@@ -299,6 +299,7 @@ The analysis suggests that commercial hosts, particularly those managing multipl
 
 These descriptive statistical methods lay the foundation for further analysis, such as regression and clustering, to quantify the relationship between host characteristics, property types, and policy compliance.
 
+## Q7 deep discussion, policy advice: require different platforms to share host's information, hosts need to provide Airbnb information withthe  government.
 ---
 
 ## References
