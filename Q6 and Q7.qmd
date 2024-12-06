@@ -276,7 +276,7 @@ Multi-listing hosts play a dominant role in the Airbnb market, particularly for 
 ### · Key Findings
 #### 1. Entire Homes Are More Likely to Breach Regulations
 - Entire homes dominate the market, accounting for **67.3%** of listings, and have significantly higher average booking days compared to private rooms.
-- A long tail of high-availability entire homes suggests that these properties are more likely to exceed the 90-day limit (see Figure 1-2).
+- A long tail of high-availability entire homes suggests that these properties are more likely to exceed the 90-day limit (see Figure 1-1).
 
 #### 2. Private Rooms Are Less Commercialized
 - Private rooms, which make up **32.1%** of listings, are often managed by single hosts who live on-site.
@@ -309,3 +309,4 @@ These descriptive statistical methods lay the foundation for further analysis, s
 - InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
 - Tufte, E. R. (2001). *The Visual Display of Quantitative Information*. Cheshire, CT: Graphics Press.  
 - Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space*, 50(6), 1147-1170.
+
