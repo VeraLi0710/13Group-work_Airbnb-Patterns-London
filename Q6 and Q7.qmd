@@ -31,7 +31,7 @@ The InsideAirbnb dataset provides detailed information on Airbnb listings in Lon
 - Entire homes dominate the market and have high average booking days (**180.6 days**), making them a key focus for regulatory concerns.
 
 ### Host Types
-- Around **70%** of hosts manage a single listing, while **30%** are multi-listing hosts. 
+- Around **36.9%** of hosts manage a single listing, while **63.1%** are multi-listing hosts. 
 - Multi-listing hosts manage a significant portion of entire-home listings, indicating a more commercialized approach.
 
 ### Booking Patterns
