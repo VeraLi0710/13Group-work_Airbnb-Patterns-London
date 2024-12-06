@@ -29,6 +29,36 @@ data = pd.read_csv(file_path)
 print(data.info()) 
 ```
 
+## Introduction
+Airbnb has transformed the short-term rental market, offering flexible accommodation options for travelers while raising concerns about housing availability and affordability in cities like London. This analysis examines the characteristics of hosts and the types of properties they list, using the InsideAirbnb dataset to explore patterns in host behavior and property usage. By leveraging descriptive statistics and visualizations, we aim to understand the nature of Airbnb lettings in London and identify potential non-compliance with local regulations, such as the 90-day rule [@insideairbnb].
+
+---
+
+## The 90-Day Rule: Context and Challenges
+The 90-day rule, introduced under the Deregulation Act 2015, restricts short-term rentals of entire homes in London to a maximum of 90 days per calendar year without planning permission. This policy addresses concerns about the commercialization of residential properties, which can reduce housing stock and inflate rental prices [@greaterlondonauthority]. However, enforcement remains challenging, as platforms like Airbnb rely on self-reporting by hosts, and there is limited oversight to ensure compliance. Research has shown that commercial hosts—those operating multiple listings or treating Airbnb as a business—are more likely to violate such regulations [@wachsmuth2018; @crommelin2018].
+
+---
+
+## Initial Observations of the Data
+The InsideAirbnb dataset provides detailed information on Airbnb listings in London, including host ID, number of listings per host, property type, availability, and reviews. After basic cleaning, the following patterns emerged:
+
+### Property Types
+- Entire homes/apartments account for **67.3%** of listings, private rooms **32.1%**, and shared rooms and hotel rooms each **0.3%**.
+- Entire homes dominate the market and have high average booking days (**180.6 days**), making them a key focus for regulatory concerns.
+
+### Host Types
+- Around **30%** of hosts manage a single listing, while **70%** are multi-listing hosts. 
+- Multi-listing hosts manage a significant portion of entire-home listings, indicating a more commercialized approach.
+
+### Booking Patterns
+- Most properties are booked for fewer than 30 days annually, indicating occasional use.
+- A subset of listings, particularly entire homes, exceeds 90 days of bookings, with some surpassing 180 or even 240 days. These high-availability properties are likely non-compliant with the 90-day rule (see Figure 1-2).
+- **Estimation Method**: The distribution of booking days (Figure 1-2) is estimated using minimum nights, price, and review counts, following the methodology referenced in InsideAirbnb's visualizations for London [@insideairbnb].
+
+These observations highlight the dominance of entire homes and multi-listing hosts in the market, both of which are more likely to engage in non-compliant behavior.
+
+---
+
 ```{python}
 #| echo: false
 # 读取数据  
