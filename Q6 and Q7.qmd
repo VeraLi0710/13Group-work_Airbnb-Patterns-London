@@ -23,10 +23,15 @@ from matplotlib.font_manager import FontProperties
 
 # 加载数据  
 file_path = 'data/listings.csv'    # 使用用户提供的文件路径  
-data = pd.read_csv(file_path)  
+airbnb_data = pd.read_csv(file_path)  
 
 # 查看数据基本信息  
-print(data.info()) 
+print(airbnb_data.info()) 
+```
+
+```{python}
+airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
+airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2  
 ```
 
 ## Introduction
@@ -69,7 +74,7 @@ from matplotlib.gridspec import GridSpec
 
 
 # 数据清洗  
-data = data[['room_type', 'availability_365', 'calculated_host_listings_count', 'reviews_per_month', 'minimum_nights']].dropna()  
+data = airbnb_data[['room_type', 'availability_365', 'calculated_host_listings_count', 'reviews_per_month', 'minimum_nights']].dropna()  
 data = data[data['availability_365'] > 0]  # 只保留有出租天数的房源  
 
 # 图 1-2: 分组直方图  
