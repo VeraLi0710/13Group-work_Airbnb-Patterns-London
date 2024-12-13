@@ -1,5 +1,4 @@
 #install and library the packages
-install.packages("spdep")
 library("spdep")
 library("sp")
 library("sf")
