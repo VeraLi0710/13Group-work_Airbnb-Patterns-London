@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties  
 
 # 加载数据  
-file_path = 'data/listings.csv'    # 使用用户提供的文件路径  
+file_path = 'data/listings_202312.csv' 
 airbnb_data = pd.read_csv(file_path)  
 
 # 查看数据基本信息  
@@ -30,8 +30,12 @@ print(airbnb_data.info())
 ```
 
 ```{python}
+#| echo: false
 airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
 airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2  
+airbnb_data.info()
+
+airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
 ```
 
 ## Introduction
@@ -74,12 +78,9 @@ from matplotlib.gridspec import GridSpec
 
 
 # 数据清洗  
-data = airbnb_data[['room_type', 'availability_365', 'calculated_host_listings_count', 'reviews_per_month', 'minimum_nights']].dropna()  
+data = airbnb_data[['room_type', 'availability_365', 'calculated_host_listings_count', 'reviews_per_month', 'minimum_nights','estimated_nights_booked']].dropna()  
 data = data[data['availability_365'] > 0]  # 只保留有出租天数的房源  
 
-# 图 1-2: 分组直方图  
-# 假设评论率为 50%，每次预订的评论率为 0.5  
-data['estimated_nights_booked'] = data['reviews_per_month'] * 12 * data['minimum_nights'] * 2  
 
 # 计算房源类型比例和平均预订天数  
 summary_table = data.groupby('room_type').agg(  
