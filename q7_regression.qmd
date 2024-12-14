@@ -1,0 +1,348 @@
+---
+title: 'Q6 An Analysis of Hosts and Property Types in London Airbnb Listings, Insights into Policy Compliance'
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.16.4
+  kernelspec:
+    display_name: Python (base)
+    language: python
+    name: base
+---
+
+```{python}
+#| echo: false
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+
+# 加载数据  
+file_path = 'data/listings.csv'    # 使用用户提供的文件路径  
+airbnb_data = pd.read_csv(file_path)  
+
+# 查看数据基本信息  
+print(airbnb_data.info()) 
+```
+
+```{python}
+airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
+airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2  
+```
+
+## Introduction
+Airbnb has transformed the short-term rental market, offering flexible accommodation options for travelers while raising concerns about housing availability and affordability in cities like London. This analysis examines the characteristics of hosts and the types of properties they list, using the InsideAirbnb dataset to explore patterns in host behavior and property usage. By leveraging descriptive statistics and visualizations, we aim to understand the nature of Airbnb lettings in London and identify potential non-compliance with local regulations, such as the 90-day rule [@insideairbnb].
+
+---
+
+## The 90-Day Rule: Context and Challenges
+The 90-day rule, introduced under the Deregulation Act 2015, restricts short-term rentals of entire homes in London to a maximum of 90 days per calendar year without planning permission. This policy addresses concerns about the commercialization of residential properties, which can reduce housing stock and inflate rental prices [@greaterlondonauthority]. However, enforcement remains challenging, as platforms like Airbnb rely on self-reporting by hosts, and there is limited oversight to ensure compliance. Research has shown that commercial hosts—those operating multiple listings or treating Airbnb as a business—are more likely to violate such regulations [@wachsmuth2018; @crommelin2018].
+
+---
+
+## Initial Observations of the Data
+The InsideAirbnb dataset provides detailed information on Airbnb listings in London, including host ID, number of listings per host, property type, availability, and reviews. After basic cleaning, the following patterns emerged:
+
+### Property Types
+- Entire homes/apartments account for **67.3%** of listings, private rooms **32.1%**, and shared rooms and hotel rooms each **0.3%**.
+- Entire homes dominate the market and have high average booking days (**180.6 days**), making them a key focus for regulatory concerns.
+
+### Host Types
+- Around **30%** of hosts manage a single listing, while **70%** are multi-listing hosts. 
+- Multi-listing hosts manage a significant portion of entire-home listings, indicating a more commercialized approach.
+
+### Booking Patterns
+- Most properties are booked for fewer than 30 days annually, indicating occasional use.
+- A subset of listings, particularly entire homes, exceeds 90 days of bookings, with some surpassing 180 or even 240 days. These high-availability properties are likely non-compliant with the 90-day rule (see Figure 1-2).
+- **Estimation Method**: The distribution of booking days (Figure 1-2) is estimated using minimum nights, price, and review counts, following the methodology referenced in InsideAirbnb's visualizations for London [@insideairbnb].
+
+These observations highlight the dominance of entire homes and multi-listing hosts in the market, both of which are more likely to engage in non-compliant behavior.
+
+---
+
+```{python}
+#| echo: false
+# 读取数据  
+import pandas as pd  
+import matplotlib.pyplot as plt  
+import seaborn as sns  
+from matplotlib.gridspec import GridSpec  
+
+
+# 数据清洗  
+data = airbnb_data[['room_type', 'availability_365', 'calculated_host_listings_count', 'reviews_per_month', 'minimum_nights']].dropna()  
+data = data[data['availability_365'] > 0]  # 只保留有出租天数的房源  
+
+# 图 1-2: 分组直方图  
+# 假设评论率为 50%，每次预订的评论率为 0.5  
+data['estimated_nights_booked'] = data['reviews_per_month'] * 12 * data['minimum_nights'] * 2  
+
+# 计算房源类型比例和平均预订天数  
+summary_table = data.groupby('room_type').agg(  
+    proportion=('room_type', 'count'),  
+    avg_booking_days=('estimated_nights_booked', 'mean')  # 使用估算的预订天数  
+)  
+summary_table['proportion'] = (summary_table['proportion'] / summary_table['proportion'].sum() * 100).round(1)
+# 创建图表  
+fig = plt.figure(figsize=(12, 10))  # 调整整体图表大小  
+gs = GridSpec(3, 1, figure=fig, height_ratios=[1.5, 1.2, 1.2])  # 调整子图比例  
+
+# 添加总标题  
+fig.suptitle('Figure 1. Room Type Analysis', fontsize=16, fontweight='bold', y=0.95)  
+
+# 图 1-1: 表格  
+ax1 = fig.add_subplot(gs[0, 0])  
+ax1.axis('tight')  
+ax1.axis('off')  
+table_data = summary_table.reset_index()  
+table_data.columns = ['Room Type', 'Proportion (%)', 'Avg Booking Days']  
+table = ax1.table(  
+    cellText=table_data.values,  
+    colLabels=table_data.columns,  
+    loc='center',  
+    cellLoc='center',  
+    bbox=[0, 0, 1, 1]  # 手动调整表格边界框  
+)  
+table.auto_set_font_size(False)  
+table.set_fontsize(12)  # 调整字体大小  
+table.auto_set_column_width(col=list(range(len(table_data.columns))))  
+ax1.set_title('1-1: Room Type Proportion and Avg Booking Days', fontsize=14, pad=10)  
+
+
+
+# 定义分组区间和标签  
+bins = [0, 30, 60, 90, 120, 150, 180, 210, 240, 255, float('inf')]  
+labels = ['0', '1-30', '31-60', '61-90', '91-120', '121-150', '151-180', '181-210', '211-240', '241-255']  
+data['booking_range'] = pd.cut(data['estimated_nights_booked'], bins=bins, labels=labels, right=False)  
+
+# 统计每个区间的房源数量  
+booking_distribution = data['booking_range'].value_counts().sort_index()  
+
+# 分离大于 90 天的部分  
+highlight_bins = ['91-120', '121-150', '151-180', '181-210', '211-240', '241-255']  
+highlight_values = booking_distribution[highlight_bins]  
+normal_bins = ['0', '1-30', '31-60', '61-90']  
+normal_values = booking_distribution[normal_bins]  
+
+# 使用 Pastel1 调色盘  
+pastel_palette = sns.color_palette("Pastel1")  
+normal_color = pastel_palette[1]  # 柔和的蓝色  
+highlight_color = pastel_palette[0]  # 柔和的红色  
+
+# 绘制直方图  
+ax2 = fig.add_subplot(gs[1, 0])  
+
+# 绘制正常部分  
+sns.barplot(  
+    x=normal_bins,  
+    y=normal_values,  
+    color=normal_color,  
+    edgecolor='black',  
+    ax=ax2,  
+    label='<= 90 days'  
+)  
+
+# 绘制高亮部分  
+sns.barplot(  
+    x=highlight_bins,  
+    y=highlight_values,  
+    color=highlight_color,  
+    edgecolor='black',  
+    ax=ax2,  
+    label='> 90 days'  
+)  
+
+# 添加标题和标签  
+ax2.set_title('1-2: Distribution of Estimated Booking Days', fontsize=14, pad=10)  
+ax2.set_xlabel('Occupancy (last 12 months)', fontsize=12)  
+ax2.set_ylabel('Listings', fontsize=12)  
+ax2.set_xticklabels(labels, rotation=45)  
+
+# 添加图例  
+ax2.legend(title='Booking Days', fontsize=10)  
+
+import numpy as np  
+
+# 对 estimated_nights_booked 进行对数变换（加 1 防止 log(0)）  
+data['log_estimated_nights_booked'] = np.log1p(data['estimated_nights_booked'])  
+
+# 绘制箱线图  
+ax3 = fig.add_subplot(gs[2, 0])  
+sns.boxplot(  
+    data=data,  
+    x='room_type',  
+    y='log_estimated_nights_booked',  # 使用对数变换后的数据  
+    palette=pastel_palette,  
+    ax=ax3  
+)  
+ax3.set_title('1-3: Boxplot of Log-Transformed Estimated Booking Days by Room Type', fontsize=14, pad=10)  
+ax3.set_xlabel('Room Type', fontsize=12)  
+ax3.set_ylabel('Log(Estimated Booking Days + 1)', fontsize=12)
+
+# 调整布局  
+plt.tight_layout(rect=[0, 0, 1, 0.93])  # 为总标题留出空间  
+plt.subplots_adjust(hspace=0.8)  # 调整子图间距  
+plt.show()
+```
+
+```{python}
+data.info()
+```
+
+```{python}
+#| echo: false
+import pandas as pd  
+import matplotlib.pyplot as plt  
+import seaborn as sns  
+from matplotlib.gridspec import GridSpec   
+from matplotlib.colors import LinearSegmentedColormap   
+
+# Load data  
+file_path = "listings.csv"  
+data = pd.read_csv(file_path)  
+
+# Data cleaning and preparation  
+data = data[['room_type', 'price', 'calculated_host_listings_count']].dropna()  
+data = data[data['price'] > 0]  # Remove listings with zero or negative prices  
+data['host_type'] = data['calculated_host_listings_count'].apply(lambda x: 'Single-Listing' if x == 1 else 'Multi-Listing')  
+
+# Calculate host type proportions  
+host_type_summary = data['host_type'].value_counts(normalize=True).reset_index()  
+host_type_summary.columns = ['Host Type', 'Market Share']  
+host_type_summary['Market Share'] = (host_type_summary['Market Share'] * 100).round(1)  
+
+# Prepare data for stacked percentage bar chart  
+stacked_data = data.groupby(['room_type', 'host_type']).size().reset_index(name='count')  
+stacked_data = stacked_data.pivot(index='room_type', columns='host_type', values='count').fillna(0)  
+stacked_data_percentage = stacked_data.div(stacked_data.sum(axis=1), axis=0) * 100  
+
+# Prepare data for heatmap  
+heatmap_data = data.groupby(['host_type', 'room_type'])['price'].mean().unstack().fillna(0)  
+
+# Define color palette  
+colors = sns.color_palette("coolwarm")  # Use Pastel1 for consistent style  
+
+# Create the figure  
+fig = plt.figure(figsize=(12, 14))  # Adjust figure size for better alignment  
+gs = GridSpec(3, 1, figure=fig, height_ratios=[1.2, 2, 2])  
+
+# Add the main title  
+fig.suptitle('Figure 2. Analysis of Host Type and Property Type',   
+             fontsize=18, fontweight='bold', y=0.95)  
+
+# Subfigure 2-1: Host Type Proportion (Table)  
+ax1 = fig.add_subplot(gs[0, 0])  
+ax1.axis('tight')  
+ax1.axis('off')  
+table = ax1.table(  
+    cellText=host_type_summary.values,  
+    colLabels=host_type_summary.columns,  
+    loc='center',  
+    cellLoc='center',  
+    bbox=[0, 0, 1, 1]  # Adjust table size to align with other plots  
+)  
+table.auto_set_font_size(False)  
+table.set_fontsize(12)  
+table.auto_set_column_width(col=list(range(len(host_type_summary.columns))))  
+ax1.set_title('2-1: Host Type Proportion', fontsize=14, pad=10)  
+
+coolwarm_palette = sns.color_palette("coolwarm")  
+# Subfigure 2-2: Property Type Distribution by Host Type (Stacked Percentage Bar Chart)  
+ax2 = fig.add_subplot(gs[1, 0])  
+stacked_data_percentage.plot(  
+    kind='bar',   
+    stacked=True,   
+    color=[pastel_palette[1], '#E8C4C4'],  # Use first two colors for host types  
+    edgecolor='grey',  # Add grey edge lines  
+    ax=ax2  
+)  
+ax2.set_title('2-2: Property Type Distribution by Host Type', fontsize=14, pad=10)  
+ax2.set_xlabel('Property Type', fontsize=12)  
+ax2.set_ylabel('Percentage (%)', fontsize=12)  
+ax2.legend(title='Host Type', loc='upper right', fontsize=10)  
+
+# Subfigure 2-3: Average Price by Host Type and Property Type (Heatmap)  
+ax3 = fig.add_subplot(gs[2, 0])   
+custom_cmap = LinearSegmentedColormap.from_list(  
+    "low_saturation_blue", ["#eaf4fc", "#a6cbe3", "#5a9bcf", "#2b6ca3"]  
+)  
+sns.heatmap(  
+    heatmap_data,   
+    annot=True,   
+    fmt=".1f",   
+    cmap=custom_cmap,  # Use custom low-saturation blue gradient  
+    cbar_kws={'label': 'Average Price'},   
+    linewidths=0.5,  # Add grid lines  
+    linecolor='black',  
+    ax=ax3  
+)  
+ax3.set_title('2-3: Average Price by Host Type and Property Type', fontsize=14, pad=10)  
+ax3.set_xlabel('Property Type', fontsize=12)  
+ax3.set_ylabel('Host Type', fontsize=12)  
+
+# Adjust layout  
+plt.tight_layout(rect=[0, 0, 1, 0.93])  # Leave space for the main title  
+plt.subplots_adjust(hspace=0.8)  # Reduce spacing between subplots  
+plt.show()
+```
+
+## Host Analysis: Identifying Commercial Hosts
+
+### · Key Findings
+#### 1. Multi-Listing Hosts Dominate Entire Homes
+- Multi-listing hosts, while fewer in number (**30% of hosts**), manage the majority of entire-home listings (**over 60%**; see Figure 2-2).
+- This indicates that multi-listing hosts are more likely to treat Airbnb as a business rather than occasional letting.
+
+#### 2. Higher Booking Days for Multi-Listing Hosts
+- Multi-listing hosts consistently have higher average booking days compared to single-listing hosts. This is particularly evident for entire homes, where multi-listing hosts often exceed the 90-day limit (see Figure 2-3).
+
+#### 3. Policy Implications
+- Multi-listing hosts are key drivers of non-compliance with the 90-day rule due to the scale of their operations. Managing multiple entire-home listings makes it difficult to comply with the regulatory limit without significant revenue loss.
+
+### · Summary of Host Analysis
+Multi-listing hosts play a dominant role in the Airbnb market, particularly for entire homes. Their higher booking days and commercialized approach make them more likely to breach regulations. This highlights the need for stricter enforcement mechanisms targeting multi-listing hosts.
+
+---
+
+## Property Analysis: Entire Homes vs. Private Rooms
+
+### · Key Findings
+#### 1. Entire Homes Are More Likely to Breach Regulations
+- Entire homes dominate the market, accounting for **67.3%** of listings, and have significantly higher average booking days compared to private rooms.
+- A long tail of high-availability entire homes suggests that these properties are more likely to exceed the 90-day limit (see Figure 1-1).
+
+#### 2. Private Rooms Are Less Commercialized
+- Private rooms, which make up **32.1%** of listings, are often managed by single hosts who live on-site.
+- These properties have lower average booking days and are less likely to breach the 90-day rule, indicating a more compliant and less commercialized use.
+
+#### 3. Pricing Differences Between Host Types
+- Multi-listing hosts charge higher average prices across all property types, particularly for entire homes ($249.5 vs. $219.7 for single-listing hosts; see Figure 2-3).
+- Single-listing hosts offer more competitive pricing for private rooms and shared rooms, likely targeting cost-sensitive customers.
+
+### · Summary of Property Analysis
+Entire homes are the primary focus of regulatory concerns due to their higher booking days and association with multi-listing hosts. Private rooms, by contrast, are less commercialized and more likely to comply with regulations. This distinction underscores the need for targeted policies addressing entire homes and their hosts.
+
+---
+
+## Preliminary Conclusions
+The analysis suggests that commercial hosts, particularly those managing multiple entire-home listings, are more likely to violate the 90-day rule. Key findings include:
+
+- **Host Behavior**: Multi-listing hosts dominate the market for entire homes, with average availability exceeding the regulatory limit (see Figure 2-2).
+- **Property Type Trends**: Entire homes are more likely to be used as commercial short-term rentals, while private rooms are typically managed by individual hosts and comply with the 90-day rule.
+- **Pricing Strategies**: Multi-listing hosts charge higher prices across all property types, reflecting their commercialized approach (see Figure 2-3).
+
+These descriptive statistical methods lay the foundation for further analysis, such as regression and clustering, to quantify the relationship between host characteristics, property types, and policy compliance.
+
+## Q7 deep discussion, policy advice: require different platforms to share host's information, hosts need to provide Airbnb information withthe  government.
+---
+
+## References
+- Crommelin, L., Troy, L., Martin, C., & Pettit, C. (2018). Is Airbnb a sharing economy success or an urban menace? *Cities*, 72, 177-185.  
+- Greater London Authority. (2023). Guidance on short-term and holiday lets in London. Retrieved from https://www.london.gov.uk  
+- InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
+- Tufte, E. R. (2001). *The Visual Display of Quantitative Information*. Cheshire, CT: Graphics Press.  
+- Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space*, 50(6), 1147-1170.
