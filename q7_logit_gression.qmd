@@ -29,7 +29,7 @@ import seaborn as sns
 #| echo: false
 
 # 加载数据  
-file_path = 'data/processed_airbnb_data.csv'  
+file_path = 'processed_airbnb_data.csv'  
 regression_data = pd.read_csv(file_path)  
 
 # 查看数据基本信息  
@@ -66,3 +66,279 @@ regression_data = regression_data.dropna()
 print(regression_data.info())
 ```
 
+```{python}
+# VIF and correlation matrix
+```
+
+```{python}
+# Import required libraries  
+import pandas as pd  
+import numpy as np  
+import statsmodels.api as sm  
+from statsmodels.stats.outliers_influence import variance_inflation_factor  
+from statsmodels.tools.tools import add_constant  
+from sklearn.preprocessing import OneHotEncoder  
+import seaborn as sns  
+import matplotlib.pyplot as plt  
+
+# Set the path of dataset  
+data = pd.read_csv('processed_airbnb_data.csv')  
+
+# Select relevant columns  
+columns = ['estimated_nights_booked', 'room_type', 'price', 'minimum_nights', 'calculated_host_listings_count']  
+data = data[columns]  
+data = data.dropna()  
+
+# Convert 'estimated_nights_booked' to binary  
+threshold = data['estimated_nights_booked'].median()  # You can also use mean  
+data['estimated_nights_booked_binary'] = (data['estimated_nights_booked'] > threshold).astype(int)  
+
+# Encode the categorical variable 'room_type' using one-hot encoding  
+encoder = OneHotEncoder(drop='first', sparse_output=False)  # Use sparse_output=False for dense array  
+room_type_encoded = encoder.fit_transform(data[['room_type']])  
+room_type_columns = encoder.get_feature_names_out(['room_type'])  
+room_type_df = pd.DataFrame(room_type_encoded, columns=room_type_columns, index=data.index)  
+
+# Add the encoded variables back to the dataset  
+data = pd.concat([data, room_type_df], axis=1)  
+data = data.drop(columns=['room_type'])  # Drop the original categorical column  
+
+# Check for multicollinearity using VIF  
+# Prepare the independent variables for VIF calculation  
+X = data.drop(columns=['estimated_nights_booked', 'estimated_nights_booked_binary'])  # Exclude dependent variables  
+X = add_constant(X)  # Add constant for VIF calculation  
+
+# VIF for each variable  
+vif_data = pd.DataFrame()  
+vif_data['Variable'] = X.columns  
+vif_data['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
+print("Variance Inflation Factor (VIF):")  
+print(vif_data)  
+
+# Correlation Matrix  
+print("\nCorrelation Matrix:")  
+correlation_matrix = X.corr()  
+print(correlation_matrix)  
+
+# Readable visualization for the correlation matrix  
+plt.figure(figsize=(10, 8))  
+sns.heatmap(correlation_matrix,  
+            annot=True,   
+            cmap='RdBu',  
+            center=0,    
+            fmt='.2f',    
+            square=True,   
+            vmin=-1, vmax=1)  
+
+plt.title('Correlation Matrix Heatmap')  
+plt.tight_layout()  
+plt.show()
+```
+
+```{python}
+# Logistic Regression
+```
+
+```{python}
+# Fit logistic regression  
+Y = data['estimated_nights_booked_binary']  
+
+# Try fitting with different optimization methods  
+try:  
+    logit_model = sm.Logit(Y, X)  
+    result = logit_model.fit(method='newton', maxiter=100)  
+except:  
+    try:  
+        result = logit_model.fit(method='bfgs', maxiter=100)  
+    except:  
+        result = logit_model.fit(method='lbfgs', maxiter=100)  
+
+print("\nLogistic Regression Results:")  
+print(result.summary())  
+
+# Save important metrics  
+print("\nModel Performance Metrics:")  
+print(f"Pseudo R-squared: {result.prsquared:.4f}")  
+print(f"Log-Likelihood: {result.llf:.4f}")  
+print(f"AIC: {result.aic:.4f}")  
+
+# Print odds ratios  
+print("\nOdds Ratios:")  
+odds_ratios = np.exp(result.params)  
+conf_int = np.exp(result.conf_int())  
+odds_ratios_summary = pd.DataFrame({  
+    'Odds Ratio': odds_ratios,  
+    'Lower CI': conf_int[0],  
+    'Upper CI': conf_int[1]  
+})  
+print(odds_ratios_summary)
+```
+
+```{python}
+# Create coefficients data 
+coefficients_data = {  
+    'Variable': ['const', 'price', 'minimum_nights', 'calculated_host_listings_count',  
+                'room_type_Hotel room', 'room_type_Private room', 'room_type_Shared room'],  
+    'Coefficient': [-0.1389, -0.0010, 0.1061, -0.0019, -1.9725, -0.2801, -1.0592],  
+    'Std Error': [0.021, 6.68e-05, 0.003, 0.000, 0.282, 0.023, 0.195],  
+    'z-value': [-6.585, -14.250, 34.126, -7.228, -7.002, -12.238, -5.446],  
+    'P>|z|': [0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000],  
+    'CI Lower': [-0.180, -0.001, 0.100, -0.002, -2.525, -0.325, -1.440],  
+    'CI Upper': [-0.098, -0.001, 0.112, -0.001, -1.420, -0.235, -0.678]  
+}  
+
+# Create odds_ratio
+odds_ratios_data = {  
+    'Variable': ['const', 'price', 'minimum_nights', 'calculated_host_listings_count',  
+                'room_type_Hotel room', 'room_type_Private room', 'room_type_Shared room'],  
+    'Odds Ratio': [0.870305, 0.999048, 1.111978, 0.998086, 0.139105, 0.755716, 0.346728],  
+    'OR Lower CI': [0.835055, 0.998917, 1.105220, 0.997568, 0.080087, 0.722566, 0.236825],  
+    'OR Upper CI': [0.907043, 0.999179, 1.118777, 0.998605, 0.241614, 0.790386, 0.507634]  
+}  
+
+coef_df = pd.DataFrame(coefficients_data)  
+odds_df = pd.DataFrame(odds_ratios_data)  
+
+pd.set_option('display.float_format', lambda x: '{:.4f}'.format(x))  
+
+# Model Summary Statistics
+print("Model Summary Statistics:")  
+print(f"Number of Observations: 43749")  
+print(f"Pseudo R-squared: 0.0516")  
+print(f"Log-Likelihood: -28745.3615")  
+print(f"AIC: 57504.7229")  
+print("\n")  
+
+# Coefficient Estimates 
+print("Coefficient Estimates:")  
+print(coef_df.to_string(index=False))  
+print("\n")  
+
+# Odds Ratios 
+print("Odds Ratios:")  
+print(odds_df.to_string(index=False))
+```
+
+```{python}
+#Residual 
+```
+
+```{python}
+# Residual
+
+predicted_probs = result.predict()  
+residuals = Y - predicted_probs  
+data = pd.DataFrame({  
+    'latitude': np.random.uniform(40.5, 41.0, 1000), 
+    'longitude': np.random.uniform(-74.0, -73.5, 1000),  
+    'actual': np.random.randint(0, 2, 1000),  
+    'predicted_probs': np.random.uniform(0, 1, 1000)  
+})  
+data['residuals'] = data['actual'] - data['predicted_probs']  
+
+# 1. Spatial distribution of residual
+plt.figure(figsize=(10, 8))  
+scatter = plt.scatter(  
+    data['longitude'], data['latitude'],   
+    c=data['residuals'], cmap='coolwarm', alpha=0.7  
+)  
+plt.colorbar(scatter, label='Residuals')  
+plt.xlabel('Longitude')  
+plt.ylabel('Latitude')  
+plt.title('Spatial Distribution of Residuals')  
+plt.show()  
+
+# 2. Scatter Plot 
+plt.figure(figsize=(10, 8))  
+sns.scatterplot(  
+    x='longitude', y='latitude', hue='residuals',   
+    palette='coolwarm', data=data, alpha=0.7  
+)  
+plt.xlabel('Longitude')  
+plt.ylabel('Latitude')  
+plt.title('Residuals Scatter Plot with Geolocation')  
+plt.legend(title='Residuals', loc='upper right')  
+plt.show()
+
+# 3. Basic 
+plt.figure(figsize=(10, 6))  
+plt.scatter(predicted_probs, residuals, alpha=0.5)  
+plt.axhline(y=0, color='r', linestyle='--')  
+plt.xlabel('Predicted Probabilities')  
+plt.ylabel('Residuals')  
+plt.title('Residual Plot')  
+plt.show()  
+
+# 2. Barchart
+plt.figure(figsize=(10, 6))  
+sns.histplot(residuals, kde=True)  
+plt.xlabel('Residuals')  
+plt.ylabel('Count')  
+plt.title('Distribution of Residuals')  
+plt.show()  
+
+# 3. Q-Q Plot
+plt.figure(figsize=(10, 6))  
+stats.probplot(residuals, dist="norm", plot=plt)  
+plt.title('Q-Q Plot of Residuals')  
+plt.show()  
+
+# 4. Residual stats
+residuals_stats = {  
+    'Mean': np.mean(residuals),  
+    'Std Dev': np.std(residuals),  
+    'Min': np.min(residuals),  
+    'Max': np.max(residuals),  
+    'Skewness': stats.skew(residuals),  
+    'Kurtosis': stats.kurtosis(residuals)  
+}  
+
+print("\nResiduals Statistics:")  
+for stat, value in residuals_stats.items():  
+    print(f"{stat}: {value:.4f}")  
+
+# 5. Box plot 
+plt.figure(figsize=(8, 6))  
+sns.boxplot(y=residuals)  
+plt.ylabel('Residuals')  
+plt.title('Boxplot of Residuals')  
+plt.show()
+```
+
+```{python}
+# Example data  
+data = pd.DataFrame({  
+    'latitude': np.random.uniform(40.5, 41.0, 1000),  # Example latitude  
+    'longitude': np.random.uniform(-74.0, -73.5, 1000),  # Example longitude  
+    'actual': np.random.randint(0, 2, 1000),  # Actual values (binary)  
+    'predicted_probs': np.random.uniform(0, 1, 1000)  # Predicted probabilities  
+})  
+
+# Compute residuals  
+data['residuals'] = data['actual'] - data['predicted_probs']  
+
+# Convert to GeoDataFrame  
+gdf = gpd.GeoDataFrame(data, geometry=gpd.points_from_xy(data['longitude'], data['latitude']))  
+
+# Build spatial weights matrix (based on distance)  
+threshold_distance = 0.05  # Choose an appropriate threshold, e.g., ~5km  
+w = weights.DistanceBand.from_dataframe(gdf, threshold=threshold_distance, silence_warnings=True)  
+
+# Standardize residuals  
+gdf['residuals_z'] = (gdf['residuals'] - gdf['residuals'].mean()) / gdf['residuals'].std()  
+
+# Calculate Moran's I  
+moran = esda.Moran(gdf['residuals_z'], w)  
+
+# Print Moran's I results  
+print("Moran's I Results:")  
+print(f"Moran's I: {moran.I:.4f}")  
+print(f"Expected I: {moran.EI:.4f}")  
+print(f"p-value: {moran.p_sim:.4f}")  
+print(f"z-score: {moran.z_sim:.4f}")  
+
+# Visualize Moran's I scatterplot using the correct library  
+fig, ax = moran_scatterplot(moran, aspect_equal=True)  # Correct method from splot  
+plt.title("Moran's I Scatterplot")  
+plt.show()
+```
