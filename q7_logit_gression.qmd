@@ -67,7 +67,7 @@ print(regression_data.info())
 ```
 
 ```{python}
-# VIF and check for highly correlated variables
+# VIF and correlation matrix
 ```
 
 ```{python}
@@ -108,7 +108,7 @@ data = data.drop(columns=['room_type'])  # Drop the original categorical column
 X = data.drop(columns=['estimated_nights_booked', 'estimated_nights_booked_binary'])  # Exclude dependent variables  
 X = add_constant(X)  # Add constant for VIF calculation  
 
-# Calculate VIF for each variable  
+# VIF for each variable  
 vif_data = pd.DataFrame()  
 vif_data['Variable'] = X.columns  
 vif_data['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
@@ -120,7 +120,7 @@ print("\nCorrelation Matrix:")
 correlation_matrix = X.corr()  
 print(correlation_matrix)  
 
-# Readable visualization for correlation matrix  
+# Readable visualization for the correlation matrix  
 plt.figure(figsize=(10, 8))  
 sns.heatmap(correlation_matrix,  
             annot=True,   
@@ -175,9 +175,7 @@ print(odds_ratios_summary)
 ```
 
 ```{python}
-import pandas as pd  
-
-# 创建系数估计表格  
+# Create coefficients data 
 coefficients_data = {  
     'Variable': ['const', 'price', 'minimum_nights', 'calculated_host_listings_count',  
                 'room_type_Hotel room', 'room_type_Private room', 'room_type_Shared room'],  
@@ -189,7 +187,7 @@ coefficients_data = {
     'CI Upper': [-0.098, -0.001, 0.112, -0.001, -1.420, -0.235, -0.678]  
 }  
 
-# 创建优势比表格  
+# Create odds_ratio
 odds_ratios_data = {  
     'Variable': ['const', 'price', 'minimum_nights', 'calculated_host_listings_count',  
                 'room_type_Hotel room', 'room_type_Private room', 'room_type_Shared room'],  
@@ -198,14 +196,12 @@ odds_ratios_data = {
     'OR Upper CI': [0.907043, 0.999179, 1.118777, 0.998605, 0.241614, 0.790386, 0.507634]  
 }  
 
-# 创建DataFrame  
 coef_df = pd.DataFrame(coefficients_data)  
 odds_df = pd.DataFrame(odds_ratios_data)  
 
-# 设置精确度  
 pd.set_option('display.float_format', lambda x: '{:.4f}'.format(x))  
 
-# 打印模型概要统计量  
+# Model Summary Statistics
 print("Model Summary Statistics:")  
 print(f"Number of Observations: 43749")  
 print(f"Pseudo R-squared: 0.0516")  
@@ -213,12 +209,12 @@ print(f"Log-Likelihood: -28745.3615")
 print(f"AIC: 57504.7229")  
 print("\n")  
 
-# 打印系数表格  
+# Coefficient Estimates 
 print("Coefficient Estimates:")  
 print(coef_df.to_string(index=False))  
 print("\n")  
 
-# 打印优势比表格  
+# Odds Ratios 
 print("Odds Ratios:")  
 print(odds_df.to_string(index=False))
 ```
@@ -346,4 +342,3 @@ fig, ax = moran_scatterplot(moran, aspect_equal=True)  # Correct method from spl
 plt.title("Moran's I Scatterplot")  
 plt.show()
 ```
-
