@@ -129,6 +129,460 @@ ax.set_xlim([0,500]);
 
 :::
 
+
+```{python}
+#| echo: false
+#| output: false
+#Reading airbnb data 2013.12
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+
+# loading data
+file_path = 'data/listings_202312.csv' 
+airbnb_data = pd.read_csv(file_path)  
+ 
+print(airbnb_data.info()) 
+```
+
+```{python}
+#| echo: false
+# estimate booking days per year by reviews and minimum nights
+airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
+airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2  
+
+#Data cleaning
+# Replace NaN with 0
+airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].fillna(0)
+# Convert the column to integers
+airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].astype(int)
+
+#airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
+```
+
+### Research Scope  
+
+Airbnb has significantly impacted London’s housing market, contributing to gentrification and reducing housing availability. To address this, the 90-day rule restricts short-term rental of entire homes to 90 days annually without planning permission [@greaterlondonauthority]. However, limited oversight and host self-reporting make enforcement difficult. Utilizing the InsideAirbnb dataset, we aim to uncover spatial and behavioral patterns linked to potential rule violations, providing actionable insights to improve the regulation of Short-Term Lets in London.  
+
+---  
+
+### Initial Observations of the Data  
+
+We used the December 2023 dataset as a snapshot for its comprehensive coverage of recent trends. Key observations are summarized below:  
+
+```{python}
+#| echo: false
+#| warning: false
+# 1. Data Cleaning and Preparation  
+# -------------------------------  
+# Select relevant columns and drop rows with missing values  
+data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  
+                    'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  
+                    'price', 'latitude', 'longitude']].dropna()  
+
+# Filter data where availability_365 is greater than 0  
+data = data[data['availability_365'] > 0]  
+
+import geopandas as gpd  
+# Load the borough map as a GeoDataFrame  
+borough_map = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+
+# Convert the cleaned data into a GeoDataFrame  
+gdf = gpd.GeoDataFrame(  
+    data,   
+    geometry=gpd.points_from_xy(data['longitude'], data['latitude']),  
+    crs="EPSG:4326"  # WGS84 coordinate system  
+)  
+# Reproject the GeoDataFrame to EPSG:27700 (British National Grid)  
+gdf = gdf.to_crs("EPSG:27700")  
+# Ensure both GeoDataFrames use the same CRS  
+borough_map = borough_map.to_crs(gdf.crs)  
+```
+
+```{python}
+#| echo: false
+#| warning: false
+import matplotlib.pyplot as plt  
+import seaborn as sns  
+from matplotlib.gridspec import GridSpec  
+import numpy as np  
+import os  # For creating directories  
+
+# -------------------------------  
+# 1. Setup the Main Figure Layout  
+# -------------------------------  
+fig = plt.figure(figsize=(16, 10))  # Main figure size  
+gs = GridSpec(1, 1, figure=fig)  # Single grid for the map  
+
+# Subplot positions and sizes  
+x_offset = 0.75  
+y_offsets = [0.82, 0.62, 0.42, 0.22]  
+subplot_width, subplot_height = 0.18, 0.12  
+
+# -------------------------------  
+# 2. Plot the Map of Airbnb Listings  
+# -------------------------------  
+ax_map = fig.add_subplot(gs[0, 0])  
+borough_map.plot(ax=ax_map, color='lightblue', edgecolor='darkblue', alpha=0.44)  
+
+# Define room type colors  
+room_type_colors = {  
+    'Entire home/apt': '#FF7F7F',  
+    'Private room': '#77DD77',  
+    'Shared room': '#FDFD96',  
+    'Hotel room': '#FFA07A'  
+}  
+
+# Plot Airbnb listings by room type  
+for room_type, color in room_type_colors.items():  
+    gdf[gdf['room_type'] == room_type].plot(  
+        ax=ax_map, color=color, markersize=2, label=room_type, alpha=0.7  
+    )  
+
+# Add legend  
+legend = ax_map.legend(  
+    title="Room Type", loc='upper left', fontsize=10, frameon=True, edgecolor='lightgray'  
+)  
+legend.get_title().set_fontsize(10)  
+legend.get_title().set_fontweight('bold')  
+
+# Add map title  
+plt.title('Airbnb Listings in London', fontsize=13)  
+
+# Remove axes and borders for a cleaner map  
+ax_map.set_xticks([]), ax_map.set_yticks([])  
+for spine in ax_map.spines.values():  
+    spine.set_visible(False)  
+
+# -------------------------------  
+# 3. Subplot 1: Estimated Booking Days  
+# -------------------------------  
+ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])  
+
+# Define bins and labels for booking days  
+bins = [0, 30, 60, 89.999, 120, 150, 180, 210, 240, 270, 300, 330, 356]  
+labels = ['0-30', '30-60', '60-90', '90-120', '120-150', '150-180', '180-210',  
+          '210-240', '240-270', '270-300', '300-330', '330-356', '356+']  
+
+# Assign colors based on booking days  
+data['booking_color'] = data['estimated_nights_booked'].apply(  
+    lambda x: 'blue' if x <= 89 else 'red'  
+)  
+
+# Plot histogram  
+sns.histplot(  
+    data=data, x='estimated_nights_booked', hue='booking_color',  
+    palette={'blue': '#6A9FB5', 'red': '#FF6F61'}, multiple='dodge',  
+    edgecolor='black', linewidth=0.5, binwidth=15, ax=ax1  
+)  
+ax1.set_title('1. Estimated Booking Days', fontsize=10, fontweight='bold')  
+ax1.set_xlabel('Booking Days (0-356)', fontsize=8)  
+ax1.set_ylabel('Listings', fontsize=8)  
+ax1.tick_params(axis='x', rotation=45, labelsize=7)  
+ax1.tick_params(axis='y', labelsize=7)  
+ax1.set_xlim(0, 356)  
+
+# Add vertical line at 90  
+ax1.axvline(x=90, color='black', linestyle='--', linewidth=1)  
+
+# Set custom x-axis ticks and labels  
+ax1.set_xticks(bins)  
+ax1.set_xticklabels(labels, rotation=45, fontsize=6.5)  
+
+# Add custom legend  
+ax1.legend(  
+    handles=[  
+        plt.Line2D([0], [0], color='#6A9FB5', lw=4, label='< 90'),  
+        plt.Line2D([0], [0], color='#FF6F61', lw=4, label='>=90')  
+    ],  
+    title="Booking Days", loc='upper right', fontsize=8, title_fontsize=8  
+)  
+ax1.spines['top'].set_visible(False)  
+ax1.spines['right'].set_visible(False)  
+
+# -------------------------------  
+# 4. Subplot 2: Listings per Host  
+# -------------------------------  
+ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])  
+
+# Group listings per host and create a new column for "10+"  
+listings_per_host = data.groupby('host_id').size()  
+listings_per_host = listings_per_host.apply(lambda x: x if x <= 10 else 11)  
+
+# Plot histogram  
+sns.histplot(  
+    listings_per_host, kde=False, color='lightblue',  
+    edgecolor='black', linewidth=0.5, binwidth=0.8, ax=ax2  
+)  
+ax2.set_title('2. Listings per Host', fontsize=10, fontweight='bold')  
+ax2.set_xlabel('Number of Listings', fontsize=8)  
+ax2.set_ylabel('Hosts', fontsize=8)  
+ax2.tick_params(axis='x', labelsize=7)  
+ax2.tick_params(axis='y', labelsize=7)  
+ax2.set_xticks(range(1, 12))  
+ax2.set_xticklabels([str(i) for i in range(1, 11)] + ['10+'])  
+ax2.set_xlim(0.5, 11.5)  
+ax2.spines['top'].set_visible(False)  
+ax2.spines['right'].set_visible(False)  
+
+# -------------------------------  
+# 5. Subplot 3: Room Type Count  
+# -------------------------------  
+ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])  
+
+# Plot bar chart  
+room_type_count = data['room_type'].value_counts()  
+room_type_count.index = ['Entire home', 'Private room', 'Shared room', 'Hotel room']  
+sns.barplot(  
+    x=room_type_count.index, y=room_type_count.values,  
+    palette=['#FF7F7F', '#AEC6CF', '#FDFD96', '#FFA07A'],  
+    edgecolor='black', linewidth=0.5, width=0.4, ax=ax3  
+)  
+ax3.set_title('3. Room Type Count', fontsize=10, fontweight='bold')  
+ax3.set_xlabel('Room Type', fontsize=8)  
+ax3.set_ylabel('Count', fontsize=8)  
+ax3.tick_params(axis='x', labelsize=7)  
+ax3.tick_params(axis='y', labelsize=7)  
+ax3.spines['top'].set_visible(False)  
+ax3.spines['right'].set_visible(False)  
+
+# -------------------------------  
+# 6. Subplot 4: Minimum Nights Distribution  
+# -------------------------------  
+ax4 = fig.add_axes([x_offset, y_offsets[3], subplot_width, subplot_height])  
+
+# Plot histogram  
+sns.histplot(  
+    data['minimum_nights'], bins=1000, kde=False,  
+    color='lightcoral', edgecolor='black', linewidth=0.5, ax=ax4  
+)  
+ax4.set_title('4. Minimum Nights Distribution', fontsize=10, fontweight='bold')  
+ax4.set_xlabel('Minimum Nights', fontsize=8)  
+ax4.set_ylabel('Listings', fontsize=8)  
+ax4.tick_params(axis='x', labelsize=7)  
+ax4.tick_params(axis='y', labelsize=7)  
+ax4.set_xlim(0, 40)  
+ax4.spines['top'].set_visible(False)  
+ax4.spines['right'].set_visible(False)  
+
+# -------------------------------  
+# 7. Add a Table Header  
+# -------------------------------  
+fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  
+
+# -------------------------------  
+# 8. Save the Figure  
+# -------------------------------  
+os.makedirs('plots', exist_ok=True)  # Create 'plots' folder if it doesn't exist  
+plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches='tight')  
+
+# -------------------------------  
+# 9. Display the Figure  
+# -------------------------------  
+plt.show()
+```
+
+1. **Spatial Clustering**: Listings are concentrated in central London, where demand and rents are highest.  
+2. **Estimated Booking Days**: Using minimum nights, price, and reviews [@insideairbnb], we estimated annual booking days, and a significant portion of properties exceeded the 90-day limit (Figure 1-1).  
+3. **Host Characteristics**: Single-listing and multi-listing hosts both occupy notable market shares(Figure 1-2).  
+4. **Short-Term Focus**: Most listings have low minimum night requirements, reflecting a predominantly commercial short-term rental model (Figure 1-4).  
+
+These findings highlight clear differences in host behavior and rental patterns, warranting further analysis of their connection to rule violations.  
+
+---  
+
+### Preliminary Conclusions  
+
+To address the limitations of single snapshots, we combined quarterly data from December 2023 to September 2024, removing duplicates to refine our analysis (Figure 2). Key results are as follows:  
+
+```{python}
+#| echo: false
+import pandas as pd  
+import matplotlib.pyplot as plt  
+import seaborn as sns  
+import os  
+from matplotlib.colors import LinearSegmentedColormap  
+
+# -------------------------------  
+# 1. Load and Combine Data  
+# -------------------------------  
+# Define the folder and file names  
+data_folder = "data"  
+file_names = ["listings_20243.csv", "listings_20246.csv", "listings_20249.csv"]  
+
+# Load and combine the datasets  
+data_list = [pd.read_csv(os.path.join(data_folder, file)) for file in file_names]  
+combined_data = pd.concat(data_list, ignore_index=True)  
+
+# Combine with airbnb_data (2023 data)  
+all_data = pd.concat([combined_data, airbnb_data], ignore_index=True)  
+
+# -------------------------------  
+# 2. Data Cleaning  
+# -------------------------------  
+# Filter out listings with no availability  
+all_data = all_data[all_data['availability_365'] > 0]  
+
+# Calculate estimated booking days  
+all_data['estimated_nights_booked'] = (  
+    all_data['reviews_per_month'] * 12 * all_data['minimum_nights'] * 2  
+)  
+all_data['estimated_nights_booked'] = all_data['estimated_nights_booked'].fillna(0).astype(int)  
+
+# Remove duplicates  
+all_data = all_data.drop_duplicates()  
+
+# -------------------------------  
+# 3. Create 'host_type' Column  
+# -------------------------------  
+# Ensure 'calculated_host_listings_count' exists  
+if 'calculated_host_listings_count' not in all_data.columns:  
+    raise KeyError("'calculated_host_listings_count' column is missing from the DataFrame.")  
+
+# Create 'host_type' column  
+all_data['host_type'] = all_data['calculated_host_listings_count'].apply(  
+    lambda x: 'Single' if x == 1 else 'Multi'  
+)  
+
+# -------------------------------  
+# 4. Calculate Metrics  
+# -------------------------------  
+# Host type proportions  
+host_proportions = all_data['host_type'].value_counts(normalize=True) * 100  
+host_proportions = host_proportions.round(2)  
+
+# Average booking days by host type  
+host_avg_booking_days = all_data.groupby('host_type')['estimated_nights_booked'].mean().round(2)  
+
+# Room type proportions  
+room_type_proportions = all_data['room_type'].value_counts(normalize=True) * 100  
+room_type_proportions = room_type_proportions.round(2)  
+
+# Average booking days by room type  
+room_type_avg_days = all_data.groupby('room_type')['estimated_nights_booked'].mean().round(2)  
+
+# Average price and minimum nights by host type and room type  
+avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  
+min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  
+```
+
+```{python}
+#| echo: false
+# 5. Visualizations  
+# -------------------------------  
+fig = plt.figure(figsize=(16, 14))  
+
+# Main title  
+fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  
+
+# First Row: Tables  
+# Left: Host Type Table  
+ax1 = fig.add_axes([0.1, 0.7, 0.35, 0.15])  
+ax1.axis('off')  
+host_table_data = pd.DataFrame({  
+    'Host Type': host_proportions.index,  
+    'Proportion (%)': host_proportions.values,  
+    'Avg Booking Days': host_avg_booking_days.values  
+})  
+host_table = ax1.table(  
+    cellText=host_table_data.values,  
+    colLabels=host_table_data.columns,  
+    cellLoc='center',  
+    loc='center',  
+    bbox=[0, 0, 1, 1]  
+)  
+host_table.auto_set_font_size(False)  
+host_table.set_fontsize(12)  
+for key, cell in host_table.get_celld().items():  
+    if key[0] == 0:  # Header row  
+        cell.set_text_props(weight='bold')  
+        cell.set_height(0.1)  
+    else:  
+        cell.set_height(0.15)  
+
+# Add left-side title  
+fig.text(0.15, 0.87, 'Host Type Distribution and Booking Trends', fontsize=13, fontweight='bold')  
+
+# Right: Room Type Table  
+ax2 = fig.add_axes([0.55, 0.7, 0.35, 0.15])  
+ax2.axis('off')  
+room_table_data = pd.DataFrame({  
+    'Room Type': room_type_proportions.index,  
+    'Proportion (%)': room_type_proportions.values,  
+    'Avg Booking Days': room_type_avg_days.values  
+})  
+room_table = ax2.table(  
+    cellText=room_table_data.values,  
+    colLabels=room_table_data.columns,  
+    cellLoc='center',  
+    loc='center',  
+    bbox=[0, 0, 1, 1]  
+)  
+room_table.auto_set_font_size(False)  
+room_table.set_fontsize(12)  
+for key, cell in room_table.get_celld().items():  
+    if key[0] == 0:  # Header row  
+        cell.set_text_props(weight='bold')  
+        cell.set_height(0.1)  
+    else:  
+        cell.set_height(0.15)  
+
+# Add right-side title  
+fig.text(0.6, 0.87, 'Room Type Distribution and Booking Trends', fontsize=13, fontweight='bold')  
+
+# Second Row: Bar Charts  
+# Left: Host Type Bar Chart  
+ax3 = fig.add_axes([0.1, 0.45, 0.35, 0.2])  
+host_avg_booking_days.plot(kind='bar', color=sns.color_palette("Pastel1")[:2], edgecolor='black', ax=ax3)  
+ax3.set_title('Average Estimated Booking Days by Host Type', fontsize=10, fontweight='bold')  
+ax3.set_xlabel('Host Type')  
+ax3.set_ylabel('Average Booking Days')  
+
+# Right: Room Type Bar Chart  
+ax4 = fig.add_axes([0.55, 0.45, 0.35, 0.2])  
+room_type_colors = sns.color_palette("Pastel1")[:len(room_type_avg_days)]  
+room_type_avg_days.plot(kind='bar', color=room_type_colors, edgecolor='black', ax=ax4)  
+ax4.set_title('Average Estimated Booking Days by Room Type', fontsize=10, fontweight='bold')  
+ax4.set_xlabel('Room Type')  
+ax4.set_ylabel('Average Booking Days')  
+
+# Add dividing line  
+fig.add_axes([0.49, 0.4, 0.01, 0.5]).plot([0, 0], [0, 1], linestyle='--', color='black', linewidth=1)  
+plt.gca().axis('off')  
+
+# Third Row: Heatmaps  
+# Left: Average Price Heatmap  
+ax5 = fig.add_axes([0.1, 0.1, 0.4, 0.23])  
+sns.heatmap(avg_price_heatmap, annot=True, fmt=".2f", cmap="Blues", cbar=True, ax=ax5)  
+ax5.set_title('Average Price by Host and Room Types', fontsize=10, fontweight='bold')  
+
+# Right: Minimum Nights Heatmap  
+slightly_higher_saturation_reds = LinearSegmentedColormap.from_list(  
+    "slightly_higher_saturation_reds", ["#fff5f5", "#fcd9d9", "#f8a8a8", "#f47474"]  
+)  
+ax6 = fig.add_axes([0.55, 0.1, 0.4, 0.22])  
+sns.heatmap(min_nights_heatmap, annot=True, fmt=".2f", cmap=slightly_higher_saturation_reds, cbar=True, ax=ax6)  
+ax6.set_title('Minimum Nights by Host and Room Types', fontsize=10, fontweight='bold')  
+
+# Save and display  
+plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  
+plt.show()
+```
+
+1. **Host Behavior**: Multi-listing hosts dominate (62.38%) and show higher average booking days (75.17) than single-listing hosts (66.61). Heatmaps reveal that multi-listing hosts rent out entire homes and hotel rooms at significantly higher prices, indicating a preference for commercialized short-term rentals.
+2. **Property Types**: Entire homes (66.97%) are the most common and have the highest average booking days (78.38). Hotel rooms, with the shortest minimum night requirements, further exemplify commercial rental patterns, while shared rooms suggest long-term use tendencies.  
+
+#### Summary and Next Steps
+
+1. **Spatial Analysis**: Listings are spatially clustered, particularly in central London. Clustering analysis can pinpoint areas of non-compliance and assess community impacts, helping refine geographically targeted enforcement strategies.  
+2. **Commercialization of Rentals**: Multi-listing hosts, particularly those managing entire homes and hotel rooms with high bookings and prices, exhibit strong commercial tendencies. Regression analysis is needed to quantify their relationship with rule violations and guide policy design for stricter regulation.  
+
+This combined analysis provides actionable insights into spatial and behavioral patterns, enabling better regulatory enforcement to mitigate the broader impacts of short-term rentals on London’s housing market.
+
+---  
+
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
 ::: {.duedate}
@@ -146,3 +600,11 @@ Your QMD file should automatically download your BibTeX and CLS files and any ot
 Written in Markdown and generated from [Quarto](https://quarto.org/). Fonts used: [Spectral](https://fonts.google.com/specimen/Spectral) (mainfont), [Roboto](https://fonts.google.com/specimen/Roboto) (<span style="font-family:Sans-Serif;">sansfont</span>) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains%20Mono) (`monofont`). 
 
 ## References
+
+Crommelin, L., Troy, L., Martin, C., & Pettit, C. (2018). Is Airbnb a sharing economy success or an urban menace? *Cities, 72*, 177–185.  
+Greater London Authority. (2023). Guidance on short-term and holiday lets in London. Retrieved from https://www.london.gov.uk  
+InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
+Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
+
+---
+
