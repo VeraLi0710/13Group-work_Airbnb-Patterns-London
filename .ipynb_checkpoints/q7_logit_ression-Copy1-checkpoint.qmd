@@ -108,7 +108,7 @@ data = data.drop(columns=['room_type'])  # Drop the original categorical column
 X = data.drop(columns=['estimated_nights_booked', 'estimated_nights_booked_binary'])  # Exclude dependent variables  
 X = add_constant(X)  # Add constant for VIF calculation  
 
-# Calculate VIF for each variable  
+# VIF for each variable  
 vif_data = pd.DataFrame()  
 vif_data['Variable'] = X.columns  
 vif_data['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
@@ -120,7 +120,7 @@ print("\nCorrelation Matrix:")
 correlation_matrix = X.corr()  
 print(correlation_matrix)  
 
-# Readable visualization for correlation matrix  
+# Readable visualization for the correlation matrix  
 plt.figure(figsize=(10, 8))  
 sns.heatmap(correlation_matrix,  
             annot=True,   
