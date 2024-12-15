@@ -1,0 +1,396 @@
+---
+title: 'Q7: Identifying Factors Associated with Airbnb Listings Exceeding 90 Days of Occupancy'
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.16.4
+  kernelspec:
+    display_name: Python (base)
+    language: python
+    name: base
+---
+
+```{python}
+#| echo: false
+# packages
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+import seaborn as sns 
+import statsmodels.api as sm  
+from statsmodels.stats.outliers_influence import variance_inflation_factor  
+from statsmodels.tools.tools import add_constant  
+from sklearn.preprocessing import OneHotEncoder  
+from scipy import stats
+import geopandas as gpd  
+from libpysal.weights import DistanceBand  
+from esda import Moran
+from splot.esda import moran_scatterplot  
+from libpysal.weights import KNN 
+```
+
+```{python}
+#| '0': e
+#| '1': c
+#| '2': h
+#| '3': o
+#| '4': ':'
+#| '5': f
+#| '6': a
+#| '7': l
+#| '8': s
+#| '9': e
+# Load the dataset  
+file_path = 'processed_airbnb_data.csv'  
+regression_data = pd.read_csv(file_path)  
+
+# Select columns to keep  
+columns_to_keep = [  
+    'estimated_nights_booked',       
+    'room_type',                     
+    'price',                         
+    'minimum_nights',                
+    'calculated_host_listings_count',  
+    'longitude',  
+    'latitude'  
+]  
+
+# Print dataset information to verify  
+print(regression_data.info())  
+
+# Filter relevant columns and drop missing values  
+regression_data = regression_data[columns_to_keep]  
+regression_data = regression_data.dropna()  
+
+# Convert 'estimated_nights_booked' to binary  
+threshold = regression_data['estimated_nights_booked'].median()  # You can also use mean  
+regression_data['estimated_nights_booked_binary'] = (  
+    regression_data['estimated_nights_booked'] > threshold  
+).astype(int)  
+
+# Encode the categorical variable 'room_type' using one-hot encoding  
+from sklearn.preprocessing import OneHotEncoder  
+encoder = OneHotEncoder(drop='first', sparse_output=False)  # Use sparse_output=False for dense array  
+room_type_encoded = encoder.fit_transform(regression_data[['room_type']])  
+room_type_columns = encoder.get_feature_names_out(['room_type'])  
+room_type_df = pd.DataFrame(room_type_encoded, columns=room_type_columns, index=regression_data.index)  
+
+# Create binary variables for single-list host and multi-list host  
+regression_data['single_list_host'] = (  
+    regression_data['calculated_host_listings_count'] == 1  
+).astype(int)  # 1 if single-list host, 0 otherwise  
+regression_data['multi_list_host'] = (  
+    regression_data['calculated_host_listings_count'] > 1  
+).astype(int)  # 1 if multi-list host, 0 otherwise  
+
+# Drop one of the collinear variables  
+regression_data = regression_data.drop(columns=['single_list_host'])  
+regression_data = regression_data.drop(columns=['calculated_host_listings_count'])  
+
+# Add the encoded variables back to the dataset  
+regression_data = pd.concat([regression_data, room_type_df], axis=1)  
+regression_data = regression_data.drop(columns=['room_type'])  # Drop the original categorical column  
+
+# VIF
+
+# Prepare the independent variables for VIF calculation  
+X = regression_data.drop(  
+    columns=['estimated_nights_booked',   
+            'estimated_nights_booked_binary',  
+            'longitude',  
+            'latitude']  
+)  # Exclude dependent variables and geographical coordinates  
+X = add_constant(X)  # Add constant for VIF calculation  
+
+
+# Calculate VIF for each variable  
+vif_data = pd.DataFrame()  
+vif_data['Variable'] = X.columns  
+vif_data['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
+print("Variance Inflation Factor (VIF):")  
+print(vif_data)  
+
+# Correlation Matrix  
+print("\nCorrelation Matrix:")  
+correlation_matrix = X.corr()  
+print(correlation_matrix)  
+
+# Logistic regression
+# Fit logistic regression  
+Y = regression_data['estimated_nights_booked_binary']  
+
+# Try fitting with different optimization methods  
+try:  
+    logit_model = sm.Logit(Y, X)  
+    result = logit_model.fit(method='newton', maxiter=100)  
+except:  
+    try:  
+        result = logit_model.fit(method='bfgs', maxiter=100)  
+    except:  
+        result = logit_model.fit(method='lbfgs', maxiter=100)  
+
+print("\nLogistic Regression Results:")  
+print(result.summary())  
+
+# Save important metrics  
+print("\nModel Performance Metrics:")  
+print(f"Pseudo R-squared: {result.prsquared:.4f}")  
+print(f"Log-Likelihood: {result.llf:.4f}")  
+print(f"AIC: {result.aic:.4f}")  
+
+# Print odds ratios  
+print("\nOdds Ratios:")  
+odds_ratios = np.exp(result.params)  
+conf_int = np.exp(result.conf_int())  
+odds_ratios_summary = pd.DataFrame({  
+    'Odds Ratio': odds_ratios,  
+    'Lower CI': conf_int[0],  
+    'Upper CI': conf_int[1]  
+})  
+print(odds_ratios_summary)
+
+# Residual Calculation  
+predicted_probs = result.predict()  
+residuals = Y - predicted_probs  
+
+# Create a DataFrame for residual analysis  
+regression_data = pd.DataFrame({  
+    'latitude': regression_data['latitude'],  # Use latitude from the dataset  
+    'longitude': regression_data['longitude'],  # Use longitude from the dataset  
+    'actual': Y,  # Actual binary outcomes  
+    'predicted_probs': predicted_probs  # Predicted probabilities  
+})  
+
+# Calculate residuals  
+regression_data['residuals'] = regression_data['actual'] - regression_data['predicted_probs']  
+
+# Residual stats  
+residuals_stats = {  
+    'Mean': np.mean(residuals),  
+    'Std Dev': np.std(residuals),  
+    'Min': np.min(residuals),  
+    'Max': np.max(residuals),  
+    'Skewness': stats.skew(residuals),  
+    'Kurtosis': stats.kurtosis(residuals)  
+}  
+
+print("\nResiduals Statistics:")  
+for stat, value in residuals_stats.items():  
+    print(f"{stat}: {value:.4f}")  
+
+# Visualisations  
+## 1. Spatial distribution of residuals  
+plt.figure(figsize=(10, 8))  
+scatter = plt.scatter(  
+    regression_data['longitude'], regression_data['latitude'],   
+    c=regression_data['residuals'], cmap='coolwarm', alpha=0.7  
+)  
+plt.colorbar(scatter, label='Residuals')  
+plt.xlabel('Longitude')  
+plt.ylabel('Latitude')  
+plt.title('Spatial Distribution of Residuals')  
+plt.show()  
+
+## 2. Basic Residual Plot  
+plt.figure(figsize=(10, 6))  
+plt.scatter(predicted_probs, residuals, alpha=0.5)  
+plt.axhline(y=0, color='r', linestyle='--')  
+plt.xlabel('Predicted Probabilities')  
+plt.ylabel('Residuals')  
+plt.title('Residual Plot')  
+plt.show()  
+
+## 3. Barchart  
+plt.figure(figsize=(10, 6))  
+sns.histplot(residuals, kde=True)  
+plt.xlabel('Residuals')  
+plt.ylabel('Count')  
+plt.title('Distribution of Residuals')  
+plt.show()  
+
+## 4. Q-Q Plot  
+plt.figure(figsize=(10, 6))  
+stats.probplot(residuals, dist="norm", plot=plt)  
+plt.title('Q-Q Plot of Residuals')  
+plt.show()  
+```
+
+```{python}
+import geopandas as gpd  
+from libpysal.weights import KNN  
+from esda.moran import Moran  
+import numpy as np  
+from scipy import stats  
+
+def calculate_morans_i_by_chunks(data, chunk_size=5000, permutations=999):  # 添加permutations参数  
+    """  
+    分块计算Moran's I并合并结果  
+    
+    参数:  
+    data: 输入数据  
+    chunk_size: 每个块的大小  
+    permutations: 置换检验的次数  
+    """  
+    # 将数据分成地理上连续的块  
+    data_sorted = data.sort_values(['latitude', 'longitude'])  
+    chunks = [data_sorted[i:i+chunk_size] for i in range(0, len(data_sorted), chunk_size)]  
+    
+    results = []  
+    for chunk in chunks:  
+        # 对每个块计算Moran's I  
+        gdf_chunk = gpd.GeoDataFrame(  
+            chunk,   
+            geometry=gpd.points_from_xy(chunk['longitude'], chunk['latitude'])  
+        )  
+        
+        w = KNN.from_dataframe(gdf_chunk, k=3)  
+        residuals_z = (gdf_chunk['residuals'] - gdf_chunk['residuals'].mean()) / gdf_chunk['residuals'].std()  
+        moran = Moran(residuals_z, w, permutations=permutations)  # 使用permutations参数  
+        
+        results.append({  
+            'I': moran.I,  
+            'p_value': moran.p_sim,  
+            'z_score': moran.z_sim,  
+            'weight': len(chunk)  
+        })  
+    
+    # 计算加权平均的Moran's I  
+    total_weight = sum(r['weight'] for r in results)  
+    weighted_I = sum(r['I'] * r['weight'] for r in results) / total_weight  
+    
+    # 使用Fisher's method组合p值  
+    chi_square = -2 * sum(np.log(r['p_value']) for r in results if r['p_value'] > 0)  
+    combined_p_value = 1 - stats.chi2.cdf(chi_square, df=2*len(results))  
+    
+    # 计算加权平均的z分数  
+    weighted_z = sum(r['z_score'] * r['weight'] for r in results) / total_weight  
+    
+    return {  
+        'moran_i': weighted_I,  
+        'p_value': combined_p_value,  
+        'z_score': weighted_z  
+    }  
+
+# 使用示例  
+results = calculate_morans_i_by_chunks(regression_data, chunk_size=5000, permutations=999)  
+
+# 打印结果  
+print("Moran's I Analysis Results:")  
+print(f"Moran's I: {results['moran_i']:.4f}")  
+print(f"p-value: {results['p_value']:.4f}")  
+print(f"z-score: {results['z_score']:.4f}")  
+
+# 解释结果  
+print("\nInterpretation:")  
+if results['p_value'] < 0.05:  
+    if results['moran_i'] > 0:  
+        print("There is significant positive spatial autocorrelation (clustering pattern)")  
+    else:  
+        print("There is significant negative spatial autocorrelation (dispersed pattern)")  
+else:  
+    print("No significant spatial autocorrelation detected (random pattern)")  
+
+# 显示空间自相关的强度  
+print("\nSpatial Autocorrelation Strength:")  
+if abs(results['moran_i']) < 0.3:  
+    strength = "weak"  
+elif abs(results['moran_i']) < 0.7:  
+    strength = "moderate"  
+else:  
+    strength = "strong"  
+print(f"The spatial autocorrelation is {strength} (Moran's I = {results['moran_i']:.4f})")
+```
+
+```{python}
+def calculate_morans_i_with_grid(data, grid_size=0.01):  
+    """使用空间网格聚合数据后计算Moran's I"""  
+    # 创建GeoDataFrame  
+    gdf = gpd.GeoDataFrame(  
+        data,   
+        geometry=gpd.points_from_xy(data['longitude'], data['latitude'])  
+    )  
+    
+    # 创建网格  
+    minx, miny, maxx, maxy = gdf.total_bounds  
+    x_grid = np.arange(minx, maxx, grid_size)  
+    y_grid = np.arange(miny, maxy, grid_size)  
+    
+    # 计算每个网格的平均残差  
+    grid_data = []  
+    for i in range(len(x_grid)-1):  
+        for j in range(len(y_grid)-1):  
+            # 选择网格内的点  
+            mask = (  
+                (gdf.geometry.x >= x_grid[i]) &   
+                (gdf.geometry.x < x_grid[i+1]) &   
+                (gdf.geometry.y >= y_grid[j]) &   
+                (gdf.geometry.y < y_grid[j+1])  
+            )  
+            if mask.any():  
+                grid_points = gdf[mask]  
+                centroid = (  
+                    (x_grid[i] + x_grid[i+1])/2,  
+                    (y_grid[j] + y_grid[j+1])/2  
+                )  
+                avg_residual = grid_points['residuals'].mean()  
+                grid_data.append({  
+                    'geometry': gpd.points_from_xy([centroid[0]], [centroid[1]])[0],  
+                    'residuals': avg_residual  
+                })  
+    
+    # 创建新的GeoDataFrame  
+    grid_gdf = gpd.GeoDataFrame(grid_data)  
+    
+    # 计算Moran's I  
+    w = KNN.from_dataframe(grid_gdf, k=3)  
+    residuals_z = (grid_gdf['residuals'] - grid_gdf['residuals'].mean()) / grid_gdf['residuals'].std()  
+    moran = Moran(residuals_z, w)  
+
+      
+       # 手动计算空间滞后值  
+    spatial_lag = w.sparse.toarray() @ residuals_z  
+    
+    # 创建散点图  
+    plt.figure(figsize=(10, 8))  
+    
+    # 绘制散点  
+    plt.scatter(residuals_z, spatial_lag, alpha=0.5, c='grey')  
+    
+    # 添加水平和垂直参考线  
+    plt.axhline(y=0, color='k', linestyle='--', alpha=0.5)  
+    plt.axvline(x=0, color='k', linestyle='--', alpha=0.5)  
+    
+    # 添加回归线  
+    slope = moran.I  
+    x_range = np.array([residuals_z.min(), residuals_z.max()])  
+    plt.plot(x_range, slope * x_range, 'r-', label=f"Moran's I = {slope:.3f}")  
+    
+    # 设置标签和标题  
+    plt.xlabel('Standardized Residuals')  
+    plt.ylabel('Spatial Lag')  
+    plt.title("Moran's I Scatterplot")  
+    plt.legend()  
+    
+    # 保持纵横比相等  
+    plt.axis('equal')  
+    
+    # 显示图形  
+    plt.grid(True, alpha=0.3)  
+    plt.show()  
+    
+    return moran  
+
+# 使用示例  
+moran_result = calculate_morans_i_with_grid(regression_data, grid_size=0.1)  
+print("Grid-based Moran's I Results:")  
+print(f"Moran's I: {moran_result.I:.4f}")  
+print(f"p-value: {moran_result.p_sim:.4f}")  
+print(f"z-score: {moran_result.z_sim:.4f}")
+
+```
+
