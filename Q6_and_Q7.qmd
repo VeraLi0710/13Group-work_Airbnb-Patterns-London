@@ -1,5 +1,11 @@
 ---
-title: 'Q6 An Analysis of Hosts and Property Types in London Airbnb Listings, Insights into Policy Compliance'
+title: Q6
+author: Author Name
+format: pdf
+margin-top: 20mm
+margin-bottom: 25mm
+margin-left: 20mm
+margin-right: 20mm
 jupyter:
   jupytext:
     text_representation:
@@ -15,6 +21,8 @@ jupyter:
 
 ```{python}
 #| echo: false
+#| output: false
+#Reading airbnb data 2013.12
 import pandas as pd  
 import numpy as np  
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
@@ -28,39 +36,9 @@ airbnb_data = pd.read_csv(file_path)
 print(airbnb_data.info()) 
 ```
 
-## Introduction
-Airbnb has transformed the short-term rental market, offering flexible accommodation options for travelers while raising concerns about housing availability and affordability in cities like London. This analysis examines the characteristics of hosts and the types of properties they list, using the InsideAirbnb dataset to explore patterns in host behavior and property usage. By leveraging descriptive statistics and visualizations, we aim to understand the nature of Airbnb lettings in London and identify potential non-compliance with local regulations, such as the 90-day rule [@insideairbnb].
-
----
-
-## The 90-Day Rule: Context and Challenges
-The 90-day rule, introduced under the Deregulation Act 2015, restricts short-term rentals of entire homes in London to a maximum of 90 days per calendar year without planning permission. This policy addresses concerns about the commercialization of residential properties, which can reduce housing stock and inflate rental prices [@greaterlondonauthority]. However, enforcement remains challenging, as platforms like Airbnb rely on self-reporting by hosts, and there is limited oversight to ensure compliance. Research has shown that commercial hosts—those operating multiple listings or treating Airbnb as a business—are more likely to violate such regulations [@wachsmuth2018; @crommelin2018].
-
----
-
-## Initial Observations of the Data
-The InsideAirbnb dataset provides detailed information on Airbnb listings in London, including host ID, number of listings per host, property type, availability, and reviews. After basic cleaning, the following patterns emerged:
-
-### Property Types
-- Entire homes/apartments account for **67.3%** of listings, private rooms **32.1%**, and shared rooms and hotel rooms each **0.3%**.
-- Entire homes dominate the market and have high average booking days (**180.6 days**), making them a key focus for regulatory concerns.
-
-### Host Types
-- Around **30%** of hosts manage a single listing, while **70%** are multi-listing hosts. 
-- Multi-listing hosts manage a significant portion of entire-home listings, indicating a more commercialized approach.
-
-### Booking Patterns
-- Most properties are booked for fewer than 30 days annually, indicating occasional use.
-- A subset of listings, particularly entire homes, exceeds 90 days of bookings, with some surpassing 180 or even 240 days. These high-availability properties are likely non-compliant with the 90-day rule (see Figure 1-2).
-- **Estimation Method**: The distribution of booking days (Figure 1-2) is estimated using minimum nights, price, and review counts, following the methodology referenced in InsideAirbnb's visualizations for London [@insideairbnb].
-
-These observations highlight the dominance of entire homes and multi-listing hosts in the market, both of which are more likely to engage in non-compliant behavior.
-
----
-
 ```{python}
 #| echo: false
-#estimate
+# estimate booking days per year by reviews and minimum nights
 airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
 airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2  
 
@@ -73,8 +51,19 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 #airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
 ```
 
+### Research Scope  
+
+Airbnb has significantly impacted London’s housing market, contributing to gentrification and reducing housing availability. To address this, the 90-day rule restricts short-term rental of entire homes to 90 days annually without planning permission [@greaterlondonauthority]. However, limited oversight and host self-reporting make enforcement difficult. Utilizing the InsideAirbnb dataset, we aim to uncover spatial and behavioral patterns linked to potential rule violations, providing actionable insights to improve the regulation of Short-Term Lets in London.  
+
+---  
+
+### Initial Observations of the Data  
+
+We used the December 2023 dataset as a snapshot for its comprehensive coverage of recent trends. Key observations are summarized below:  
+
 ```{python}
 #| echo: false
+#| warning: false
 # 1. Data Cleaning and Preparation  
 # -------------------------------  
 # Select relevant columns and drop rows with missing values  
@@ -103,6 +92,7 @@ borough_map = borough_map.to_crs(gdf.crs)
 
 ```{python}
 #| echo: false
+#| warning: false
 import matplotlib.pyplot as plt  
 import seaborn as sns  
 from matplotlib.gridspec import GridSpec  
@@ -283,9 +273,18 @@ plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches
 plt.show()
 ```
 
-```{python}
-data.info()
-```
+1. **Spatial Clustering**: Listings are concentrated in central London, where demand and rents are highest.  
+2. **Estimated Booking Days**: Using minimum nights, price, and reviews [@insideairbnb], we estimated annual booking days, and a significant portion of properties exceeded the 90-day limit (Figure 1-1).  
+3. **Host Characteristics**: Single-listing and multi-listing hosts both occupy notable market shares(Figure 1-2).  
+4. **Short-Term Focus**: Most listings have low minimum night requirements, reflecting a predominantly commercial short-term rental model (Figure 1-4).  
+
+These findings highlight clear differences in host behavior and rental patterns, warranting further analysis of their connection to rule violations.  
+
+---  
+
+### Preliminary Conclusions  
+
+To address the limitations of single snapshots, we combined quarterly data from December 2023 to September 2024, removing duplicates to refine our analysis (Figure 2). Key results are as follows:  
 
 ```{python}
 #| echo: false
@@ -359,6 +358,7 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 ```
 
 ```{python}
+#| echo: false
 # 5. Visualizations  
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
@@ -460,60 +460,26 @@ plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches=
 plt.show()
 ```
 
-## Host Analysis: Identifying Commercial Hosts
+1. **Host Behavior**: Multi-listing hosts dominate (62.38%) and show higher average booking days (75.17) than single-listing hosts (66.61). Heatmaps reveal that multi-listing hosts rent out entire homes and hotel rooms at significantly higher prices, indicating a preference for commercialized short-term rentals.
+2. **Property Types**: Entire homes (66.97%) are the most common and have the highest average booking days (78.38). Hotel rooms, with the shortest minimum night requirements, further exemplify commercial rental patterns, while shared rooms suggest long-term use tendencies.  
 
-### · Key Findings
-#### 1. Multi-Listing Hosts Dominate Entire Homes
-- Multi-listing hosts, while fewer in number (**30% of hosts**), manage the majority of entire-home listings (**over 60%**; see Figure 2-2).
-- This indicates that multi-listing hosts are more likely to treat Airbnb as a business rather than occasional letting.
+#### Summary and Next Steps
 
-#### 2. Higher Booking Days for Multi-Listing Hosts
-- Multi-listing hosts consistently have higher average booking days compared to single-listing hosts. This is particularly evident for entire homes, where multi-listing hosts often exceed the 90-day limit (see Figure 2-3).
+1. **Spatial Analysis**: Listings are spatially clustered, particularly in central London. Clustering analysis can pinpoint areas of non-compliance and assess community impacts, helping refine geographically targeted enforcement strategies.  
+2. **Commercialization of Rentals**: Multi-listing hosts, particularly those managing entire homes and hotel rooms with high bookings and prices, exhibit strong commercial tendencies. Regression analysis is needed to quantify their relationship with rule violations and guide policy design for stricter regulation.  
 
-#### 3. Policy Implications
-- Multi-listing hosts are key drivers of non-compliance with the 90-day rule due to the scale of their operations. Managing multiple entire-home listings makes it difficult to comply with the regulatory limit without significant revenue loss.
-
-### · Summary of Host Analysis
-Multi-listing hosts play a dominant role in the Airbnb market, particularly for entire homes. Their higher booking days and commercialized approach make them more likely to breach regulations. This highlights the need for stricter enforcement mechanisms targeting multi-listing hosts.
-
----
-
-## Property Analysis: Entire Homes vs. Private Rooms
-
-### · Key Findings
-#### 1. Entire Homes Are More Likely to Breach Regulations
-- Entire homes dominate the market, accounting for **67.3%** of listings, and have significantly higher average booking days compared to private rooms.
-- A long tail of high-availability entire homes suggests that these properties are more likely to exceed the 90-day limit (see Figure 1-1).
-
-#### 2. Private Rooms Are Less Commercialized
-- Private rooms, which make up **32.1%** of listings, are often managed by single hosts who live on-site.
-- These properties have lower average booking days and are less likely to breach the 90-day rule, indicating a more compliant and less commercialized use.
-
-#### 3. Pricing Differences Between Host Types
-- Multi-listing hosts charge higher average prices across all property types, particularly for entire homes ($249.5 vs. $219.7 for single-listing hosts; see Figure 2-3).
-- Single-listing hosts offer more competitive pricing for private rooms and shared rooms, likely targeting cost-sensitive customers.
-
-### · Summary of Property Analysis
-Entire homes are the primary focus of regulatory concerns due to their higher booking days and association with multi-listing hosts. Private rooms, by contrast, are less commercialized and more likely to comply with regulations. This distinction underscores the need for targeted policies addressing entire homes and their hosts.
-
----
-
-## Preliminary Conclusions
-The analysis suggests that commercial hosts, particularly those managing multiple entire-home listings, are more likely to violate the 90-day rule. Key findings include:
-
-- **Host Behavior**: Multi-listing hosts dominate the market for entire homes, with average availability exceeding the regulatory limit (see Figure 2-2).
-- **Property Type Trends**: Entire homes are more likely to be used as commercial short-term rentals, while private rooms are typically managed by individual hosts and comply with the 90-day rule.
-- **Pricing Strategies**: Multi-listing hosts charge higher prices across all property types, reflecting their commercialized approach (see Figure 2-3).
-
-These descriptive statistical methods lay the foundation for further analysis, such as regression and clustering, to quantify the relationship between host characteristics, property types, and policy compliance.
+This combined analysis provides actionable insights into spatial and behavioral patterns, enabling better regulatory enforcement to mitigate the broader impacts of short-term rentals on London’s housing market.
 
 ## Q7 deep discussion, policy advice: require different platforms to share host's information, hosts need to provide Airbnb information withthe  government.
----
 
-## References
-- Crommelin, L., Troy, L., Martin, C., & Pettit, C. (2018). Is Airbnb a sharing economy success or an urban menace? *Cities*, 72, 177-185.  
-- Greater London Authority. (2023). Guidance on short-term and holiday lets in London. Retrieved from https://www.london.gov.uk  
-- InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
-- Tufte, E. R. (2001). *The Visual Display of Quantitative Information*. Cheshire, CT: Graphics Press.  
-- Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space*, 50(6), 1147-1170.
+---  
+
+### References  
+
+Crommelin, L., Troy, L., Martin, C., & Pettit, C. (2018). Is Airbnb a sharing economy success or an urban menace? *Cities, 72*, 177–185.  
+Greater London Authority. (2023). Guidance on short-term and holiday lets in London. Retrieved from https://www.london.gov.uk  
+InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
+Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
+
+
 
