@@ -78,9 +78,8 @@ import statsmodels.api as sm
 from statsmodels.stats.outliers_influence import variance_inflation_factor  
 from statsmodels.tools.tools import add_constant  
 from sklearn.preprocessing import OneHotEncoder  
-from sklearn.preprocessing import StandardScaler  
 import seaborn as sns  
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt  
 
 # Set the path of dataset  
 data = pd.read_csv('processed_airbnb_data.csv')  
@@ -94,7 +93,14 @@ data = data.dropna()
 threshold = data['estimated_nights_booked'].median()  # You can also use mean  
 data['estimated_nights_booked_binary'] = (data['estimated_nights_booked'] > threshold).astype(int)  
 
-#  Encode the categorical variable 'room_type' using one-hot encoding  
+# Create binary variables for single-list host and multi-list host  
+data['single_list_host'] = (data['calculated_host_listings_count'] == 1).astype(int)  # 1 if single-list host, 0 otherwise  
+data['multi_list_host'] = (data['calculated_host_listings_count'] > 1).astype(int)    # 1 if multi-list host, 0 otherwise  
+
+# Drop one of the collinear variables  
+data = data.drop(columns=['single_list_host'])  # Drop single_list_host, keeping multi_list_host  
+
+# Encode the categorical variable 'room_type' using one-hot encoding  
 encoder = OneHotEncoder(drop='first', sparse_output=False)  # Use sparse_output=False for dense array  
 room_type_encoded = encoder.fit_transform(data[['room_type']])  
 room_type_columns = encoder.get_feature_names_out(['room_type'])  
@@ -116,23 +122,24 @@ vif_data['VIF'] = [variance_inflation_factor(X.values, i) for i in range(X.shape
 print("Variance Inflation Factor (VIF):")  
 print(vif_data)  
 
+# Correlation Matrix  
 print("\nCorrelation Matrix:")  
 correlation_matrix = X.corr()  
-print(correlation_matrix)
+print(correlation_matrix)  
 
-# Readable visualisation for correlation matrix
+# Readable visualization for correlation matrix  
 plt.figure(figsize=(10, 8))  
-sns.heatmap(correlation_matrix,   
-            annot=True, 
+sns.heatmap(correlation_matrix,  
+            annot=True,   
             cmap='RdBu',  
             center=0,    
             fmt='.2f',    
-            square=True, 
-            vmin=-1, vmax=1) 
+            square=True,   
+            vmin=-1, vmax=1)  
 
 plt.title('Correlation Matrix Heatmap')  
 plt.tight_layout()  
-plt.show()  
+plt.show()
 ```
 
 ```{python}
@@ -310,76 +317,40 @@ plt.show()
 ```
 
 ```{python}
-import pandas as pd  
-import numpy as np  
-import matplotlib.pyplot as plt  
-import seaborn as sns  
-from statsmodels.graphics.regressionplots import plot_leverage_resid2  
+# Example data  
+data = pd.DataFrame({  
+    'latitude': np.random.uniform(40.5, 41.0, 1000),  # Example latitude  
+    'longitude': np.random.uniform(-74.0, -73.5, 1000),  # Example longitude  
+    'actual': np.random.randint(0, 2, 1000),  # Actual values (binary)  
+    'predicted_probs': np.random.uniform(0, 1, 1000)  # Predicted probabilities  
+})  
 
-# Assuming `result` is the fitted logistic regression model  
-# Predicted probabilities (fitted values) and residuals  
-fitted_values = result.predict()  
-residuals = Y - fitted_values  
+# Compute residuals  
+data['residuals'] = data['actual'] - data['predicted_probs']  
 
-# 查看预测值（fitted_values）范围  
-print(f"Fitted values range: {fitted_values.min()} to {fitted_values.max()}")  
+# Convert to GeoDataFrame  
+gdf = gpd.GeoDataFrame(data, geometry=gpd.points_from_xy(data['longitude'], data['latitude']))  
 
-# 查看残差的基本统计情况  
-print(f"Residuals range: {residuals.min()} to {residuals.max()}")  
+# Build spatial weights matrix (based on distance)  
+threshold_distance = 0.05  # Choose an appropriate threshold, e.g., ~5km  
+w = weights.DistanceBand.from_dataframe(gdf, threshold=threshold_distance, silence_warnings=True)  
 
-# 检测是否存在极端的标准化残差值  
-extreme_std_residuals = standardized_residuals[np.abs(standardized_residuals) > 3]  
-print(f"Number of extreme standardized residuals (>3): {len(extreme_std_residuals)}")
+# Standardize residuals  
+gdf['residuals_z'] = (gdf['residuals'] - gdf['residuals'].mean()) / gdf['residuals'].std()  
 
-# 1. Residuals vs Fitted Values Plot  
-plt.figure(figsize=(10, 6))  
-plt.scatter(fitted_values, residuals, alpha=0.7, edgecolor='k')  
-plt.axhline(0, color='red', linestyle='--', linewidth=1)  
-plt.xlabel('Fitted Values')  
-plt.ylabel('Residuals')  
-plt.title('Residuals vs Fitted Values')  
-plt.grid(alpha=0.3)  
-plt.show()  
+# Calculate Moran's I  
+moran = esda.Moran(gdf['residuals_z'], w)  
 
-# 2. Scale-Location Plot (Square Root of Standardized Residuals vs Fitted Values)  
-standardized_residuals = residuals / np.std(residuals)  
-sqrt_standardized_residuals = np.sqrt(np.abs(standardized_residuals))  
+# Print Moran's I results  
+print("Moran's I Results:")  
+print(f"Moran's I: {moran.I:.4f}")  
+print(f"Expected I: {moran.EI:.4f}")  
+print(f"p-value: {moran.p_sim:.4f}")  
+print(f"z-score: {moran.z_sim:.4f}")  
 
-plt.figure(figsize=(10, 6))  
-plt.scatter(fitted_values, sqrt_standardized_residuals, alpha=0.7, edgecolor='k')  
-plt.axhline(0, color='red', linestyle='--', linewidth=1)  
-plt.xlabel('Fitted Values')  
-plt.ylabel('√|Standardized Residuals|')  
-plt.title('Scale-Location Plot')  
-plt.grid(alpha=0.3)  
-plt.show()  
-
-# 3. Residuals vs Leverage Plot  
-# Extract leverage values from the model  
-influence = result.get_influence()  
-leverage = influence.hat_matrix_diag  # Leverage values  
-standardized_residuals = influence.resid_studentized_internal  # Standardized residuals  
-
-plt.figure(figsize=(10, 6))  
-plt.scatter(leverage, standardized_residuals, alpha=0.7, edgecolor='k')  
-plt.axhline(0, color='red', linestyle='--', linewidth=1)  
-plt.xlabel('Leverage')  
-plt.ylabel('Standardized Residuals')  
-plt.title('Residuals vs Leverage')  
-plt.grid(alpha=0.3)  
-
-# Add Cook's distance contours  
-cooks_d = influence.cooks_distance[0]  
-threshold = 4 / len(fitted_values)  # Common threshold for Cook's distance  
-plt.scatter(leverage, standardized_residuals, c=cooks_d, cmap='coolwarm', edgecolor='k')  
-plt.colorbar(label="Cook's Distance")  
-plt.axhline(0, color='red', linestyle='--', linewidth=1)  
-plt.axvline(threshold, color='blue', linestyle='--', linewidth=1, label="Cook's Distance Threshold")  
-plt.legend()  
-plt.show()  
-
-# use statsmodels' built-in leverage-residual plot  
-plot_leverage_resid2(result)  
+# Visualize Moran's I scatterplot using the correct library  
+fig, ax = moran_scatterplot(moran, aspect_equal=True)  # Correct method from splot  
+plt.title("Moran's I Scatterplot")  
 plt.show()
 ```
 
