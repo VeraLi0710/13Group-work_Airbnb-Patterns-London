@@ -1,0 +1,68 @@
+---
+title: 'Q7: Identifying Factors Associated with Airbnb Listings Exceeding 90 Days of Occupancy'
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.16.4
+  kernelspec:
+    display_name: Python (base)
+    language: python
+    name: base
+---
+
+```{python}
+#| echo: false
+
+# packages
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+import seaborn as sns 
+```
+
+```{python}
+#| echo: false
+
+# 加载数据  
+file_path = 'data/processed_airbnb_data.csv'  
+regression_data = pd.read_csv(file_path)  
+
+# 查看数据基本信息  
+print(regression_data.info()) 
+```
+
+```{python}
+#| '0': e
+#| '1': c
+#| '2': h
+#| '3': o
+#| '4': ':'
+#| '5': f
+#| '6': a
+#| '7': l
+#| '8': s
+#| '9': e
+# 选择出用于回归分析的列
+columns_to_keep = [
+    'estimated_nights_booked',       # Y
+    'room_type',                     # Xi
+    'price',                         
+    'minimum_nights',                
+    'calculated_host_listings_count'
+]
+
+# 提取相关列
+regression_data = regression_data[columns_to_keep]
+
+# 去除包含空值的行
+regression_data = regression_data.dropna()
+
+# 打印结果，确认清理后的数据
+print(regression_data.info())
+```
+
