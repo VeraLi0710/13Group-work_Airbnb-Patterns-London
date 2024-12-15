@@ -1,0 +1,140 @@
+---
+title: 'Q7: Identifying Factors Associated with the Violations of the 90-Day Policy'
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.16.4
+  kernelspec:
+    display_name: Python (base)
+    language: python
+    name: base
+---
+
+```{python}
+#| echo: false
+
+# packages
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+import seaborn as sns 
+import geopandas as gpd
+from shapely.geometry import Point
+```
+
+```{python}
+#| echo: false
+
+# load data   
+listing = pd.read_csv('data/processed_airbnb_data.csv')  # inside airbnb with estimated nights
+ward = (
+    gpd.read_file('data/statistical-gis-boundaries-london/ESRI/London_Ward_CityMerged.shp') # london ward
+    .to_crs(epsg=27700)  
+)
+```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(listing.info()) 
+```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+
+# convert listing data from csv to spatial data
+# create geometry
+geometry = [Point(xy) for xy in zip(listing['longitude'], listing['latitude'])]
+
+# GeoDataFrame
+listing_spatial = gpd.GeoDataFrame(listing, geometry=geometry, crs='EPSG:4326')
+
+# convert CRS
+listing_spatial = listing_spatial.to_crs(epsg=27700)
+
+# info check
+print(listing_spatial.head())
+```
+
+```{python}
+#| echo: false
+
+# keep listings > 90 only
+listing_spatial_90 = listing_spatial[listing_spatial['estimated_nights_booked'] >= 90]
+print(listing_spatial_90)
+```
+
+```{python}
+#| echo: false
+# Y: density of over-90-days listings per ward
+
+# number per ward
+join_listing_ward = gpd.sjoin(ward, listing_spatial_90, how='left', predicate='intersects')
+ward_count = join_listing_ward.groupby('GSS_CODE').size().reset_index(name='listing_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['listing_count'] = ward['listing_count'].fillna(0)
+
+# ward area
+ward['area'] = ward.geometry.area
+
+# density
+ward['density'] = ward['listing_count'] / ward['area']
+
+# 6. 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Over-90-days Listings by Ward")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+# add a ward column on listing data
+
+# 1. spatial join
+join_listing_ward_2 = gpd.sjoin(listing_spatial, ward, how='left', predicate='within')
+
+# 2. 确保列名正确：保留 ward 的唯一标识（如 GSS_CODE）并将它添加到点数据
+join_listing_ward_2 = join_listing_ward_2[['geometry', 'GSS_CODE'] + [col for col in listing_spatial.columns if col != 'geometry']]
+
+# 3. 查看结果
+print(join_listing_ward_2.head())
+```
+
+```{python}
+#| echo: false
+# x1: average price per ward
+```
+
+```{python}
+#| echo: false
+# x2: average min nights per ward
+```
+
+```{python}
+#| echo: false
+# x2: price per ward
+```
+
+```{python}
+#| echo: false
+# x2: price per ward
+```
+
+```{python}
+#| echo: false
+# x2: price per ward
+```
