@@ -2,8 +2,6 @@
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
 title: Group Name's Group Project
-assess:
-  group-date: '2024-12-17'
 execute:
   echo: false
   freeze: true
@@ -23,13 +21,13 @@ format:
         \addtokomafont{disposition}{\rmfamily}
     mainfont: Spectral
     sansfont: Roboto Flex
-    monofont: InputMonoCondensed
+    monofont: Liberation Mono
     papersize: a4
     geometry:
-      - top=25mm
-      - left=40mm
-      - right=30mm
-      - bottom=25mm
+      - top=20mm
+      - left=25mm
+      - right=25mm
+      - bottom=20mm
       - heightrounded
     toc: false
     number-sections: false
@@ -115,12 +113,6 @@ This way is also supposed to work (`{python} f"{df.shape[0]:,}" `) but I've foun
 
 ## 6. With reference to the InsideAirbnb data (*i.e.* using numbers, figures, maps, and descriptive statistics), what does an analysis of Hosts and the types of properties that they list suggest about the nature of Airbnb lettings in London? 
 
-::: {.duedate}
-
-( 15 points; Answer due {{< var assess.group-date >}} )
-
-:::
-
 ```{python}
 #| echo: false
 #| output: false
@@ -159,7 +151,7 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 
 ### The 90-Day Rule and Airbnb Commercialization  
 
-Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data：
+Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:
 
 ```{python}
 #| echo: false
@@ -571,19 +563,13 @@ plt.show()
 ### Summary and Next Steps  
 InsideAirbnb data shows London’s Airbnb market is highly commercialized, with significant 90-day rule compliance risks, requiring effective enforcement.
 
-**Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.
-
-**Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.
+1. **Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.
+ 
+2. **Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.
 
 ---  
 
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
-
-::: {.duedate}
-
-( 45 points; Answer due {{< var assess.group-date >}} )
-
-:::
 
 
 We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:
@@ -598,7 +584,7 @@ This approach will highlight the need for effective regulation, and clarify enfo
 
 ### Spatial Analysis of Policy Violations and Local Impacts  
 
-#### **Hotspot Identification:** 
+1. **Hotspot Identification:** 
 We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  
 
 ```{python}
@@ -962,7 +948,7 @@ new_im.save('plots/combined_of_Moran_and_LISA.png')
 
 ![](plots/combined_of_Moran_and_LISA.png)
 
-#### **Housing Market Impacts**  
+2. **Housing Market Impacts**  
 To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].
 
 ```{python}
@@ -1013,6 +999,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| include: false
 #| cache: true
 # GWR model
 from mgwr.gwr import GWR
@@ -1039,12 +1026,12 @@ print('Optimal Bandwidth Size for Rent:', gwr_bw_rent)
 
 # Fit GWR model with the determined optimal bandwidth
 gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()
-print(gwr_results_rent.summary())
 ```
 
 ```{python}
 #| echo: false
 #| output: false
+#| include: false
 g_coords = list(zip(zone['X'], zone['Y']))
 
 # Define independent and dependent variables for the Vacant_Ratio model
@@ -1078,6 +1065,7 @@ zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values
 ```{python}
 #| echo: false
 #| output: false
+#| include: false
 # Define the variable names to be visualized, corresponding to the regression results added
 var_names = ['coefficient']  # Adjust this if more variables from the model should be visualized
 
@@ -1136,6 +1124,7 @@ zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96
 ```{python}
 #| echo: false
 #| output: false
+#| include: false
 fig, ax = plt.subplots(1, 2, figsize=(12, 6))
 
 # Plot for Rent
@@ -1159,6 +1148,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| include: false
 #| cache: true
 # combing the plots to a new plot
 zone['residuals'] = sar_model.u
@@ -1196,19 +1186,10 @@ plt.tight_layout()
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
-## Sustainable Authorship Tools
 
-Using the Terminal in Docker, you compile the Quarto report using `quarto render <group_submission_file>.qmd`.
 
-Your QMD file should automatically download your BibTeX and CLS files and any other required files. If this is done right after library loading then the entire report should output successfully.
-
-Written in Markdown and generated from [Quarto](https://quarto.org/). Fonts used: [Spectral](https://fonts.google.com/specimen/Spectral) (mainfont), [Roboto](https://fonts.google.com/specimen/Roboto) (<span style="font-family:Sans-Serif;">sansfont</span>) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains%20Mono) (`monofont`). 
 
 ## References
 
-Crommelin, L., Troy, L., Martin, C., & Pettit, C. (2018). Is Airbnb a sharing economy success or an urban menace? *Cities, 72*, 177–185.  
-Greater London Authority. (2023). Guidance on short-term and holiday lets in London. Retrieved from https://www.london.gov.uk  
-InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  
-Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
 
 ---
