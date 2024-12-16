@@ -103,8 +103,6 @@ from libpysal.cg import KDTree
 import matplotlib.pyplot as plt
 ```
 
-
-
 ```{python}
 import pandas as pd
 import numpy as np
@@ -146,7 +144,7 @@ y_sample = y[:sample_size]
 X_sample = X_scaled[:sample_size]
 
 # 3. 手动设置固定带宽
-fixed_bandwidth = 1000  # 手动设置带宽
+fixed_bandwidth = 0.1  # 手动设置带宽
 
 # 4. 拟合 GWR 模型
 print("开始拟合 GWR 模型（使用子集数据和固定带宽）...")
@@ -168,6 +166,18 @@ plt.colorbar(label="Local R²")
 plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.title("Spatial Distribution of Local R² (Sample Data)")
+plt.show()
+```
+
+```{python}
+# 可视化 price 的系数
+plt.figure(figsize=(10, 6))
+plt.scatter(coords_sample[:, 0], coords_sample[:, 1], 
+            c=results.params[:, 1], cmap='coolwarm', s=20)  # minimum_nights系数
+plt.colorbar(label="Minimum Nights Coefficient")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.title("Spatial Distribution of Minimum Nights Coefficient")
 plt.show()
 ```
 

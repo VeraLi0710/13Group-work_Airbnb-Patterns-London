@@ -27,15 +27,33 @@ import geopandas as gpd
 from shapely.geometry import Point
 ```
 
+## load data
+
 ```{python}
 #| echo: false
-
 # load data   
+
 listing = pd.read_csv('data/processed_airbnb_data.csv')  # inside airbnb with estimated nights
+
 ward = (
     gpd.read_file('data/statistical-gis-boundaries-london/ESRI/London_Ward_CityMerged.shp') # london ward
     .to_crs(epsg=27700)  
 )
+
+nature = (
+    gpd.read_file('data/ldn_poi/gis_osm_natural_free_1.shp') # nature poi
+    .to_crs(epsg=27700)  
+)
+
+transport = (
+    gpd.read_file('data/ldn_poi/gis_osm_transport_free_1.shp') # transport poi
+    .to_crs(epsg=27700)  
+) 
+
+tourism = (
+    gpd.read_file('data/ldn_poi/gis_osm_pois_free_1.shp') # tourism poi
+    .to_crs(epsg=27700)  
+) 
 ```
 
 ```{python}
@@ -51,6 +69,29 @@ print(listing.info())
 # check data info  
 print(ward.info()) 
 ```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(nature.info()) 
+```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(transport.info()) 
+```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(tourism.info()) 
+```
+
+## manipulate data
 
 ```{python}
 #| echo: false
@@ -71,6 +112,7 @@ print(listing_spatial.head())
 
 ```{python}
 #| echo: false
+# Y: density of over-90-days listings per ward
 
 # keep listings > 90 only
 listing_spatial_90 = listing_spatial[listing_spatial['estimated_nights_booked'] >= 90]
@@ -78,9 +120,6 @@ print(listing_spatial_90)
 ```
 
 ```{python}
-#| echo: false
-# Y: density of over-90-days listings per ward
-
 # number per ward
 join_listing_ward = gpd.sjoin(ward, listing_spatial_90, how='left', predicate='intersects')
 ward_count = join_listing_ward.groupby('GSS_CODE').size().reset_index(name='listing_count')
@@ -91,50 +130,84 @@ ward['listing_count'] = ward['listing_count'].fillna(0)
 ward['area'] = ward.geometry.area
 
 # density
-ward['density'] = ward['listing_count'] / ward['area']
+ward['listing_density'] = ward['listing_count'] / ward['area']
 
-# 6. 可视化结果
+# 可视化结果
 fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-ward.plot(column='density', cmap='viridis', legend=True, ax=ax)
+ward.plot(column='listing_density', cmap='viridis', legend=True, ax=ax)
 ax.set_title("Density of Over-90-days Listings by Ward")
 plt.axis('off')
 plt.show()
 ```
 
 ```{python}
-# add a ward column on listing data
+#| echo: false
+# X1: density of green spaces per ward
 
-# 1. spatial join
-join_listing_ward_2 = gpd.sjoin(listing_spatial, ward, how='left', predicate='within')
+# number per ward
+join_nature_ward = gpd.sjoin(ward, nature, how='left', predicate='intersects')
+ward_count = join_nature_ward.groupby('GSS_CODE').size().reset_index(name='nature_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['nature_count'] = ward['nature_count'].fillna(0)
 
-# 2. 确保列名正确：保留 ward 的唯一标识（如 GSS_CODE）并将它添加到点数据
-join_listing_ward_2 = join_listing_ward_2[['geometry', 'GSS_CODE'] + [col for col in listing_spatial.columns if col != 'geometry']]
+# density
+ward['nature_density'] = ward['nature_count'] / ward['area']
 
-# 3. 查看结果
-print(join_listing_ward_2.head())
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='nature_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Green Spaces by Ward")
+plt.axis('off')
+plt.show()
 ```
 
 ```{python}
 #| echo: false
-# x1: average price per ward
+# X2: density of Transport Networks per ward
+
+# number per ward
+join_transport_ward = gpd.sjoin(ward, transport, how='left', predicate='intersects')
+ward_count = join_transport_ward.groupby('GSS_CODE').size().reset_index(name='transport_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['transport_count'] = ward['transport_count'].fillna(0)
+
+# density
+ward['transport_density'] = ward['transport_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='transport_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Transport Networks by Ward")
+plt.axis('off')
+plt.show()
 ```
 
 ```{python}
 #| echo: false
-# x2: average min nights per ward
+# X3: density of Tourism Attractions per ward
+
+# 提取 code 列中以 '26' 开头的行
+tourism = tourism[tourism['code'].astype(str).str.startswith('26')]
+
+# 显示结果
+print(tourism)
 ```
 
 ```{python}
-#| echo: false
-# x2: price per ward
+# number per ward
+join_tourism_ward = gpd.sjoin(ward, tourism, how='left', predicate='intersects')
+ward_count = join_tourism_ward.groupby('GSS_CODE').size().reset_index(name='tourism_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['tourism_count'] = ward['tourism_count'].fillna(0)
+
+# density
+ward['tourism_density'] = ward['tourism_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='tourism_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Tourism Attractions by Ward")
+plt.axis('off')
+plt.show()
 ```
 
-```{python}
-#| echo: false
-# x2: price per ward
-```
-
-```{python}
-#| echo: false
-# x2: price per ward
-```
