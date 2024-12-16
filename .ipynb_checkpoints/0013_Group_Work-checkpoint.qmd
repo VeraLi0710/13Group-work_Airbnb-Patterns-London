@@ -1193,3 +1193,8 @@ From the analysis above, enforcing the 90-day policy is essential to address ris
 
 
 ---
+
+### Regression Analysis of Detecting Factors associated with Policy Violations
+
+Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution[@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.
+
