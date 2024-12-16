@@ -2,6 +2,8 @@
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
 title: Group Name's Group Project
+assess:
+  group-date: '2024-12-17'
 execute:
   echo: false
   freeze: true
@@ -73,9 +75,9 @@ else:
 
 :::
 
-An inline citation example: As discussed on @insideairbnb, there are many...
+An inline citation example: As discussed on [], there are many...
 
-A parenthetical citation example: There are many ways to research Airbnb [see, for example, @insideairbnb]... 
+A parenthetical citation example: There are many ways to research Airbnb []... 
 
 ## 2. Why did they collect the InsideAirbnb data?
 
@@ -162,7 +164,6 @@ Airbnb has significantly impacted London’s housing market by reducing long-ter
 ```{python}
 #| echo: false
 #| warning: false
-#| cache: true
 # 1. Data Cleaning and Preparation  
 # -------------------------------  
 # Select relevant columns and drop rows with missing values  
@@ -191,9 +192,7 @@ borough_map = borough_map.to_crs(gdf.crs)
 
 ```{python}
 #| echo: false
-#| cache: true
 #| warning: false
-#| cache: true
 import matplotlib.pyplot as plt  
 import seaborn as sns  
 from matplotlib.gridspec import GridSpec  
@@ -387,7 +386,6 @@ To address the limitations of using only snapshot data, we merged datasets from 
 ```{python}
 #| echo: false
 #| cache: true
-#| cache: true
 import pandas as pd  
 import matplotlib.pyplot as plt  
 import seaborn as sns  
@@ -459,7 +457,6 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 
 ```{python}
 #| echo: false
-#| cache: true
 #| cache: true
 # 5. Visualizations  
 # -------------------------------  
@@ -804,6 +801,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 from libpysal.weights import Queen, lag_spatial
 from esda.moran import Moran_BV, Moran_Local_BV
 
@@ -956,7 +954,7 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-### Figure 1: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
 
 ![](plots/combined_of_Moran_and_LISA.png)
 
@@ -1164,6 +1162,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # combing the plots to a new plot
 zone['residuals'] = sar_model.u
 
@@ -1194,7 +1193,7 @@ plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=600, bbox_inches='tigh
 plt.tight_layout()
 ```
 
-### Figure 2: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
@@ -1234,3 +1233,4 @@ InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from h
 Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
 
 ---
+
