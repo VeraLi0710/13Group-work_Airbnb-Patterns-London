@@ -317,3 +317,81 @@ gwr_data = ward[columns_to_keep + ['geometry']]
 gwr_data.to_file("data/gwr.shp", driver="ESRI Shapefile")
 ```
 
+## gwr
+
+```{python}
+import pandas as pd
+import geopandas as gpd
+import numpy as np
+from mgwr.gwr import GWR, MGWR
+from mgwr.sel_bw import Sel_BW
+from shapely.geometry import Point
+import matplotlib.pyplot as plt
+
+# 导入数据
+gwr = gpd.read_file("data/gwr.shp")
+```
+
+```{python}
+# 提取坐标
+gwr['geometry'] = gwr.centroid
+
+# 提取坐标
+gwr['x'] = gwr.geometry.x
+gwr['y'] = gwr.geometry.y
+```
+
+```{python}
+print(gwr.columns)
+```
+
+```{python}
+# 定义因变量和自变量
+Y = gwr[['listing_de']].values
+X = gwr[['nature_den', 'transport_', 'tourism_de','avg_price','avg_night','avg_host_l','entire_den']].values
+coords = gwr[['x', 'y']].values
+
+# 选择最优带宽
+bw = Sel_BW(coords, Y, X).search()
+
+# 运行 GWR 模型
+model = GWR(coords, Y, X, bw)
+results = model.fit()
+
+# 输出结果
+print("GWR结果摘要：")
+print(f"R²: {results.R2}")
+print(f"AIC: {results.aic}")
+print(f"带宽: {bw}")
+print(f"参数: {results.params.shape}")
+```
+
+```{python}
+gwr['gwr_r2'] = results.localR2  # R² 的局部值
+for i, col in enumerate(['intercept', 'nature_density', 'transport_density', 'tourism_density', 
+                         'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']):
+    gwr[f'gwr_{col}'] = results.params[:, i]
+```
+
+```{python}
+# 设置画布
+fig, axes = plt.subplots(3, 3, figsize=(15, 12))
+
+# 绘制 R² 分布
+gwr.plot(column='gwr_r2', cmap='coolwarm', legend=True, ax=axes[0, 0])
+axes[0, 0].set_title('Local R² Distribution')
+
+# 绘制每个回归系数的空间分布
+variables = ['nature_density', 'transport_density', 'tourism_density',
+             'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']
+
+for i, var in enumerate(variables):
+    row, col = divmod(i + 1, 3)  # 计算子图位置
+    gwr.plot(column=f'gwr_{var}', cmap='coolwarm', legend=True, ax=axes[row, col])
+    axes[row, col].set_title(f'{var} Coefficient')
+
+# 调整布局
+plt.tight_layout()
+plt.show()
+```
+
