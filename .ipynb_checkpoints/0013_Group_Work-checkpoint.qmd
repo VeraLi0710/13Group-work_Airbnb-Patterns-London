@@ -162,6 +162,7 @@ Airbnb has significantly impacted London’s housing market by reducing long-ter
 ```{python}
 #| echo: false
 #| warning: false
+#| cache: true
 # 1. Data Cleaning and Preparation  
 # -------------------------------  
 # Select relevant columns and drop rows with missing values  
@@ -190,6 +191,7 @@ borough_map = borough_map.to_crs(gdf.crs)
 
 ```{python}
 #| echo: false
+#| cache: true
 #| warning: false
 #| cache: true
 import matplotlib.pyplot as plt  
@@ -385,6 +387,7 @@ To address the limitations of using only snapshot data, we merged datasets from 
 ```{python}
 #| echo: false
 #| cache: true
+#| cache: true
 import pandas as pd  
 import matplotlib.pyplot as plt  
 import seaborn as sns  
@@ -456,6 +459,7 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 
 ```{python}
 #| echo: false
+#| cache: true
 #| cache: true
 # 5. Visualizations  
 # -------------------------------  

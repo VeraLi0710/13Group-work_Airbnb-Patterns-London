@@ -191,7 +191,6 @@ borough_map = borough_map.to_crs(gdf.crs)
 ```{python}
 #| echo: false
 #| warning: false
-#| cache: true
 import matplotlib.pyplot as plt  
 import seaborn as sns  
 from matplotlib.gridspec import GridSpec  
@@ -800,6 +799,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 from libpysal.weights import Queen, lag_spatial
 from esda.moran import Moran_BV, Moran_Local_BV
 
