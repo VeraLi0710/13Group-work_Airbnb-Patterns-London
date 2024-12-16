@@ -13,8 +13,6 @@ jupyter:
     name: base
 ---
 
-### Logistic regression analysis and verify
-
 ```{python}
 #| echo: false
 # packages

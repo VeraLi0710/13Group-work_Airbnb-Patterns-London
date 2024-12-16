@@ -129,7 +129,6 @@ ax.set_xlim([0,500]);
 
 :::
 
-
 ```{python}
 #| echo: false
 #| output: false
@@ -162,15 +161,9 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 #airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
 ```
 
-### Research Scope  
+### The 90-Day Rule and Airbnb Commercialization  
 
-Airbnb has significantly impacted London’s housing market, contributing to gentrification and reducing housing availability. To address this, the 90-day rule restricts short-term rental of entire homes to 90 days annually without planning permission [@greaterlondonauthority]. However, limited oversight and host self-reporting make enforcement difficult. Utilizing the InsideAirbnb dataset, we aim to uncover spatial and behavioral patterns linked to potential rule violations, providing actionable insights to improve the regulation of Short-Term Lets in London.  
-
----  
-
-### Initial Observations of the Data  
-
-We used the December 2023 dataset as a snapshot for its comprehensive coverage of recent trends. Key observations are summarized below:  
+Airbnb has significantly impacted London’s housing market by reducing long-term housing availability, increasing rents, and driving commercialization. In response, London implemented the 90-day rule, restricting entire-home short-term rentals to 90 days annually unless planning permission is obtained [@greaterlondonauthority]. However, enforcement relies on self-reporting, making violations difficult to monitor. This analysis uses InsideAirbnb data to examine spatial patterns, booking behavior, host characteristics, and property types to assess Airbnb’s commercialization and compliance risks.  
 
 ```{python}
 #| echo: false
@@ -384,18 +377,15 @@ plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches
 plt.show()
 ```
 
-1. **Spatial Clustering**: Listings are concentrated in central London, where demand and rents are highest.  
-2. **Estimated Booking Days**: Using minimum nights, price, and reviews [@insideairbnb], we estimated annual booking days, and a significant portion of properties exceeded the 90-day limit (Figure 1-1).  
-3. **Host Characteristics**: Single-listing and multi-listing hosts both occupy notable market shares(Figure 1-2).  
-4. **Short-Term Focus**: Most listings have low minimum night requirements, reflecting a predominantly commercial short-term rental model (Figure 1-4).  
+### Data Analysis and Key Findings  
 
-These findings highlight clear differences in host behavior and rental patterns, warranting further analysis of their connection to rule violations.  
+1. **Spatial Patterns**:  
+   Airbnb listings are concentrated in central London, particularly in high-demand, high-rent areas (Figure 1, Map). Entire-home rentals dominate these areas, making them hotspots for non-compliance with the 90-day rule.  
 
----  
+2. **Booking Days and Non-Compliance Risks**:  
+   Estimated booking days, calculated using reviews, pricing, and minimum nights [@insideairbnb], show that entire homes and hotel-like properties frequently exceed the 90-day limit, posing significant enforcement challenges (Figure 1, Panel 1).  
 
-### Preliminary Conclusions  
-
-To address the limitations of single snapshots, we combined quarterly data from December 2023 to September 2024, removing duplicates to refine our analysis (Figure 2). Key results are as follows:  
+To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy (Figure 2)：
 
 ```{python}
 #| echo: false
@@ -571,15 +561,23 @@ plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches=
 plt.show()
 ```
 
-1. **Host Behavior**: Multi-listing hosts dominate (62.38%) and show higher average booking days (75.17) than single-listing hosts (66.61). Heatmaps reveal that multi-listing hosts rent out entire homes and hotel rooms at significantly higher prices, indicating a preference for commercialized short-term rentals.
-2. **Property Types**: Entire homes (66.97%) are the most common and have the highest average booking days (78.38). Hotel rooms, with the shortest minimum night requirements, further exemplify commercial rental patterns, while shared rooms suggest long-term use tendencies.  
+3. **Host Characteristics**:  
+   Multi-listing hosts make up 62.38% of all listings and have higher average booking durations (75.17 days) compared to single-listing hosts (66.61 days) (Figure 2, Top Left). Heatmaps (Figure 2) indicate that these hosts primarily manage entire homes and hotel-like properties, which have higher prices and shorter minimum stays, reflecting increased commercialization.  
 
-#### Summary and Next Steps
+4. **Property Types**:  
+   Entire homes dominate the market, comprising 66.97% of listings and averaging the longest booking durations (78.38 days), making them the most likely to exceed the 90-day limit (Figure 2, Top Right). Hotel-like properties, though less common, also exhibit highly commercial trends, with the shortest minimum stays (2.13 nights) (Figure 2, heatmap). Private rooms and shared spaces are less commercialized, showing lower booking durations and pricing, making them less likely to violate the rule.  
 
-1. **Spatial Analysis**: Listings are spatially clustered, particularly in central London. Clustering analysis can pinpoint areas of non-compliance and assess community impacts, helping refine geographically targeted enforcement strategies.  
-2. **Commercialization of Rentals**: Multi-listing hosts, particularly those managing entire homes and hotel rooms with high bookings and prices, exhibit strong commercial tendencies. Regression analysis is needed to quantify their relationship with rule violations and guide policy design for stricter regulation.  
 
-This combined analysis provides actionable insights into spatial and behavioral patterns, enabling better regulatory enforcement to mitigate the broader impacts of short-term rentals on London’s housing market.
+
+
+
+### Summary and Next Steps  
+
+**Spatial Insights**: Central London displays a high intensity of short-term rentals and frequent entire-home use, making it a key hotspot for potential 90-day rule violations. Further investigation is needed to establish enforcement priorities and evaluate the impact of short-term rentals on local housing.  
+
+**Policy Violation Factors**: Multi-listing hosts and commercialized property types, such as entire homes and hotel-like properties, are strongly linked to increased booking durations and greater non-compliance risks. Factors like rental type, pricing, and location require further analysis—such as regression models—to better target enforcement and guide regulatory measures.  
+
+InsideAirbnb data highlights London’s Airbnb market as highly commercialized and dominated by multi-listing hosts, with entire-home rentals posing significant risks of non-compliance with the 90-day rule. Effective enforcement is crucial to address these challenges.  
 
 ---  
 
@@ -590,6 +588,619 @@ This combined analysis provides actionable insights into spatial and behavioral 
 ( 45 points; Answer due {{< var assess.group-date >}} )
 
 :::
+
+```{python}
+#| echo: false
+#| output: false
+import warnings
+warnings.filterwarnings('ignore')
+
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+
+# Read the data  
+file_path = 'data/listings.csv'    #which is the path in this repository  
+airbnb_data = pd.read_csv(file_path)
+
+# Calculate the estimation of nights booked for each listing
+airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
+airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2 
+
+# Data cleaning: assign the estimated nights booked to each borough
+# Replace NaN with 0
+airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].fillna(0)
+
+# Convert the column to integers
+airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].astype(int)
+
+#Count the number of listings in each borough using 'neighbourhood' column
+borough_counts = airbnb_data['neighbourhood'].value_counts()
+
+# Filter the DataFrame to include only rows where estimated_nights_booked is greater than 90
+filtered_data = airbnb_data[airbnb_data['estimated_nights_booked'] > 90]
+
+#Count the number of listings with estimation of nights booked larger than 90 days in each borough
+borough_counts_90 = filtered_data['neighbourhood'].value_counts()
+
+# Merge the two series into a DataFrame
+combined_data = pd.concat([borough_counts, borough_counts_90], axis=1, keys=['Total_listings', 'More_than_90'])
+
+# Calculate the ratio of listings with more than 90 booked nights per total listings
+combined_data['Ratio_of_more_than_90'] = combined_data['More_than_90'] / combined_data['Total_listings']
+
+# Fill any NaN values that might occur if there are boroughs with no listings > 90 nights
+combined_data['Ratio_of_more_than_90'] = combined_data['Ratio_of_more_than_90'].fillna(0)
+
+# Data formatting and round to four decimal places
+combined_data['Ratio_of_more_than_90'] = combined_data['Ratio_of_more_than_90'].apply(lambda x: round(x, 4))
+
+# Rename the index label to 'Borough_name'
+combined_data.index.rename('Borough_name', inplace=True)
+
+# Load the borough codes
+borough_code_file_path = 'data/borough_name_code.csv'
+borough_codes = pd.read_csv(borough_code_file_path)
+
+# Reset index in combined_data to turn the index into a regular column
+combined_data.reset_index(inplace=True)
+borough_codes.reset_index(inplace=True)
+
+#Combine the ratio data and borough name with borough code by borough name
+combined_data = pd.merge(combined_data, borough_codes[['Borough_name', 'Borough_code']], on='Borough_name', how='left')
+
+# Set 'Borough_name' back as the index
+combined_data.set_index('Borough_name', inplace=True)
+
+# Save the updated DataFrame
+combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Moran analysis
+import geopandas as gpd
+import libpysal
+from esda.moran import Moran, Moran_Local
+import matplotlib.pyplot as plt
+from libpysal.weights import Queen, KNN
+import seaborn as sns
+import os
+
+# Load data
+ratio = pd.read_csv("data/borough_listings_ratio.csv")
+borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+
+# merge
+borough_ratio = borough.merge(ratio, left_on="GSS_CODE", right_on="Borough_code")
+
+# Calculate neighbors using Queen contiguity
+weights = Queen.from_dataframe(borough_ratio)
+weights.transform = 'r'  # Row-standardize the weights
+
+os.makedirs('plots/raw', exist_ok=True)
+
+# Global Moran's I
+y = borough_ratio['Ratio_of_more_than_90']
+moran = Moran(y, weights)
+print(f"Global Moran's I: {moran.I:.3f}")
+print(f"P-value: {moran.p_sim:.3f}")
+
+# Moran Plot
+def moran_plot(y, weights):
+    lag = weights.sparse.dot(y)
+    slope, intercept = np.polyfit(y, lag, 1)
+    
+    plt.figure(figsize=(10, 5))
+    plt.scatter(y, lag)
+    plt.plot(y, slope * y + intercept, 'r')
+    plt.xlabel('Ratio of more than 90')
+    plt.ylabel('Spatially Lagged Ratio')
+    plt.title("Moran Plot of rule breaking Airbnbs")
+    plt.axvline(y.mean(), color='gray', linestyle='--')
+    plt.axhline(lag.mean(), color='gray', linestyle='--')
+    plt.savefig('plots/raw/Moran_rule_breaking.png') 
+    plt.show()
+
+moran_plot(y, weights)
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Local Moran's I
+local_moran = Moran_Local(y, weights)
+borough_ratio['Ii'] = local_moran.Is
+borough_ratio['p_value'] = local_moran.p_sim
+
+# Plot Local Moran's I
+fig, ax = plt.subplots(figsize=(12, 8))
+borough_ratio.plot(column='Ii', legend=True, ax=ax)
+plt.title("Local Moran's I Statistics")
+plt.axis('off')
+plt.show()
+
+# LISA Cluster Map
+sig = 0.1
+labels = ['Not Significant', 'Low-Low', 'Low-High', 'High-Low', 'High-High']
+colors = ['white', 'blue', 'lightblue', 'pink', 'red']
+
+# Standardize the variable of interest
+y_std = (y - y.mean()) / y.std()
+lag_std = weights.sparse.dot(y_std)
+
+# Create significance masks
+sig_mask = local_moran.p_sim < sig
+
+# Create cluster categories
+borough_ratio['quadrant'] = np.zeros(len(y))
+borough_ratio.loc[sig_mask, 'quadrant'] = np.where(y_std < 0,
+    np.where(lag_std < 0, 1, 2),
+    np.where(lag_std < 0, 3, 4))[sig_mask]
+
+# Plot LISA clusters
+fig, ax = plt.subplots(figsize=(10, 10))
+borough_ratio.plot(column='quadrant', categorical=True, k=5, cmap='Paired',
+                  legend=True, ax=ax)
+plt.title('LISA Cluster Map of rule breaking Airbnbs')
+plt.axis('off')
+plt.savefig('plots/raw/LISA_rule_breaking.png') 
+plt.show()
+
+# Additional analysis plots
+plt.figure(figsize=(10, 6))
+plt.hist(y, bins=20)
+plt.title('Distribution of Ratio_of_more_than_90')
+plt.xlabel('Value')
+plt.show()
+
+print(y.describe())
+# print(local_moran.Is.describe())
+print(pd.Series(local_moran.Is).describe())
+
+print(f"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}")
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Distance-based weights (20km)
+centroids = borough_ratio.geometry.centroid
+coords = np.column_stack((centroids.x, centroids.y))
+knn = KNN.from_dataframe(borough_ratio, k=4)  # Approximate 20km neighbors
+knn.transform = 'r'
+
+# Calculate Local Moran's I with distance weights
+local_moran_dist = Moran_Local(y, knn)
+
+# Add results to GeoDataFrame
+borough_ratio['Ii_dist'] = local_moran_dist.Is
+
+# Plot results with distance-based weights
+fig, ax = plt.subplots(figsize=(12, 8))
+borough_ratio.plot(column='Ii_dist', legend=True, ax=ax)
+plt.title("Local Moran Statistic (Distance-based)")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+from libpysal.weights import Queen, lag_spatial
+from esda.moran import Moran_BV, Moran_Local_BV
+
+# load data
+connect = pd.read_csv("data/connect.csv")
+borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+
+# merge the data
+borough_connect = borough.merge(connect, left_on="GSS_CODE", right_on="Borough_code")
+```
+
+```{python}
+#| echo: false
+#| output: false
+# analyse the spatial autocorrelation of monthly rent and airbnbs breaking the rule
+# Variables
+var1 = 'Monthly_rent_2023'
+var2 = 'Ratio_of_more_than_90'
+
+# Check for and handle missing data
+borough_connect.dropna(subset=[var1, var2], inplace=True)
+
+# Create weights and row-standardize them
+weights = Queen.from_dataframe(borough_connect, use_index=True)
+weights.transform = 'r'
+
+# Bivariate Moran's I
+moran_bv = Moran_BV(borough_connect[var1], borough_connect[var2], weights)
+print(f"Bivariate Moran's I between {var1} and {var2}: {moran_bv.I:.3f}")
+print(f"p-value: {moran_bv.p_sim:.3f}")
+
+# Bivariate Moran Plot
+fig, ax = plt.subplots(figsize=(10, 5))
+spatial_lag_var2 = lag_spatial(weights, borough_connect[var2])  # Calculate the spatial lag of var2
+scatter = ax.scatter(borough_connect[var1], spatial_lag_var2, color='blue', edgecolor='k', alpha=0.7)
+fit = np.polyfit(borough_connect[var1], spatial_lag_var2, 1)
+ax.plot(borough_connect[var1], np.polyval(fit, borough_connect[var1]), color='red', linestyle='--', linewidth=1)
+ax.set_title('Bivariate Moran Scatter Plot monthly rent and rule breaking Airbnbs')
+ax.set_xlabel(var1)
+ax.set_ylabel(f"Spatial Lag of {var2}")
+plt.savefig('plots/raw/Moran_monthly_rent.png')
+plt.show()
+
+# Bivariate Local Moran's I
+local_moran_bv = Moran_Local_BV(borough_connect[var1], borough_connect[var2], weights)
+
+# LISA Plot (Bivariate)
+fig, ax = plt.subplots(figsize=(10, 10))
+borough_connect.assign(cl=local_moran_bv.q).plot(column='cl', categorical=True, 
+                                                 cmap='Paired', linewidth=0.1, ax=ax, 
+                                                 edgecolor='white', legend=True)
+labels = ['Not Significant', 'Low-Low', 'Low-High', 'High-Low', 'High-High']
+legend = ax.get_legend()
+if legend:
+    legend.set_bbox_to_anchor((1, 1))
+    legend.set_title('Cluster Type')
+    for text, label in zip(legend.get_texts(), labels):
+        text.set_text(label)
+
+ax.set_title('Bivariate LISA Cluster Map of monthly rent and rule breaking Airbnbs')
+ax.set_axis_off()
+plt.savefig('plots/raw/LISA_monthly_rent.png')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+# analyse the spatial autocorrelation of vacant ratio and airbnbs breaking the rule
+# Variables
+var1 = 'Vacant_Ratio'
+var2 = 'Ratio_of_more_than_90'
+
+# Check for and handle missing data
+borough_connect.dropna(subset=[var1, var2], inplace=True)
+
+# Create weights and row-standardize them
+weights = Queen.from_dataframe(borough_connect, use_index=True)
+weights.transform = 'r'
+
+# Bivariate Moran's I
+moran_bv = Moran_BV(borough_connect[var1], borough_connect[var2], weights)
+print(f"Bivariate Moran's I between {var1} and {var2}: {moran_bv.I:.3f}")
+print(f"p-value: {moran_bv.p_sim:.3f}")
+
+# Bivariate Moran Plot
+fig, ax = plt.subplots(figsize=(10, 5))
+spatial_lag_var2 = lag_spatial(weights, borough_connect[var2])  # Calculate the spatial lag of var2
+scatter = ax.scatter(borough_connect[var1], spatial_lag_var2, color='blue', edgecolor='k', alpha=0.7)
+fit = np.polyfit(borough_connect[var1], spatial_lag_var2, 1)
+ax.plot(borough_connect[var1], np.polyval(fit, borough_connect[var1]), color='red', linestyle='--', linewidth=1)
+ax.set_title('Bivariate Moran Scatter Plot of vacant ratio and rule breaking Airbnbs')
+ax.set_xlabel(var1)
+ax.set_ylabel(f"Spatial Lag of {var2}")
+plt.savefig('plots/raw/Moran_vacant_ratio.png')
+plt.show()
+
+# Bivariate Local Moran's I
+local_moran_bv = Moran_Local_BV(borough_connect[var1], borough_connect[var2], weights)
+
+# LISA Plot (Bivariate)
+fig, ax = plt.subplots(figsize=(10, 10))
+borough_connect.assign(cl=local_moran_bv.q).plot(column='cl', categorical=True, 
+                                                 cmap='Paired', linewidth=0.1, ax=ax, 
+                                                 edgecolor='white', legend=True)
+labels = ['Not Significant', 'Low-Low', 'Low-High', 'High-Low', 'High-High']
+legend = ax.get_legend()
+if legend:
+    legend.set_bbox_to_anchor((1, 1))
+    legend.set_title('Cluster Type')
+    for text, label in zip(legend.get_texts(), labels):
+        text.set_text(label)
+
+ax.set_title('Bivariate LISA Cluster Map of vacant ratio and rule breaking Airbnbs')
+ax.set_axis_off()
+plt.savefig('plots/raw/LISA_vacant_ratio.png')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Plotting the combined figure showing the rusults of Moran scatter plot and LISA cluster map
+from PIL import Image, ImageDraw, ImageFont
+
+# Paths to the images
+morans = ['plots/raw/Moran_rule_breaking.png', 'plots/raw/Moran_monthly_rent.png', 'plots/raw/Moran_vacant_ratio.png']
+lisas = ['plots/raw/LISA_rule_breaking.png', 'plots/raw/LISA_monthly_rent.png', 'plots/raw/LISA_vacant_ratio.png']
+
+# Load all images
+images = [Image.open(img) for img in morans + lisas]
+
+# Calculate total width and height for the new image
+total_width = images[0].width * 3
+max_height = images[0].height + images[3].height 
+
+# Create a new image with the appropriate size
+new_im = Image.new('RGB', (total_width, max_height))
+
+# Paste each Moran plot into the new image
+for i, img in enumerate(images[:3]):  # First three are Moran plots
+    new_im.paste(img, (img.width * i, 0))
+
+# Paste each LISA plot into the new image
+for i, img in enumerate(images[3:]):  # Last three are LISA plots
+    new_im.paste(img, (img.width * i, images[0].height))  # Paste below the Moran plots
+
+new_im.save('plots/combined_of_Moran_and_LISA.png')
+```
+
+### Figure 1: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+
+![](plots/combined_of_Moran_and_LISA.png)
+
+#### Moran test result
+1. Rule-breaking Airbnbs exhibit significant spatial clustering (positive spatial autocorrelation), meaning these properties are not randomly distributed but are concentrated in specific areas, primarily in central and eastern London.
+2. The scatter plots further show a positive relationship between rule-breaking Airbnbs and both monthly rents and vacancy ratios, suggesting that areas with higher Airbnb violations also face increased rents and vacancies.
+
+#### LISA test result
+The LISA cluster maps highlight “hotspots” where rule-breaking Airbnbs are spatially significant:
+1. Rule-breaking Airbnbs: Central London (e.g., Westminster) and parts of eastern London show significant clustering (brown regions).
+2. Monthly Rent: High Airbnb violations coincide with high rent clusters (High-High), reinforcing the pressure on housing affordability.
+3. Vacancy Rates: Similar High-High clusters are observed in eastern London, suggesting a correlation between high Airbnb violations and increased vacancy rates in certain neighborhoods.
+Conversely, areas with Low-Low clusters (e.g., northern and southwestern boroughs) indicate regions with lower Airbnb activity and minimal impact on rents or vacancies.
+
+```{python}
+#| echo: false
+#| output: false
+# SAR model
+from spreg import ML_Lag
+# Import data
+data = pd.read_csv("data/connect.csv")
+shp = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+
+# Merge data and transform coordinate system
+zone = shp.merge(data, left_on="GSS_CODE", right_on="Borough_code")
+zone = zone.to_crs("EPSG:27700")
+
+# Check and remove missing values
+columns = ['Monthly_rent_2023', 'Vacant_Ratio', 'Ratio_of_more_than_90']
+print("Missing values:\n", zone[columns].isna().sum())
+zone = zone.dropna(subset=columns)
+
+# Construct spatial weights matrix
+w = Queen.from_dataframe(zone)
+w.transform = 'r'
+
+# Prepare variables
+y = zone['Ratio_of_more_than_90'].values.reshape(-1, 1)
+X = zone[['Monthly_rent_2023', 'Vacant_Ratio']].values
+
+# Fit Spatial Lag Model
+sar_model = ML_Lag(y, X, w=w,
+                   name_y='Ratio_of_more_than_90',
+                   name_x=['Monthly_rent_2023', 'Vacant_Ratio'],
+                   name_w='w')
+
+# Output model results
+print("=== SAR Model Results ===")
+print(sar_model.summary)
+
+# Visualize residuals
+zone['residuals'] = sar_model.u
+fig, ax = plt.subplots(figsize=(8, 6))
+zone.plot(column='residuals', cmap='viridis', legend=True, ax=ax)
+plt.title("SAR Model Residuals")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+# GWR model
+from mgwr.gwr import GWR
+from mgwr.sel_bw import Sel_BW
+zone = zone.to_crs("EPSG:27700")
+zone['centro'] = zone.geometry.centroid
+zone['X'] = zone['centro'].x
+zone['Y'] = zone['centro'].y
+g_y_rent = zone['Monthly_rent_2023'].values.reshape((-1, 1))
+g_X_rent = zone[['Ratio_of_more_than_90']].values
+g_coords = list(zip(zone['X'], zone['Y']))
+
+# Automatically set bw_min and bw_max based on the number of observations
+n_obs = len(g_coords)  # Number of observations
+bw_min = 2  # Minimum bandwidth, should be a positive integer
+bw_max = max(bw_min, n_obs - 1)  # Ensures bw_max does not exceed n_obs - 1
+
+# Initialize bandwidth selector with dynamic bandwidth settings
+gwr_selector_rent = Sel_BW(g_coords, g_y_rent, g_X_rent, fixed=False)
+
+# Search for optimal bandwidth using the golden section search method
+gwr_bw_rent = gwr_selector_rent.search(search_method='golden_section', criterion='AICc', bw_min=bw_min, bw_max=bw_max)
+print('Optimal Bandwidth Size for Rent:', gwr_bw_rent)
+
+# Fit GWR model with the determined optimal bandwidth
+gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()
+print(gwr_results_rent.summary())
+```
+
+```{python}
+#| echo: false
+#| output: false
+g_coords = list(zip(zone['X'], zone['Y']))
+
+# Define independent and dependent variables for the Vacant_Ratio model
+g_y_vacant = zone['Vacant_Ratio'].values.reshape((-1, 1))
+g_X_vacant = zone[['Ratio_of_more_than_90']].values
+
+# Automatically set bw_min and bw_max based on the number of observations
+n_obs = len(g_coords)  # Number of observations
+bw_min = 2  # Minimum bandwidth, should be a positive integer
+bw_max = max(bw_min, n_obs - 1)  # Ensures bw_max does not exceed n_obs - 1
+
+# Initialize bandwidth selector with dynamic bandwidth settings for Vacant_Ratio
+gwr_selector_vacant = Sel_BW(g_coords, g_y_vacant, g_X_vacant, fixed=False)
+
+# Search for optimal bandwidth using the golden section search method for Vacant_Ratio
+gwr_bw_vacant = gwr_selector_vacant.search(search_method='golden_section', criterion='AICc', bw_min=bw_min, bw_max=bw_max)
+print('Optimal Bandwidth Size for Vacant Ratio:', gwr_bw_vacant)
+
+# Fit GWR model with the determined optimal bandwidth for Vacant_Ratio
+gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()
+print(gwr_results_vacant.summary())
+```
+
+```{python}
+#| echo: false
+#| output: false
+zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients
+zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Define the variable names to be visualized, corresponding to the regression results added
+var_names = ['coefficient']  # Adjust this if more variables from the model should be visualized
+
+fig, axes = plt.subplots(1, len(var_names), figsize=(12, 3))
+
+# Ensure `axes` is iterable
+if len(var_names) == 1:
+    axes = [axes]
+
+for i, var in enumerate(var_names):
+    ax = axes[i]  # Access each subplot axis
+    zone.plot(column=var, cmap='viridis', legend=True, ax=ax, edgecolor='white', legend_kwds={'label': "Coefficient value"})
+    ax.set_title(f'Regression Coefficients for {var}')
+    ax.set_axis_off()
+
+    # Highlight non-significant areas based on a significance threshold
+    threshold = 1.96
+    non_significant = zone['t_values'].abs() < threshold  # Ensuring the use of absolute value for significance checking
+    zone.loc[non_significant].plot(ax=ax, color='lightgrey', edgecolor='white')
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Fit GWR for Monthly_rent_2023
+gwr_model_rent = GWR(g_coords, zone['Monthly_rent_2023'].values.reshape((-1, 1)),
+                     zone[['Ratio_of_more_than_90']].values.reshape((-1, 1)), gwr_bw_rent).fit()
+
+# Fit GWR for Vacant_Ratio
+gwr_model_vacant = GWR(g_coords, zone['Vacant_Ratio'].values.reshape((-1, 1)),
+                       zone[['Ratio_of_more_than_90']].values.reshape((-1, 1)), gwr_bw_vacant).fit()
+
+# Extract coefficients and t-values for each model
+rent_coefs = pd.DataFrame(gwr_model_rent.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Rent'])
+rent_tvals = pd.DataFrame(gwr_model_rent.tvalues, columns=['t_Intercept', 't_Effect_on_Rent'])
+
+vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])
+vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])
+```
+
+```{python}
+#| echo: false
+#| output: false
+# Add results directly to zone GeoDataFrame
+zone['Rent_Effect'] = rent_coefs['Effect_of_Ratio_of_more_than_90_on_Rent']
+zone['Vacancy_Effect'] = vacant_coefs['Effect_of_Ratio_of_more_than_90_on_Vacancy']
+
+# Check significance and add to zone
+zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96
+zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96
+```
+
+```{python}
+#| echo: false
+#| output: false
+fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot for Rent
+zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[0], legend=True,
+          legend_kwds={'label': "Effect on Rent"})
+zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[0])
+ax[0].set_title('Effect of Ratio_of_more_than_90 on Rent')
+ax[0].set_axis_off()
+
+# Plot for Vacancy
+zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[1], legend=True,
+          legend_kwds={'label': "Effect on Vacancy"})
+zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[1])
+ax[1].set_title('Effect of Ratio_of_more_than_90 on Vacancy')
+ax[1].set_axis_off()
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| output: false
+# combing the plots to a new plot
+zone['residuals'] = sar_model.u
+
+# Create a figure with three subplots (one row, three columns)
+fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
+
+# Plot for Residuals
+zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
+ax[0].set_title('SAR Model Residuals')
+ax[0].set_axis_off()
+
+# Plot for Rent Effect
+zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
+zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
+ax[1].set_title('Effect of rule breaking Airbnbs on rent')
+ax[1].set_axis_off()
+
+# Plot for Vacancy Effect
+zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
+zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
+ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
+ax[2].set_axis_off()
+
+#output
+plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=600, bbox_inches='tight')  
+
+# Adjust layout
+plt.tight_layout()
+```
+
+### Figure 2: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+
+![](plots/Results_of_SAR_and_GWR_model.png)
+
+### SAR model result
+1. The residuals map indicates that the model captures most spatial variations but leaves some unexplained patterns, especially in central boroughs.
+2. Effect on Rent: Boroughs with high Airbnb violations (e.g., central and inner eastern areas) show a strong positive effect on monthly rents, confirming that Airbnb activity drives up rental prices.
+3. Effect on Vacancy: Significant positive impacts are observed in specific eastern and southern areas, where Airbnb violations correlate with higher housing vacancy rates.
+
+### GWR model result
+1. The spatial variability captured by GWR confirms that the relationship between Airbnb violations, rents, and vacancies is non-stationary. In central London, the effect on rents is pronounced, while in eastern boroughs, the effect on vacancy rates is stronger.
+2. This spatial heterogeneity indicates that Airbnb’s impact is location-dependent, with the most severe effects concentrated in areas of high demand.
+
+### Conclusion
+These patterns underscore Airbnb's role in gentrification, a process where local residents—especially lower-income households—are displaced due to rising living costs Jain et al. (2021). As short-term rentals become more profitable, landlords are incentivized to convert long-term housing into Airbnbs, reducing housing availability for local tenants and driving up competition for remaining rental units Bosma and van Doorn (2024) . The impacts are particularly severe in central neighborhoods like Westminster and spreading into eastern boroughs, where vacancy rates increase, further destabilizing communities.
+
+Gentrification does not only lead to physical displacement but also causes cultural displacement, as long-standing communities lose affordable housing and essential social ties. Local businesses catering to residents may also suffer as short-term tourism replaces neighborhood-oriented consumption patterns.
+
+In essence, Airbnb rule-breaking accelerates the gentrification process by prioritizing tourism-driven economic gains over the housing needs of local communities, exacerbating social inequalities.
+
+### References (for Q7, remember to move them with other references together later)
+Bosma, J. R. & van Doorn, N. (2024) The Gentrification of Airbnb: Closing Rent Gaps Through the Professionalization of Hosting. *Space and culture*. [Online] 27 (1), 31–47.
+Jain, S. et al. (2021) Nowcasting Gentrification Using Airbnb Data. *Proceedings of the ACM on human-computer interaction*. [Online] 5 (CSCW1), 1–21.
 
 ## Sustainable Authorship Tools
 
@@ -607,4 +1218,3 @@ InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from h
 Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
 
 ---
-
