@@ -65,6 +65,31 @@ else:
   df.to_parquet(file)
 ```
 
+## Declaration of Authorship {.unnumbered .unlisted}
+
+We, [NA_Group2], pledge our honour that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
+
+Date: 17/12/2024
+
+Student Numbers: 4
+
+## Brief Group Reflection
+
+| What Went Well | What Was Challenging |
+| -------------- | -------------------- |
+| A              | B                    |
+| C              | D                    |
+
+## Priorities for Feedback
+
+Are there any areas on which you would appreciate more detailed feedback if we're able to offer it?
+
+{{< pagebreak >}}
+
+# Response to Questions
+
+See the raw file for examples of how to hide computational output as there is code hidden here.
+
 ## 1. Who collected the InsideAirbnb data?
 
 ::: {.duedate}
