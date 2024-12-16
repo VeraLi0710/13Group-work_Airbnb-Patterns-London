@@ -203,11 +203,11 @@ data?}\label{who-collected-the-insideairbnb-data}
 
 ( 2 points; Answer due Week 7 )
 
-An inline citation example: As discussed on (\textbf{insideairbnb?}),
-there are many\ldots{}
+An inline citation example: As discussed on {[}{]}, there are
+many\ldots{}
 
 A parenthetical citation example: There are many ways to research Airbnb
-(see, for example, \textbf{insideairbnb?})\ldots{}
+{[}{]}\ldots{}
 
 \subsection{2. Why did they collect the InsideAirbnb
 data?}\label{why-did-they-collect-the-insideairbnb-data}
@@ -333,7 +333,7 @@ London?}{7. Drawing on your previous answers, and supporting your response with 
 ( 45 points; Answer due \textbf{?var:assess.group-date} )
 
 To provide evidence on violation hotspots, community impacts, and the
-drivers of policy violations, the next steps are:
+drivers of policy violations,()the next steps are:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -355,116 +355,51 @@ This approach will highlight the need for effective regulation, clarify
 enforcement priorities, and enhance the focus and efficiency of
 enforcement efforts.
 
-\subsubsection{Figure 1: Results of Moran and LISA analysis of rule
+\subsubsection{Spatial Analysis of Policy Violations and Local
+Impacts}\label{spatial-analysis-of-policy-violations-and-local-impacts}
+
+\paragraph{\texorpdfstring{\textbf{1. Hotspot
+Identification}}{1. Hotspot Identification}}\label{hotspot-identification}
+
+We analyzed the spatial clustering of Airbnb rule-breaking properties
+using Moran's I and LISA cluster maps (Figure 3). High-High clusters
+were found in central boroughs, such as Westminster, and eastern areas
+like Hackney, where violations are linked to a combination of high
+tourism demand, profitability of short-term rentals, and housing market
+pressures (Bosma and Doorn, 2024).
+
+\subsubsection{Figure 3: Results of Moran and LISA analysis of rule
 breaking Airbnbs, monthly rent and vacancy
-ratio}\label{figure-1-results-of-moran-and-lisa-analysis-of-rule-breaking-airbnbs-monthly-rent-and-vacancy-ratio}
+ratio}\label{figure-3-results-of-moran-and-lisa-analysis-of-rule-breaking-airbnbs-monthly-rent-and-vacancy-ratio}
 
 \includegraphics{plots/combined_of_Moran_and_LISA.png}
 
-\paragraph{Moran test result}\label{moran-test-result}
+\paragraph{\texorpdfstring{\textbf{Housing Market
+Impacts}}{Housing Market Impacts}}\label{housing-market-impacts}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Rule-breaking Airbnbs exhibit significant spatial clustering (positive
-  spatial autocorrelation), meaning these properties are not randomly
-  distributed but are concentrated in specific areas, primarily in
-  central and eastern London.
-\item
-  The scatter plots further show a positive relationship between
-  rule-breaking Airbnbs and both monthly rents and vacancy ratios,
-  suggesting that areas with higher Airbnb violations also face
-  increased rents and vacancies.
-\end{enumerate}
+To quantify these impacts, we applied SAR and GWR models (Figure 4). The
+SAR analysis showed that violations contributed to rising rents and
+increased vacancy rates, with the strongest effects observed in central
+areas where tourism dominates and in eastern boroughs with emerging
+rental markets. GWR results highlighted spatial variability, with the
+highest rent surges in central London and higher vacancy rates in
+eastern boroughs. Similar findings as (Jain \emph{et al.}, 2021).
 
-\paragraph{LISA test result}\label{lisa-test-result}
-
-The LISA cluster maps highlight ``hotspots'' where rule-breaking Airbnbs
-are spatially significant: 1. Rule-breaking Airbnbs: Central London
-(e.g., Westminster) and parts of eastern London show significant
-clustering (brown regions). 2. Monthly Rent: High Airbnb violations
-coincide with high rent clusters (High-High), reinforcing the pressure
-on housing affordability. 3. Vacancy Rates: Similar High-High clusters
-are observed in eastern London, suggesting a correlation between high
-Airbnb violations and increased vacancy rates in certain neighborhoods.
-Conversely, areas with Low-Low clusters (e.g., northern and southwestern
-boroughs) indicate regions with lower Airbnb activity and minimal impact
-on rents or vacancies.
-
-\subsubsection{Figure 2: Results of SAR and GWR Analysis of the Effect
+\subsubsection{Figure 4: Results of SAR and GWR Analysis of the Effect
 of Rule-Breaking Airbnbs on Monthly Rent and Vacancy
-Ratio}\label{figure-2-results-of-sar-and-gwr-analysis-of-the-effect-of-rule-breaking-airbnbs-on-monthly-rent-and-vacancy-ratio}
+Ratio}\label{figure-4-results-of-sar-and-gwr-analysis-of-the-effect-of-rule-breaking-airbnbs-on-monthly-rent-and-vacancy-ratio}
 
 \includegraphics{plots/Results_of_SAR_and_GWR_model.png}
 
-\subsubsection{SAR model result}\label{sar-model-result}
+\paragraph{\texorpdfstring{\textbf{Policy Enforcement
+Necessity}}{Policy Enforcement Necessity}}\label{policy-enforcement-necessity}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  The residuals map indicates that the model captures most spatial
-  variations but leaves some unexplained patterns, especially in central
-  boroughs.
-\item
-  Effect on Rent: Boroughs with high Airbnb violations (e.g., central
-  and inner eastern areas) show a strong positive effect on monthly
-  rents, confirming that Airbnb activity drives up rental prices.
-\item
-  Effect on Vacancy: Significant positive impacts are observed in
-  specific eastern and southern areas, where Airbnb violations correlate
-  with higher housing vacancy rates.
-\end{enumerate}
-
-\subsubsection{GWR model result}\label{gwr-model-result}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  The spatial variability captured by GWR confirms that the relationship
-  between Airbnb violations, rents, and vacancies is non-stationary. In
-  central London, the effect on rents is pronounced, while in eastern
-  boroughs, the effect on vacancy rates is stronger.
-\item
-  This spatial heterogeneity indicates that Airbnb's impact is
-  location-dependent, with the most severe effects concentrated in areas
-  of high demand.
-\end{enumerate}
-
-\subsubsection{Conclusion}\label{conclusion}
-
-These patterns underscore Airbnb's role in gentrification, a process
-where local residents---especially lower-income households---are
-displaced due to rising living costs Jain et al.~(2021). As short-term
-rentals become more profitable, landlords are incentivized to convert
-long-term housing into Airbnbs, reducing housing availability for local
-tenants and driving up competition for remaining rental units Bosma and
-van Doorn (2024) . The impacts are particularly severe in central
-neighborhoods like Westminster and spreading into eastern boroughs,
-where vacancy rates increase, further destabilizing communities.
-
-Gentrification does not only lead to physical displacement but also
-causes cultural displacement, as long-standing communities lose
-affordable housing and essential social ties. Local businesses catering
-to residents may also suffer as short-term tourism replaces
-neighborhood-oriented consumption patterns.
-
-In essence, Airbnb rule-breaking accelerates the gentrification process
-by prioritizing tourism-driven economic gains over the housing needs of
-local communities, exacerbating social inequalities.
-
-\subsubsection{References (for Q7, remember to move them with other
-references together
-later)}\label{references-for-q7-remember-to-move-them-with-other-references-together-later}
-
-Bosma, J. R. \& van Doorn, N. (2024) The Gentrification of Airbnb:
-Closing Rent Gaps Through the Professionalization of Hosting.
-\emph{Space and culture}. {[}Online{]} 27 (1), 31--47. Jain, S. et
-al.~(2021) Nowcasting Gentrification Using Airbnb Data.
-\emph{Proceedings of the ACM on human-computer interaction}.
-{[}Online{]} 5 (CSCW1), 1--21.
+These findings underline the necessity of enforcing the 90-day policy to
+mitigate housing pressures. Without enforcement, short-term rentals
+reduce long-term housing supply, displace residents, and fuel
+gentrification. Strengthened, targeted interventions are essential to
+preserve housing affordability and community stability in affected
+hotspots.
 
 \subsection{Sustainable Authorship
 Tools}\label{sustainable-authorship-tools}
@@ -500,6 +435,12 @@ Planning A: Economy and Space, 50}(6), 1147--1170.
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-bosma2024}
+Bosma, J.R. and Doorn, N. van (2024) {`The gentrification of airbnb:
+Closing rent gaps through the professionalization of hosting'},
+\emph{Space and Culture}, 27(1), pp. 31--47. Available at:
+\url{https://journals.sagepub.com/doi/full/10.1177/12063312221090606}.
+
 \bibitem[\citeproctext]{ref-greaterlondonauthority}
 Greater London Authority (2023) {`Guidance on short-term and holiday
 lets in london'}. \url{https://www.london.gov.uk}.
@@ -507,6 +448,12 @@ lets in london'}. \url{https://www.london.gov.uk}.
 \bibitem[\citeproctext]{ref-insideairbnb2023}
 InsideAirbnb (2023) {`Inside airbnb: Adding data to the debate'}.
 \url{http://insideairbnb.com}.
+
+\bibitem[\citeproctext]{ref-jain2021nowcasting}
+Jain, S. \emph{et al.} (2021) {`Nowcasting gentrification using airbnb
+data'}, \emph{Proceedings of the ACM on Human-Computer Interaction},
+5(CSCW1), pp. 1--21. Available at:
+\url{https://dl.acm.org/doi/10.1145/3449112}.
 
 \bibitem[\citeproctext]{ref-smith2006}
 Smith, J. and Doe, J. (2006) {`The impacts of short-term rentals on
