@@ -77,10 +77,14 @@ Student Numbers: 4
 
 ## Brief Group Reflection
 
-| What Went Well | What Was Challenging |
-| -------------- | -------------------- |
-| A              | B                    |
-| C              | D                    |
+| What Went Well                                      | What Was Challenging                               |  
+|----------------------------------------------------|--------------------------------------------------|  
+| Clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
+| Initial observations revealed significant policy violations.| Snapshot data is time-sensitive and may not fully capture temporal changes. |  
+| Spatial clustering analysis highlighted policy-violating hotspots.| Logistic regression model had low explanatory power (R² = 0.05). |  
+| Iterative refinement of models improved insights (GWLR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
+| Identified policy violations' impact on rent and vacancy rates.| Incorporating new variables (e.g., attraction density) was computationally intensive. |  
+| Combined four quarters of snapshot data to mitigate time-sensitivity limitations.| Assessing the broader socioeconomic impact was limited by data availability. |
 
 ## Priorities for Feedback
 
@@ -600,7 +604,6 @@ InsideAirbnb data shows London’s Airbnb market is highly commercialized, with 
 
 
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
-
 
 We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:
 
@@ -1467,7 +1470,6 @@ The logistic regression analysis revealed significant relationships across all v
 Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. 
 
 ## References
-
 
 ---
 
