@@ -85,17 +85,7 @@ A parenthetical citation example: There are many ways to research Airbnb [see, f
 
 :::
 
-```{python}
-#| output: asis
-print(f"One of way to embed output in the text looks like this: after cleaning, we were left with {df.shape[0]:,} rows of data.")
-```
-
 This way is also supposed to work (`{python} f"{df.shape[0]:,}" `) but I've found it less reliable.
-
-```{python}
-ax = df.host_listings_count.plot.hist(bins=50);
-ax.set_xlim([0,500]);
-```
 
 ## 3. How did they collect it?
 
@@ -138,6 +128,10 @@ import numpy as np
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
+import seaborn as sns  
+from matplotlib.gridspec import GridSpec  
+import numpy as np  
+import os  
 
 # loading data
 file_path = 'data/listings_202312.csv' 
@@ -197,6 +191,7 @@ borough_map = borough_map.to_crs(gdf.crs)
 ```{python}
 #| echo: false
 #| warning: false
+#| cache: true
 import matplotlib.pyplot as plt  
 import seaborn as sns  
 from matplotlib.gridspec import GridSpec  
@@ -377,18 +372,19 @@ plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches
 plt.show()
 ```
 
-### Data Analysis and Key Findings  
+### Key Findings  
 
-1. **Spatial Patterns**:  
-   Airbnb listings are concentrated in central London, particularly in high-demand, high-rent areas (Figure 1, Map). Entire-home rentals dominate these areas, making them hotspots for non-compliance with the 90-day rule.  
+1. **Central London is a Compliance Hotspot**:  
+   Central London has the highest concentration of short-term rentals, especially entire homes in high-demand areas, making it a key area for potential violations of the 90-day rule (Figure 1, Map).  
 
-2. **Booking Days and Non-Compliance Risks**:  
-   Estimated booking days, calculated using reviews, pricing, and minimum nights [@insideairbnb], show that entire homes and hotel-like properties frequently exceed the 90-day limit, posing significant enforcement challenges (Figure 1, Panel 1).  
+2. **Frequent Breaches of the 90-Day Limit**:  
+   Booking data, based on reviews, pricing, and minimum nights [@insideairbnb2023], shows that entire homes and hotel-like properties often exceed the 90-day limit. This poses significant challenges for enforcement, particularly in highly commercialized areas (Figure 1, Panel 1).  
 
-To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy (Figure 2)：
+To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：
 
 ```{python}
 #| echo: false
+#| cache: true
 import pandas as pd  
 import matplotlib.pyplot as plt  
 import seaborn as sns  
@@ -460,6 +456,7 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 
 ```{python}
 #| echo: false
+#| cache: true
 # 5. Visualizations  
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
@@ -561,11 +558,11 @@ plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches=
 plt.show()
 ```
 
-3. **Host Characteristics**:  
-   Multi-listing hosts make up 62.38% of all listings and have higher average booking durations (75.17 days) compared to single-listing hosts (66.61 days) (Figure 2, Top Left). Heatmaps (Figure 2) indicate that these hosts primarily manage entire homes and hotel-like properties, which have higher prices and shorter minimum stays, reflecting increased commercialization.  
+3. **Multi-Listing Hosts Dominate the Market**:  
+   Multi-listing hosts account for 62.38% of all Airbnb listings and have longer average booking durations (75.17 days) than single-listing hosts (66.61 days). They mainly manage entire homes and hotel-like properties, which are more commercialized with higher prices and shorter stays (Figure 2, Top Left and heatmap).  
 
-4. **Property Types**:  
-   Entire homes dominate the market, comprising 66.97% of listings and averaging the longest booking durations (78.38 days), making them the most likely to exceed the 90-day limit (Figure 2, Top Right). Hotel-like properties, though less common, also exhibit highly commercial trends, with the shortest minimum stays (2.13 nights) (Figure 2, heatmap). Private rooms and shared spaces are less commercialized, showing lower booking durations and pricing, making them less likely to violate the rule.  
+4. **Entire Homes are the Highest Risk**:  
+   Entire homes dominate the market (66.97%) and have the longest booking durations (78.38 days), making them most likely to break the 90-day limit. Hotel-like properties, while smaller in volume, show similar risks due to their short minimum stays (2.13 nights) and high commercial focus (Figure 2, Top Right and heatmap).  
 
 
 
@@ -589,9 +586,20 @@ InsideAirbnb data highlights London’s Airbnb market as highly commercialized a
 
 :::
 
+To provide evidence on violation hotspots, community impacts, and the drivers of policy violations, the next steps are:  
+
+1. **Identifying Violation Hotspots and Impacts:**  
+   Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents, reduced housing availability, and displacement of long-term residents—issues tied to Airbnb-driven gentrification [@smith2006].  
+
+2. **Analyzing Drivers of Violations:**  
+   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, pricie and location...)
+
+This approach will highlight the need for effective regulation, clarify enforcement priorities, and enhance the focus and efficiency of enforcement efforts.
+
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -661,6 +669,7 @@ combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # Moran analysis
 import geopandas as gpd
 import libpysal
@@ -711,6 +720,7 @@ moran_plot(y, weights)
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # Local Moran's I
 local_moran = Moran_Local(y, weights)
 borough_ratio['Ii'] = local_moran.Is
@@ -804,6 +814,7 @@ borough_connect = borough.merge(connect, left_on="GSS_CODE", right_on="Borough_c
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # analyse the spatial autocorrelation of monthly rent and airbnbs breaking the rule
 # Variables
 var1 = 'Monthly_rent_2023'
@@ -858,6 +869,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # analyse the spatial autocorrelation of vacant ratio and airbnbs breaking the rule
 # Variables
 var1 = 'Vacant_Ratio'

@@ -85,17 +85,7 @@ A parenthetical citation example: There are many ways to research Airbnb [see, f
 
 :::
 
-```{python}
-#| output: asis
-print(f"One of way to embed output in the text looks like this: after cleaning, we were left with {df.shape[0]:,} rows of data.")
-```
-
 This way is also supposed to work (`{python} f"{df.shape[0]:,}" `) but I've found it less reliable.
-
-```{python}
-ax = df.host_listings_count.plot.hist(bins=50);
-ax.set_xlim([0,500]);
-```
 
 ## 3. How did they collect it?
 
@@ -138,6 +128,10 @@ import numpy as np
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
+import seaborn as sns  
+from matplotlib.gridspec import GridSpec  
+import numpy as np  
+import os  
 
 # loading data
 file_path = 'data/listings_202312.csv' 
@@ -197,6 +191,7 @@ borough_map = borough_map.to_crs(gdf.crs)
 ```{python}
 #| echo: false
 #| warning: false
+#| cache: true
 import matplotlib.pyplot as plt  
 import seaborn as sns  
 from matplotlib.gridspec import GridSpec  
@@ -389,6 +384,7 @@ To address the limitations of using only snapshot data, we merged datasets from 
 
 ```{python}
 #| echo: false
+#| cache: true
 import pandas as pd  
 import matplotlib.pyplot as plt  
 import seaborn as sns  
@@ -460,6 +456,7 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 
 ```{python}
 #| echo: false
+#| cache: true
 # 5. Visualizations  
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
@@ -602,6 +599,7 @@ This approach will highlight the need for effective regulation, clarify enforcem
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -671,6 +669,7 @@ combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # Moran analysis
 import geopandas as gpd
 import libpysal
@@ -721,6 +720,7 @@ moran_plot(y, weights)
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # Local Moran's I
 local_moran = Moran_Local(y, weights)
 borough_ratio['Ii'] = local_moran.Is
@@ -814,6 +814,7 @@ borough_connect = borough.merge(connect, left_on="GSS_CODE", right_on="Borough_c
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # analyse the spatial autocorrelation of monthly rent and airbnbs breaking the rule
 # Variables
 var1 = 'Monthly_rent_2023'
@@ -868,6 +869,7 @@ plt.show()
 ```{python}
 #| echo: false
 #| output: false
+#| cache: true
 # analyse the spatial autocorrelation of vacant ratio and airbnbs breaking the rule
 # Variables
 var1 = 'Vacant_Ratio'
@@ -1228,4 +1230,3 @@ InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from h
 Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.
 
 ---
-
