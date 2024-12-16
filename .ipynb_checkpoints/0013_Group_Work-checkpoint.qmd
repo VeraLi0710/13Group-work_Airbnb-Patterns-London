@@ -2,8 +2,6 @@
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
 title: Group Name's Group Project
-assess:
-  group-date: '2024-12-17'
 execute:
   echo: false
   freeze: true
@@ -18,16 +16,19 @@ format:
       collapsed: false
       smooth_scroll: true
   pdf:
-    pdf-engine: xelatex
-    mainfont: ''
-    sansfont: ''
-    monofont: ''
+    include-in-header:
+      text: |
+        \addtokomafont{disposition}{\rmfamily}
+    mainfont: Spectral
+    sansfont: Roboto Flex
+    monofont: Liberation Mono
     papersize: a4
     geometry:
       - top=20mm
       - left=25mm
       - right=25mm
       - bottom=20mm
+      - heightrounded
     toc: false
     number-sections: false
     colorlinks: true
