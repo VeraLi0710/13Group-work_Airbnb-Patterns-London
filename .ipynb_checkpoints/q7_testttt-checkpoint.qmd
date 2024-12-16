@@ -211,3 +211,10 @@ plt.axis('off')
 plt.show()
 ```
 
+```{python}
+#| echo: false
+
+# check data info  
+print(ward.info()) 
+```
+

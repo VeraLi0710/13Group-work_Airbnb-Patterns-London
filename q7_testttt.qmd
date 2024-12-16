@@ -211,3 +211,109 @@ plt.axis('off')
 plt.show()
 ```
 
+```{python}
+#| echo: false
+
+# check data info  
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+
+# check data info  
+print(listing_spatial.info()) 
+```
+
+```{python}
+listing_ward = gpd.sjoin(listing_spatial, ward, how="left", predicate="intersects")
+
+columns_to_keep = ['id', 'room_type', 'price', 'minimum_nights', 'calculated_host_listings_count', 'GSS_CODE', 'geometry']
+listing_ward = listing_ward[columns_to_keep]
+
+# 查看结果
+print(listing_ward.head())
+
+# 保存结果
+listing_ward.to_file("data/listing_ward.shp", driver="ESRI Shapefile")
+```
+
+```{python}
+#| echo: false
+# X4: average Price per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_price = listing_ward.groupby('GSS_CODE', as_index=False)['price'].mean()
+avg_price.rename(columns={'price': 'avg_price'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_price'] = ward['GSS_CODE'].map(avg_price.set_index('GSS_CODE')['avg_price'])
+
+# 3. 检查结果
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+# X5: average Min Nights per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_night = listing_ward.groupby('GSS_CODE', as_index=False)['minimum_nights'].mean()
+avg_night.rename(columns={'minimum_nights': 'avg_night'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_night'] = ward['GSS_CODE'].map(avg_night.set_index('GSS_CODE')['avg_night'])
+
+# 3. 检查结果
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+# X6: average Listings per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_host_listing = listing_ward.groupby('GSS_CODE', as_index=False)['calculated_host_listings_count'].mean()
+avg_host_listing.rename(columns={'calculated_host_listings_count': 'avg_host_listing'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_host_listing'] = ward['GSS_CODE'].map(avg_host_listing.set_index('GSS_CODE')['avg_host_listing'])
+
+# 3. 检查结果
+print(ward.info()) 
+```
+
+```{python}
+# 1. 计算每个 GSS_CODE 中 'Entire' 类型的数量
+entire_count = listing_ward[listing_ward['room_type'].str.contains('Entire')].groupby('GSS_CODE').size()
+entire_count = entire_count.reset_index(name='entire_count')
+
+# 2. 将 'entire_count' 合并到 ward 数据中
+ward = ward.merge(entire_count, on='GSS_CODE', how='left')
+
+# 3. 计算 'Entire' 密度 (数量 / 面积)
+ward['entire_density'] = ward['entire_count'] / ward['area']
+
+# 4. 处理 NaN 值（如果某些 ward 没有 'Entire' 数据）
+ward['entire_count'] = ward['entire_count'].fillna(0)
+ward['entire_density'] = ward['entire_density'].fillna(0)
+
+# 5. 检查结果
+print(ward.info())
+```
+
+```{python}
+# 6. 保存结果到新的 Shapefile
+
+
+# 指定要保留的列
+columns_to_keep = ['listing_density', 'nature_density', 'transport_density', 
+                   'tourism_density', 'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']
+
+# 筛选所需列，同时保留 geometry
+gwr_data = ward[columns_to_keep + ['geometry']]
+
+# 保存筛选后的数据为新的 Shapefile
+gwr_data.to_file("data/gwr.shp", driver="ESRI Shapefile")
+```
+
