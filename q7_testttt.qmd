@@ -394,4 +394,3 @@ for i, var in enumerate(variables):
 plt.tight_layout()
 plt.show()
 ```
-

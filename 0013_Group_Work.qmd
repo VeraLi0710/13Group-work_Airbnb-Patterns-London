@@ -602,7 +602,6 @@ This approach will highlight the need for effective regulation, clarify enforcem
 #### **1. Hotspot Identification** 
 We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  
 
-
 ```{python}
 #| echo: false
 #| output: false
@@ -966,7 +965,6 @@ new_im.save('plots/combined_of_Moran_and_LISA.png')
 
 #### **Housing Market Impacts**  
 To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].
-
 
 ```{python}
 #| echo: false
