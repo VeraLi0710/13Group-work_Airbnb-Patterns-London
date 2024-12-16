@@ -129,7 +129,6 @@ ax.set_xlim([0,500]);
 
 :::
 
-
 ```{python}
 #| echo: false
 #| output: false
