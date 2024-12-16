@@ -52,7 +52,7 @@
         "    name: base\n",
         "---"
       ],
-      "id": "9851cc52"
+      "id": "50b97880"
     },
     {
       "cell_type": "code",
@@ -62,7 +62,7 @@
         "import os\n",
         "import pandas as pd"
       ],
-      "id": "e78fdd20",
+      "id": "37cf4d4f",
       "execution_count": null,
       "outputs": []
     },
@@ -81,7 +81,7 @@
         "  df = pd.read_parquet(f'{host}/{path}/{file}')\n",
         "  df.to_parquet(file)"
       ],
-      "id": "ca2dd6d5",
+      "id": "ebc1517f",
       "execution_count": null,
       "outputs": []
     },
@@ -143,7 +143,7 @@
         "\n",
         ":::\n"
       ],
-      "id": "6f17c711"
+      "id": "25a7e2f0"
     },
     {
       "cell_type": "code",
@@ -168,7 +168,7 @@
         " \n",
         "print(airbnb_data.info()) "
       ],
-      "id": "1709f94e",
+      "id": "e85ddb06",
       "execution_count": null,
       "outputs": []
     },
@@ -189,7 +189,7 @@
         "\n",
         "#airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  "
       ],
-      "id": "9f1c8357",
+      "id": "7a2c8b77",
       "execution_count": null,
       "outputs": []
     },
@@ -201,7 +201,7 @@
         "\n",
         "Airbnb has significantly impacted London’s housing market by reducing long-term housing availability, increasing rents, and driving commercialization. In response, London implemented the 90-day rule, restricting entire-home short-term rentals to 90 days annually unless planning permission is obtained [@greaterlondonauthority]. However, enforcement relies on self-reporting, making violations difficult to monitor. This analysis uses InsideAirbnb data to examine spatial patterns, booking behavior, host characteristics, and property types to assess Airbnb’s commercialization and compliance risks.  \n"
       ],
-      "id": "e16d77f7"
+      "id": "4ec93370"
     },
     {
       "cell_type": "code",
@@ -234,7 +234,7 @@
         "# Ensure both GeoDataFrames use the same CRS  \n",
         "borough_map = borough_map.to_crs(gdf.crs)  "
       ],
-      "id": "d8e13853",
+      "id": "8293863c",
       "execution_count": null,
       "outputs": []
     },
@@ -423,7 +423,7 @@
         "# -------------------------------  \n",
         "plt.show()"
       ],
-      "id": "9305f7b2",
+      "id": "6ce989dc",
       "execution_count": null,
       "outputs": []
     },
@@ -441,7 +441,7 @@
         "\n",
         "To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：\n"
       ],
-      "id": "370c9035"
+      "id": "ee348478"
     },
     {
       "cell_type": "code",
@@ -518,7 +518,7 @@
         "avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  \n",
         "min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  "
       ],
-      "id": "00c000a1",
+      "id": "8c60531e",
       "execution_count": null,
       "outputs": []
     },
@@ -629,7 +629,7 @@
         "plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  \n",
         "plt.show()"
       ],
-      "id": "d548c720",
+      "id": "98751e7d",
       "execution_count": null,
       "outputs": []
     },
@@ -675,7 +675,7 @@
         "\n",
         "This approach will highlight the need for effective regulation, clarify enforcement priorities, and enhance the focus and efficiency of enforcement efforts.\n"
       ],
-      "id": "92a8d7a8"
+      "id": "22b7928b"
     },
     {
       "cell_type": "code",
@@ -750,7 +750,7 @@
         "# Save the updated DataFrame\n",
         "combined_data.to_csv('data/borough_listings_ratio.csv', index=True)"
       ],
-      "id": "85cd50f9",
+      "id": "010199a4",
       "execution_count": null,
       "outputs": []
     },
@@ -808,7 +808,7 @@
         "\n",
         "moran_plot(y, weights)"
       ],
-      "id": "63761e48",
+      "id": "811fbef8",
       "execution_count": null,
       "outputs": []
     },
@@ -872,7 +872,7 @@
         "\n",
         "print(f\"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}\")"
       ],
-      "id": "b8451788",
+      "id": "d591214f",
       "execution_count": null,
       "outputs": []
     },
@@ -901,7 +901,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "95706c06",
+      "id": "2ca80d9e",
       "execution_count": null,
       "outputs": []
     },
@@ -923,7 +923,7 @@
         "# merge the data\n",
         "borough_connect = borough.merge(connect, left_on=\"GSS_CODE\", right_on=\"Borough_code\")"
       ],
-      "id": "e0af1c0c",
+      "id": "8afa8ac9",
       "execution_count": null,
       "outputs": []
     },
@@ -985,7 +985,7 @@
         "plt.savefig('plots/raw/LISA_monthly_rent.png')\n",
         "plt.show()"
       ],
-      "id": "7383f0a4",
+      "id": "71c4cb0a",
       "execution_count": null,
       "outputs": []
     },
@@ -1047,7 +1047,7 @@
         "plt.savefig('plots/raw/LISA_vacant_ratio.png')\n",
         "plt.show()"
       ],
-      "id": "8327beab",
+      "id": "7222fba4",
       "execution_count": null,
       "outputs": []
     },
@@ -1084,7 +1084,7 @@
         "\n",
         "new_im.save('plots/combined_of_Moran_and_LISA.png')"
       ],
-      "id": "5cd36c2a",
+      "id": "f08e17cc",
       "execution_count": null,
       "outputs": []
     },
@@ -1107,7 +1107,7 @@
         "3. Vacancy Rates: Similar High-High clusters are observed in eastern London, suggesting a correlation between high Airbnb violations and increased vacancy rates in certain neighborhoods.\n",
         "Conversely, areas with Low-Low clusters (e.g., northern and southwestern boroughs) indicate regions with lower Airbnb activity and minimal impact on rents or vacancies.\n"
       ],
-      "id": "4ea6426d"
+      "id": "3a9e8270"
     },
     {
       "cell_type": "code",
@@ -1156,7 +1156,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "e340a97b",
+      "id": "3b8e3c02",
       "execution_count": null,
       "outputs": []
     },
@@ -1193,7 +1193,7 @@
         "gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_rent.summary())"
       ],
-      "id": "9babb818",
+      "id": "e4d1df62",
       "execution_count": null,
       "outputs": []
     },
@@ -1225,7 +1225,7 @@
         "gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_vacant.summary())"
       ],
-      "id": "dcf14a6c",
+      "id": "0a54601a",
       "execution_count": null,
       "outputs": []
     },
@@ -1238,7 +1238,7 @@
         "zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients\n",
         "zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values"
       ],
-      "id": "cadd0ca1",
+      "id": "d194b1e8",
       "execution_count": null,
       "outputs": []
     },
@@ -1271,7 +1271,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "8379ccb1",
+      "id": "7afc6aca",
       "execution_count": null,
       "outputs": []
     },
@@ -1296,7 +1296,7 @@
         "vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])\n",
         "vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])"
       ],
-      "id": "305804b6",
+      "id": "a512c78c",
       "execution_count": null,
       "outputs": []
     },
@@ -1314,7 +1314,7 @@
         "zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96\n",
         "zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96"
       ],
-      "id": "55a2c87a",
+      "id": "7586d354",
       "execution_count": null,
       "outputs": []
     },
@@ -1343,7 +1343,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "e122af16",
+      "id": "ded7665e",
       "execution_count": null,
       "outputs": []
     },
@@ -1382,7 +1382,7 @@
         "# Adjust layout\n",
         "plt.tight_layout()"
       ],
-      "id": "f237556a",
+      "id": "9dbecc30",
       "execution_count": null,
       "outputs": []
     },
@@ -1431,7 +1431,7 @@
         "\n",
         "---"
       ],
-      "id": "b2e2eab1"
+      "id": "a3c5b75e"
     }
   ],
   "metadata": {
