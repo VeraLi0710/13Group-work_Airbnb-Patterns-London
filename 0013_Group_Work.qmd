@@ -567,7 +567,9 @@ InsideAirbnb data shows London’s Airbnb market is highly commercialized, with 
  
 2. **Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.
 
----  
+---
+
+
 
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
@@ -944,7 +946,9 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
+::: {style="text-align: center;"}  
 ### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+:::
 
 ![](plots/combined_of_Moran_and_LISA.png)
 
@@ -1146,50 +1150,53 @@ plt.show()
 ```
 
 ```{python}
-#| echo: false
-#| output: false
-#| include: false
 #| cache: true
-# combing the plots to a new plot
-zone['residuals'] = sar_model.u
+# #| echo: false
+# #| output: false
+# #| include: false
+# # combing the plots to a new plot
+# zone['residuals'] = sar_model.u
 
-# Create a figure with three subplots (one row, three columns)
-fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
+# # Create a figure with three subplots (one row, three columns)
+# fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
 
-# Plot for Residuals
-zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
-ax[0].set_title('SAR Model Residuals')
-ax[0].set_axis_off()
+# # Plot for Residuals
+# zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
+# ax[0].set_title('SAR Model Residuals')
+# ax[0].set_axis_off()
 
-# Plot for Rent Effect
-zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
-zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
-ax[1].set_title('Effect of rule breaking Airbnbs on rent')
-ax[1].set_axis_off()
+# # Plot for Rent Effect
+# zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
+# zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
+# ax[1].set_title('Effect of rule breaking Airbnbs on rent')
+# ax[1].set_axis_off()
 
-# Plot for Vacancy Effect
-zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
-zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
-ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
-ax[2].set_axis_off()
+# # Plot for Vacancy Effect
+# zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
+# zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
+# ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
+# ax[2].set_axis_off()
 
-#output
-plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=600, bbox_inches='tight')  
+# #output
+# plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tight')  
 
-# Adjust layout
-plt.tight_layout()
+# # Adjust layout
+# plt.tight_layout()
 ```
 
-### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+::: {style="text-align: center;"}  
+### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio  
+:::
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
-
+--- 
 
 
 ## References
 
 
 ---
+
