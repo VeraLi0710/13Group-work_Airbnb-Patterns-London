@@ -54,7 +54,7 @@
         "    name: base\n",
         "---"
       ],
-      "id": "cadf68c4"
+      "id": "4eddec1e"
     },
     {
       "cell_type": "code",
@@ -64,7 +64,7 @@
         "import os\n",
         "import pandas as pd"
       ],
-      "id": "de166e08",
+      "id": "6eee01ca",
       "execution_count": null,
       "outputs": []
     },
@@ -83,7 +83,7 @@
         "  df = pd.read_parquet(f'{host}/{path}/{file}')\n",
         "  df.to_parquet(file)"
       ],
-      "id": "d12c16d9",
+      "id": "0a181d6f",
       "execution_count": null,
       "outputs": []
     },
@@ -145,7 +145,7 @@
         "\n",
         ":::\n"
       ],
-      "id": "10ac365c"
+      "id": "4e3ac5f0"
     },
     {
       "cell_type": "code",
@@ -170,7 +170,7 @@
         " \n",
         "print(airbnb_data.info()) "
       ],
-      "id": "f1e528e5",
+      "id": "9eb15aa8",
       "execution_count": null,
       "outputs": []
     },
@@ -191,7 +191,7 @@
         "\n",
         "#airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  "
       ],
-      "id": "7b4cce53",
+      "id": "2c102523",
       "execution_count": null,
       "outputs": []
     },
@@ -201,9 +201,9 @@
       "source": [
         "### The 90-Day Rule and Airbnb Commercialization  \n",
         "\n",
-        "Airbnb has significantly impacted London’s housing market by reducing long-term housing availability, increasing rents, and driving commercialization. In response, London implemented the 90-day rule, restricting entire-home short-term rentals to 90 days annually unless planning permission is obtained [@greaterlondonauthority]. However, enforcement relies on self-reporting, making violations difficult to monitor. This analysis uses InsideAirbnb data to examine spatial patterns, booking behavior, host characteristics, and property types to assess Airbnb’s commercialization and compliance risks.  \n"
+        "Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data：\n"
       ],
-      "id": "321d8294"
+      "id": "16f152cb"
     },
     {
       "cell_type": "code",
@@ -236,7 +236,7 @@
         "# Ensure both GeoDataFrames use the same CRS  \n",
         "borough_map = borough_map.to_crs(gdf.crs)  "
       ],
-      "id": "016af4b3",
+      "id": "6d31c8c8",
       "execution_count": null,
       "outputs": []
     },
@@ -425,7 +425,7 @@
         "# -------------------------------  \n",
         "plt.show()"
       ],
-      "id": "b8f31ad4",
+      "id": "b63b16bc",
       "execution_count": null,
       "outputs": []
     },
@@ -436,14 +436,14 @@
         "### Key Findings  \n",
         "\n",
         "1. **Central London is a Compliance Hotspot**:  \n",
-        "   Central London has the highest concentration of short-term rentals, especially entire homes in high-demand areas, making it a key area for potential violations of the 90-day rule (Figure 1, Map).  \n",
+        "    Central London shows the highest concentration of short-term rentals, with entire homes dominating in high-demand areas prone to violations of the 90-day rule (Figure 1, Map).\n",
         "\n",
         "2. **Frequent Breaches of the 90-Day Limit**:  \n",
-        "   Booking data, based on reviews, pricing, and minimum nights [@insideairbnb2023], shows that entire homes and hotel-like properties often exceed the 90-day limit. This poses significant challenges for enforcement, particularly in highly commercialized areas (Figure 1, Panel 1).  \n",
+        "    Booking data, based on reviews, pricing, and minimum nights [@insideairbnb2023], shows entire homes and hotel-like properties often exceed the 90-day limit, especially in commercialized areas (Figure 1, Panel 1). \n",
         "\n",
         "To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：\n"
       ],
-      "id": "edce9337"
+      "id": "9ce750ed"
     },
     {
       "cell_type": "code",
@@ -520,7 +520,7 @@
         "avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  \n",
         "min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  "
       ],
-      "id": "36108155",
+      "id": "f0415163",
       "execution_count": null,
       "outputs": []
     },
@@ -631,7 +631,7 @@
         "plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  \n",
         "plt.show()"
       ],
-      "id": "b23c16a0",
+      "id": "efba9fd0",
       "execution_count": null,
       "outputs": []
     },
@@ -640,22 +640,20 @@
       "metadata": {},
       "source": [
         "3. **Multi-Listing Hosts Dominate the Market**:  \n",
-        "   Multi-listing hosts account for 62.38% of all Airbnb listings and have longer average booking durations (75.17 days) than single-listing hosts (66.61 days). They mainly manage entire homes and hotel-like properties, which are more commercialized with higher prices and shorter stays (Figure 2, Top Left and heatmap).  \n",
+        "    Multi-listing hosts manage 62.38% of Airbnb listings with longer average booking durations than single-listing hosts. They primarily operate entire homes and hotel-like properties, which are highly commercialized with shorter stays and higher prices (Figure 2, Top Left; heatmap).\n",
         "\n",
         "4. **Entire Homes are the Highest Risk**:  \n",
-        "   Entire homes dominate the market (66.97%) and have the longest booking durations (78.38 days), making them most likely to break the 90-day limit. Hotel-like properties, while smaller in volume, show similar risks due to their short minimum stays (2.13 nights) and high commercial focus (Figure 2, Top Right and heatmap).  \n",
-        "\n",
+        "    Entire homes make up 66.97% of listings, with an highest average booking days, and are most likely to breach the 90-day rule. Hotel-like properties, while fewer, also show risks due to short minimum stays (2.13 nights) and high commercialization (Figure 2, Top Right; heatmap).\n",
         "\n",
         "\n",
         "\n",
         "\n",
         "### Summary and Next Steps  \n",
+        "InsideAirbnb data shows London’s Airbnb market is highly commercialized, with significant 90-day rule compliance risks, requiring effective enforcement.\n",
         "\n",
-        "**Spatial Insights**: Central London displays a high intensity of short-term rentals and frequent entire-home use, making it a key hotspot for potential 90-day rule violations. Further investigation is needed to establish enforcement priorities and evaluate the impact of short-term rentals on local housing.  \n",
+        "**Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.\n",
         "\n",
-        "**Policy Violation Factors**: Multi-listing hosts and commercialized property types, such as entire homes and hotel-like properties, are strongly linked to increased booking durations and greater non-compliance risks. Factors like rental type, pricing, and location require further analysis—such as regression models—to better target enforcement and guide regulatory measures.  \n",
-        "\n",
-        "InsideAirbnb data highlights London’s Airbnb market as highly commercialized and dominated by multi-listing hosts, with entire-home rentals posing significant risks of non-compliance with the 90-day rule. Effective enforcement is crucial to address these challenges.  \n",
+        "**Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.\n",
         "\n",
         "---  \n",
         "\n",
@@ -667,17 +665,23 @@
         "\n",
         ":::\n",
         "\n",
-        "To provide evidence on violation hotspots, community impacts, and the drivers of policy violations, the next steps are:  \n",
+        "\n",
+        "We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:\n",
         "\n",
         "1. **Identifying Violation Hotspots and Impacts:**  \n",
-        "   Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents, reduced housing availability, and displacement of long-term residents—issues tied to Airbnb-driven gentrification [@smith2006].  \n",
+        "    Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents, reduced housing availability—issues tied to Airbnb-driven gentrification [@smith2006].\n",
         "\n",
         "2. **Analyzing Drivers of Violations:**  \n",
         "   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, pricie and location...)\n",
         "\n",
-        "This approach will highlight the need for effective regulation, clarify enforcement priorities, and enhance the focus and efficiency of enforcement efforts.\n"
+        "This approach will highlight the need for effective regulation, and clarify enforcement priorities to enhance the efficiency of enforcement efforts.\n",
+        "\n",
+        "### Spatial Analysis of Policy Violations and Local Impacts  \n",
+        "\n",
+        "#### **Hotspot Identification:** \n",
+        "We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  \n"
       ],
-      "id": "60e7a251"
+      "id": "67b9ea9a"
     },
     {
       "cell_type": "code",
@@ -752,7 +756,7 @@
         "# Save the updated DataFrame\n",
         "combined_data.to_csv('data/borough_listings_ratio.csv', index=True)"
       ],
-      "id": "df9c7afa",
+      "id": "69f871ed",
       "execution_count": null,
       "outputs": []
     },
@@ -810,7 +814,7 @@
         "\n",
         "moran_plot(y, weights)"
       ],
-      "id": "09536110",
+      "id": "ad9b4078",
       "execution_count": null,
       "outputs": []
     },
@@ -874,7 +878,7 @@
         "\n",
         "print(f\"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}\")"
       ],
-      "id": "d18110d1",
+      "id": "1a3b544a",
       "execution_count": null,
       "outputs": []
     },
@@ -903,7 +907,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "ab8a2148",
+      "id": "590b2731",
       "execution_count": null,
       "outputs": []
     },
@@ -925,7 +929,7 @@
         "# merge the data\n",
         "borough_connect = borough.merge(connect, left_on=\"GSS_CODE\", right_on=\"Borough_code\")"
       ],
-      "id": "11bf7833",
+      "id": "df666a63",
       "execution_count": null,
       "outputs": []
     },
@@ -987,7 +991,7 @@
         "plt.savefig('plots/raw/LISA_monthly_rent.png')\n",
         "plt.show()"
       ],
-      "id": "1d1a944d",
+      "id": "4ac2f16d",
       "execution_count": null,
       "outputs": []
     },
@@ -1049,7 +1053,7 @@
         "plt.savefig('plots/raw/LISA_vacant_ratio.png')\n",
         "plt.show()"
       ],
-      "id": "aa37aedc",
+      "id": "8ebe10f6",
       "execution_count": null,
       "outputs": []
     },
@@ -1086,7 +1090,7 @@
         "\n",
         "new_im.save('plots/combined_of_Moran_and_LISA.png')"
       ],
-      "id": "707745d3",
+      "id": "7467c4d3",
       "execution_count": null,
       "outputs": []
     },
@@ -1098,18 +1102,10 @@
         "\n",
         "![](plots/combined_of_Moran_and_LISA.png)\n",
         "\n",
-        "#### Moran test result\n",
-        "1. Rule-breaking Airbnbs exhibit significant spatial clustering (positive spatial autocorrelation), meaning these properties are not randomly distributed but are concentrated in specific areas, primarily in central and eastern London.\n",
-        "2. The scatter plots further show a positive relationship between rule-breaking Airbnbs and both monthly rents and vacancy ratios, suggesting that areas with higher Airbnb violations also face increased rents and vacancies.\n",
-        "\n",
-        "#### LISA test result\n",
-        "The LISA cluster maps highlight “hotspots” where rule-breaking Airbnbs are spatially significant:\n",
-        "1. Rule-breaking Airbnbs: Central London (e.g., Westminster) and parts of eastern London show significant clustering (brown regions).\n",
-        "2. Monthly Rent: High Airbnb violations coincide with high rent clusters (High-High), reinforcing the pressure on housing affordability.\n",
-        "3. Vacancy Rates: Similar High-High clusters are observed in eastern London, suggesting a correlation between high Airbnb violations and increased vacancy rates in certain neighborhoods.\n",
-        "Conversely, areas with Low-Low clusters (e.g., northern and southwestern boroughs) indicate regions with lower Airbnb activity and minimal impact on rents or vacancies.\n"
+        "#### **Housing Market Impacts**  \n",
+        "To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].\n"
       ],
-      "id": "55081a6c"
+      "id": "059294b7"
     },
     {
       "cell_type": "code",
@@ -1158,13 +1154,15 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "11154711",
+      "id": "d461a86d",
       "execution_count": null,
       "outputs": []
     },
     {
       "cell_type": "code",
-      "metadata": {},
+      "metadata": {
+        "cache": true
+      },
       "source": [
         "#| echo: false\n",
         "#| output: false\n",
@@ -1195,7 +1193,7 @@
         "gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_rent.summary())"
       ],
-      "id": "d19f3d14",
+      "id": "aeaa9ad9",
       "execution_count": null,
       "outputs": []
     },
@@ -1227,7 +1225,7 @@
         "gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_vacant.summary())"
       ],
-      "id": "85fbcaff",
+      "id": "1df98944",
       "execution_count": null,
       "outputs": []
     },
@@ -1240,7 +1238,7 @@
         "zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients\n",
         "zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values"
       ],
-      "id": "9f8d33ba",
+      "id": "65a44aad",
       "execution_count": null,
       "outputs": []
     },
@@ -1273,7 +1271,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "f5143af0",
+      "id": "412c5a78",
       "execution_count": null,
       "outputs": []
     },
@@ -1298,7 +1296,7 @@
         "vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])\n",
         "vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])"
       ],
-      "id": "6b01c38d",
+      "id": "cc13c9d1",
       "execution_count": null,
       "outputs": []
     },
@@ -1316,7 +1314,7 @@
         "zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96\n",
         "zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96"
       ],
-      "id": "dd2942ed",
+      "id": "9c40e4c0",
       "execution_count": null,
       "outputs": []
     },
@@ -1345,7 +1343,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "fae98da7",
+      "id": "005230eb",
       "execution_count": null,
       "outputs": []
     },
@@ -1386,7 +1384,7 @@
         "# Adjust layout\n",
         "plt.tight_layout()"
       ],
-      "id": "ebf37c4b",
+      "id": "504935bf",
       "execution_count": null,
       "outputs": []
     },
@@ -1398,25 +1396,7 @@
         "\n",
         "![](plots/Results_of_SAR_and_GWR_model.png)\n",
         "\n",
-        "### SAR model result\n",
-        "1. The residuals map indicates that the model captures most spatial variations but leaves some unexplained patterns, especially in central boroughs.\n",
-        "2. Effect on Rent: Boroughs with high Airbnb violations (e.g., central and inner eastern areas) show a strong positive effect on monthly rents, confirming that Airbnb activity drives up rental prices.\n",
-        "3. Effect on Vacancy: Significant positive impacts are observed in specific eastern and southern areas, where Airbnb violations correlate with higher housing vacancy rates.\n",
-        "\n",
-        "### GWR model result\n",
-        "1. The spatial variability captured by GWR confirms that the relationship between Airbnb violations, rents, and vacancies is non-stationary. In central London, the effect on rents is pronounced, while in eastern boroughs, the effect on vacancy rates is stronger.\n",
-        "2. This spatial heterogeneity indicates that Airbnb’s impact is location-dependent, with the most severe effects concentrated in areas of high demand.\n",
-        "\n",
-        "### Conclusion\n",
-        "These patterns underscore Airbnb's role in gentrification, a process where local residents—especially lower-income households—are displaced due to rising living costs Jain et al. (2021). As short-term rentals become more profitable, landlords are incentivized to convert long-term housing into Airbnbs, reducing housing availability for local tenants and driving up competition for remaining rental units Bosma and van Doorn (2024) . The impacts are particularly severe in central neighborhoods like Westminster and spreading into eastern boroughs, where vacancy rates increase, further destabilizing communities.\n",
-        "\n",
-        "Gentrification does not only lead to physical displacement but also causes cultural displacement, as long-standing communities lose affordable housing and essential social ties. Local businesses catering to residents may also suffer as short-term tourism replaces neighborhood-oriented consumption patterns.\n",
-        "\n",
-        "In essence, Airbnb rule-breaking accelerates the gentrification process by prioritizing tourism-driven economic gains over the housing needs of local communities, exacerbating social inequalities.\n",
-        "\n",
-        "### References (for Q7, remember to move them with other references together later)\n",
-        "Bosma, J. R. & van Doorn, N. (2024) The Gentrification of Airbnb: Closing Rent Gaps Through the Professionalization of Hosting. *Space and culture*. [Online] 27 (1), 31–47.\n",
-        "Jain, S. et al. (2021) Nowcasting Gentrification Using Airbnb Data. *Proceedings of the ACM on human-computer interaction*. [Online] 5 (CSCW1), 1–21.\n",
+        "From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.\n",
         "\n",
         "## Sustainable Authorship Tools\n",
         "\n",
@@ -1433,9 +1413,9 @@
         "InsideAirbnb. (2023). Inside Airbnb: Adding data to the debate. Retrieved from http://insideairbnb.com  \n",
         "Wachsmuth, D., & Weisler, A. (2018). Airbnb and the rent gap: Gentrification through the sharing economy. *Environment and Planning A: Economy and Space, 50*(6), 1147–1170.\n",
         "\n",
-        "---\n"
+        "---"
       ],
-      "id": "1c2fc22c"
+      "id": "af87a84c"
     }
   ],
   "metadata": {
