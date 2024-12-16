@@ -587,7 +587,7 @@ InsideAirbnb data highlights London’s Airbnb market as highly commercialized a
 
 :::
 
-To provide evidence on violation hotspots, community impacts, and the drivers of policy violations, the next steps are:  
+To provide evidence on violation hotspots, community impacts, and the drivers of policy violations,()the next steps are:  
 
 1. **Identifying Violation Hotspots and Impacts:**  
    Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents, reduced housing availability, and displacement of long-term residents—issues tied to Airbnb-driven gentrification [@smith2006].  
@@ -1199,10 +1199,6 @@ plt.tight_layout()
 
 #### **Policy Enforcement Necessity** 
 These findings underline the necessity of enforcing the 90-day policy to mitigate housing pressures. Without enforcement, short-term rentals reduce long-term housing supply, displace residents, and fuel gentrification. Strengthened, targeted interventions are essential to preserve housing affordability and community stability in affected hotspots.
-
-### References (for Q7, remember to move them with other references together later)
-Bosma, J. R. & van Doorn, N. (2024) The Gentrification of Airbnb: Closing Rent Gaps Through the Professionalization of Hosting. *Space and culture*. [Online] 27 (1), 31–47.
-Jain, S. et al. (2021) Nowcasting Gentrification Using Airbnb Data. *Proceedings of the ACM on human-computer interaction*. [Online] 5 (CSCW1), 1–21.
 
 ## Sustainable Authorship Tools
 
