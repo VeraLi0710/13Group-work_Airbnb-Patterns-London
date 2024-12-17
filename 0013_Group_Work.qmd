@@ -95,6 +95,9 @@ In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthrop
 
 **Total**: 2,627
 
+{{< pagebreak >}}
+
+
 
 ## Brief Group Reflection
 
@@ -1865,9 +1868,9 @@ However, significant spatial heterogeneity exists. In the lower-left central reg
 ## Conclusion / Policy Recommendations
 We conducted a spatial analysis using Inside Airbnb data and found that illegal listings in London exhibit a clear clustering pattern. These listings significantly impact local housing market rental levels and vacancy rates, highlighting the necessity and reasonableness of the current 90-day short-term rental policy.
 
-Further multi-factor analysis reveals that while illegal listings show some correlation with factors such as host type, property type, minimum rental period, and price, their overall impact is limited. Instead, traffic network density and tourist density emerge as the key drivers of illegal listing distribution. However, their influence varies significantly across regions, indicating that a single regulatory policy cannot effectively address illegal activities in all areas.
+Further multi-factor analysis reveals that while illegal listings show some correlation with factors such as host type, property type, minimum rental period, and price, their overall impact is limited. Instead, traffic network density and tourist density emerge as the key drivers of illegal listing distribution. However, their influence varies significantly across regions, indicating that a single regulatory policy cannot effectively address illegal activities in all areas.  
 
-**Policy Recommendations**
+**Policy Recommendations**  
 1. **Citywide Housing Database and Data Sharing**: We recommend that the government establish a citywide housing database and require short-term rental platforms to sign data-sharing agreements. These platforms should regularly upload housing information and usage data to support regulatory work.
 
 2. **Learning from European Cities**: Drawing on the experience of cities like Barcelona, short-term rental platforms should be compelled to remove unregistered listings and face stricter penalties for violations. [@Gianluca2025]
