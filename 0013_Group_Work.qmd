@@ -1253,7 +1253,7 @@ import matplotlib.gridspec as gridspec
 
 ```{python}
 #| echo: false
-# Step 2: Load and preprocess data   
+# Load and preprocess data   
 regression_data = airbnb_data
 
 # Select and clean columns  
@@ -1296,7 +1296,7 @@ regression_data = pd.concat([regression_data, room_type_df], axis=1)
 #| output: false
 #| include: false
 
-# Step 3: VIF Calculation  
+# VIF Calculation  
 X = regression_data.drop(  
     columns=["estimated_nights_booked", "estimated_nights_booked_binary", "longitude", "latitude"]  
 )  
@@ -1314,7 +1314,7 @@ vif_results = vif_data
 #| echo: false
 #| output: false
 #| include: false
-# Step 4: Run Logistic Regression  
+# Run Logistic Regression  
 Y = regression_data["estimated_nights_booked_binary"]  
 logit_model = sm.Logit(Y, X)  
 result = logit_model.fit()  
@@ -1339,10 +1339,11 @@ print("Logistic regression complete.")
 #| echo: false
 #| output: false
 #| include: false
-# Step 1: Clip predicted probabilities  
+
+# Clip predicted probabilities  
 regression_data["predicted_probs"] = regression_data["predicted_probs"].clip(1e-6, 1 - 1e-6)  
 
-# Step 2: Calculate Deviance Residuals  
+# Calculate Deviance Residuals  
 eps = 1e-6  # Small constant to avoid numerical issues  
 regression_data["deviance_residuals"] = np.sign(  
     regression_data["estimated_nights_booked_binary"] - regression_data["predicted_probs"]  
@@ -1353,16 +1354,16 @@ regression_data["deviance_residuals"] = np.sign(
     )  
 )  
 
-# Step 3: Convert data into GeoDataFrame  
+# Convert data into GeoDataFrame  
 regression_data["geometry"] = [  
     Point(xy) for xy in zip(regression_data["longitude"], regression_data["latitude"])  
 ]  
 gdf = gpd.GeoDataFrame(regression_data, geometry="geometry", crs="EPSG:4326")  
 
-# Step 4: Create KNN weight matrix  
+# Create KNN weight matrix  
 weights = KNN.from_dataframe(gdf, k=3)  # k=3 means each point will connect to its 3 nearest neighbors  
 
-# Step 5: Check for isolated points in the weight matrix  
+# Check for isolated points in the weight matrix  
 islands = weights.islands  # Return a list of indices that are isolated/disconnected  
 
 if len(islands) > 0:  
@@ -1373,7 +1374,7 @@ else:
     print("No isolated points found. Continuing with the original dataset.")  
     gdf_filtered = gdf  # If no isolated points, the original dataset is used  
 
-# Step 6: Calculate Moran's I  
+# Calculate Moran's I  
 moran = Moran(gdf_filtered["deviance_residuals"], weights)  
 
 # Print Moran's I results  
@@ -1865,4 +1866,3 @@ These measures would improve regulatory efficiency and help reduce illegal activ
 --- 
 
 ## References
-
