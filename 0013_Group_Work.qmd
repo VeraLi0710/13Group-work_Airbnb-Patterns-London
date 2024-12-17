@@ -716,7 +716,7 @@ merged_data['Ratio_of_more_than_90'] = merged_data['Ratio_of_more_than_90'].appl
 merged_data.index.rename('Borough_name', inplace=True)  
 
 # Load the borough codes  
-borough_code_file_path = 'data/borough_name_code.csv'  
+borough_code_file_path = 'https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/borough_name_code.csv'  
 borough_codes = pd.read_csv(borough_code_file_path)  
 
 # Reset index in merged_data to turn the index into a regular column  
