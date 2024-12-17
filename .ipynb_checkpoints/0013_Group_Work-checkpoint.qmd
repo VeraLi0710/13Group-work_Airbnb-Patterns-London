@@ -67,48 +67,44 @@ else:
 
 ## 1. Who collected the InsideAirbnb data?
 
-::: {.duedate}
-
-( 2 points; Answer due Week 7 )
-
+:::
+The data was collected, integrated, and published by Inside Airbnb’s policy and housing researchers, led by founder Murray Cox, an activist using data-driven insights to address housing challenges [@inside_airbnb_about_nodate].
 :::
 
-An inline citation example: As discussed on [], there are many...
-
-A parenthetical citation example: There are many ways to research Airbnb []... 
 
 ## 2. Why did they collect the InsideAirbnb data?
 
-::: {.duedate}
-
-( 4 points; Answer due Week 7 )
-
+::: 
+Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighbourhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].
 :::
 
-This way is also supposed to work (`{python} f"{df.shape[0]:,}" `) but I've found it less reliable.
 
 ## 3. How did they collect it?
 
-::: {.duedate}
-
-( 5 points; Answer due Week 8 )
-
+::: 
+Inside Airbnb used Python-based web scraping to collect publicly available data from the Airbnb website [@alsudais_incorrect_2021]. The data is captured as a time-specific snapshot, including availability calendars (up to 365 days), reviews, names, photos, and other publicly visible details. After collection, the data was cleaned, analyzed, and aggregated. Airbnb’s categorization of unavailable nights (booked or blocked) and location anonymization were retained unchanged, while neighborhood names were refined using city-defined boundaries for accuracy [@inside_airbnb_about_nodate].
 :::
 
 ## 4. How does the method of collection (Q3) impact the completeness and/or accuracy of the InsideAirbnb data? How well does it represent the process it seeks to study, and what wider issues does this raise?
 
-::: {.duedate}
-
-( 11 points; Answer due Week 9 )
-
+::: 
+The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has following limitations:
+1. The data comes solely from Airbnb, which may delete or hide listings due to business or regulatory pressures, reducing representativeness. For example, in 2015, Airbnb removed over 1,000 entire-home listings in New York City [@cox_how_2016].
+2. The data's snapshot nature cannot reflect ongoing changes, such as newly added or removed listings. This compromises its temporal completeness. Meanwhile, when new versions of dataset overwrite old ones, there are significant differences in entries and reviews across releases. Without specifying the dataset version, research results may lack reproducibility and reliability.
+3. The data excludes off-platform bookings, such as private arrangements to avoid platform fees or bypass rental day regulations. Additionally, booked dates are marked as unavailable, creating the false impression that popular listings are unrentable. These factors lead to an underestimation of actual bookings and occupancy rates.
+4. The anonymization of geolocation data shifts locations by up to 150 meters and scatters listings within buildings, reducing spatial accuracy for neighborhood analysis.
+5. Airbnb's 'Experience' and 'Listing' features sometimes unintentionally have the same ID, despite representing different entities. This leads to 'Experience' reviews being misclassified as 'Listing' reviews, causing inaccuracies in review data [@alsudais_incorrect_2021].
 :::
 
 ## 5. What ethical considerations does the use of the InsideAirbnb data raise? 
 
-::: {.duedate}
-
-( 18 points; Answer due {{< var assess.group-date >}} )
-
+::: 
+1. **Respecting the Inside Airbnb's Vision: Ensuring Data Serves the Public Good**  
+Inside Airbnb’s core value is to reveal the impacts of short-term rentals and advocate for local communities. If used for some commercial purposes, the data could harm residents. For instance, investors might use the data to identify high-profit areas for short-term rentals, leading to increased property purchases for rentals and worsening the housing crisis. Therefore, researchers and policymakers should align their work with the mission by prioritizing community interests and exercising caution when sharing data with commercial entities to prevent misuse that could harm local communities.
+3. **Protecting User Privacy**  
+Data collection relies on web scraping technology, meaning Airbnb hosts and guests may not have explicitly authorized the use of their data. Meanwhile, even when geographic data is anonymized, it can unintentionally reveal location details in small communities or standalone properties. Short-term rental activity is sometimes associated with housing shortages, rising rents, and negative impacts on local residents. Once short-term rental listings are identified, hosts and guests may face risks such as harassment, discrimination, or economic loss. Therefore, research outputs should be generalized to prevent the indirect identification of specific properties and avoid language that reinforces negative perceptions of individuals.
+5. **Ensuring Representation of Vulnerable Communities: Promoting Equity in Data Interpretation**  
+Although Inside Airbnb data is open, ordinary residents, especially those in low-income communities, often lack the technical skills to analyze and interpret the data. As a result, the power to interpret the data is concentrated in the hands of a few technically skilled residents, activists, and researchers. This may lead to policymaking that favors the needs of these elite groups, while potential information related to vulnerable communities in the data may be underestimated, overlooked, or misunderstood. Data-driven policies and decisions should not serve only as tools for technical elites but should act as a means to promote social fairness and justice. Therefore, as discussed on ‘Data Feminism’, researchers and policymakers should consciously consider vulnerable communities, encourage their participation in data analysis and interpretation, and present findings in an accessible way to amplify their voices [@dignazio_data_2020]
 :::
 
 ## 6. With reference to the InsideAirbnb data (*i.e.* using numbers, figures, maps, and descriptive statistics), what does an analysis of Hosts and the types of properties that they list suggest about the nature of Airbnb lettings in London? 
@@ -1186,15 +1182,544 @@ plt.tight_layout()
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
+```{python}
+### Logistic Regression and visualisations
+To explore the relationship in the study area between variables and their spatial distribution characteristics, this study adopted the traditional logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
+```
+
+```{python}
+#| echo: false
+# Imports  
+import pandas as pd  
+import numpy as np  
+import matplotlib.pyplot as plt  
+import seaborn as sns  
+from scipy import stats  
+from statsmodels.tools import add_constant  
+from statsmodels.stats.outliers_influence import variance_inflation_factor  
+import statsmodels.api as sm  
+from shapely.geometry import Point  
+from libpysal.weights import KNN  
+from esda.moran import Moran  
+from splot.esda import moran_scatterplot  
+import geopandas as gpd  
+from pandas.plotting import table  
+import matplotlib.gridspec as gridspec  
+```
+
+```{python}
+#| echo: false
+# Step 2: Load and preprocess data  
+file_path = "processed_airbnb_data.csv"  
+regression_data = pd.read_csv(file_path)  
+
+# Select and clean columns  
+columns_to_keep = [  
+    "estimated_nights_booked",   
+    "room_type",   
+    "price",   
+    "minimum_nights",  
+    "calculated_host_listings_count",   
+    "longitude",   
+    "latitude"  
+]  
+regression_data = regression_data[columns_to_keep].dropna()  
+
+# Create binary outcome for nights booked  
+threshold = regression_data["estimated_nights_booked"].median()  
+regression_data["estimated_nights_booked_binary"] = (  
+    regression_data["estimated_nights_booked"] > threshold  
+).astype(int)  
+
+# Encode 'room_type' using OneHotEncoder  
+from sklearn.preprocessing import OneHotEncoder  
+encoder = OneHotEncoder(drop="first", sparse_output=False)  
+room_type_encoded = encoder.fit_transform(regression_data[["room_type"]])  
+room_type_columns = encoder.get_feature_names_out(["room_type"])  
+room_type_df = pd.DataFrame(room_type_encoded, columns=room_type_columns, index=regression_data.index)  
+
+# Add multi-list host column  
+regression_data["multi_list_host"] = (  
+    regression_data["calculated_host_listings_count"] > 1  
+).astype(int)  
+
+# Drop columns no longer needed and combine encoded features  
+regression_data = regression_data.drop(columns=["calculated_host_listings_count", "room_type"])  
+regression_data = pd.concat([regression_data, room_type_df], axis=1)  
+```
+
+```{python}
+#| echo: false
+#| output: false
+#| include: false
+
+# Step 3: VIF Calculation  
+X = regression_data.drop(  
+    columns=["estimated_nights_booked", "estimated_nights_booked_binary", "longitude", "latitude"]  
+)  
+X = add_constant(X)  
+
+# Calculate VIF  
+vif_data = pd.DataFrame()  
+vif_data["Variable"] = X.columns  
+vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
+
+vif_results = vif_data  
+```
+
+```{python}
+#| echo: false
+#| output: false
+#| include: false
+# Step 4: Run Logistic Regression  
+Y = regression_data["estimated_nights_booked_binary"]  
+logit_model = sm.Logit(Y, X)  
+result = logit_model.fit()  
+
+# Extract and display summary table  
+regression_summary = result.summary().tables[1]  
+data = regression_summary.data[1:]  # Skip the header row  
+headers = regression_summary.data[0]  # Use the header  
+summary_df = pd.DataFrame(data, columns=headers)  
+
+# Add predicted probabilities and residuals  
+regression_data["predicted_probs"] = result.predict(X)  
+regression_data["residuals"] = (  
+    regression_data["estimated_nights_booked_binary"] - regression_data["predicted_probs"]  
+)  
+
+print(result.summary())  
+print("Logistic regression complete.")
+```
+
+```{python}
+#| echo: false
+#| output: false
+#| include: false
+# Step 1: Clip predicted probabilities  
+regression_data["predicted_probs"] = regression_data["predicted_probs"].clip(1e-6, 1 - 1e-6)  
+
+# Step 2: Calculate Deviance Residuals  
+eps = 1e-6  # Small constant to avoid numerical issues  
+regression_data["deviance_residuals"] = np.sign(  
+    regression_data["estimated_nights_booked_binary"] - regression_data["predicted_probs"]  
+) * np.sqrt(  
+    -2 * (  
+        regression_data["estimated_nights_booked_binary"] * np.log(regression_data["predicted_probs"] + eps) +  
+        (1 - regression_data["estimated_nights_booked_binary"]) * np.log(1 - regression_data["predicted_probs"] + eps)  
+    )  
+)  
+
+# Step 3: Convert data into GeoDataFrame  
+regression_data["geometry"] = [  
+    Point(xy) for xy in zip(regression_data["longitude"], regression_data["latitude"])  
+]  
+gdf = gpd.GeoDataFrame(regression_data, geometry="geometry", crs="EPSG:4326")  
+
+# Step 4: Create KNN weight matrix  
+weights = KNN.from_dataframe(gdf, k=3)  # k=3 means each point will connect to its 3 nearest neighbors  
+
+# Step 5: Check for isolated points in the weight matrix  
+islands = weights.islands  # Return a list of indices that are isolated/disconnected  
+
+if len(islands) > 0:  
+    print(f"Found {len(islands)} isolated points. Removing and recalculating weights...")  
+    gdf_filtered = gdf.drop(islands, axis=0)  # Drop the rows corresponding to isolated points  
+    weights = KNN.from_dataframe(gdf_filtered, k=3)  # Recalculate weights for the filtered dataset  
+else:  
+    print("No isolated points found. Continuing with the original dataset.")  
+    gdf_filtered = gdf  # If no isolated points, the original dataset is used  
+
+# Step 6: Calculate Moran's I  
+moran = Moran(gdf_filtered["deviance_residuals"], weights)  
+
+# Print Moran's I results  
+print("Moran's I Results:")  
+print(f"Moran's I: {moran.I:.4f}")  
+print(f"p-value: {moran.p_sim:.4f}")  
+print(f"z-score: {moran.z_sim:.4f}")  
+```
+
+```{python}
+# Create a 3x2 subplot layout  
+fig = plt.figure(figsize=(15, 18))  
+
+# Add main title  
+plt.suptitle("Figure 5. Visualisation of Residuals and Moran's I",   
+             fontsize=16,   
+             fontweight='bold',   
+             y=0.95)  # Adjust y position of the title  
+
+# Residuals vs Fitted Values  
+ax1 = plt.subplot(3, 2, 1)  
+sns.scatterplot(x=gdf_filtered["predicted_probs"], y=gdf_filtered["deviance_residuals"],  
+                ax=ax1, color="blue", s=25)  
+ax1.axhline(y=0, color="red", linestyle="--", linewidth=1)  
+ax1.set_title("Residuals vs Fitted (Deviance Residuals)")  
+ax1.set_xlabel("Fitted values / Predicted Probabilities")  
+ax1.set_ylabel("Deviance Residuals")  
+
+# Q-Q Plot  
+ax2 = plt.subplot(3, 2, 2)  
+sm.qqplot(gdf_filtered["deviance_residuals"], line="45", ax=ax2)  
+ax2.set_title("Q-Q Plot (Deviance Residuals)")  
+
+# Scale-Location Plot  
+ax3 = plt.subplot(3, 2, 3)  
+sns.scatterplot(x=gdf_filtered["predicted_probs"],   
+                y=np.sqrt(np.abs(gdf_filtered["deviance_residuals"])),  
+                ax=ax3, color="blue", s=25)  
+ax3.axhline(y=0, color="red", linestyle="--", linewidth=1)  
+ax3.set_title("Scale-Location (√|Deviance Residuals|)")  
+ax3.set_xlabel("Fitted values / Predicted Probabilities")  
+ax3.set_ylabel("√|Deviance Residuals|")  
+
+# Residuals vs Leverage  
+ax4 = plt.subplot(3, 2, 4)  
+try:  
+    influence = result.get_influence()  
+    leverage = influence.hat_matrix_diag  
+    deviance_residuals = gdf_filtered["deviance_residuals"]  
+    
+    ax4.scatter(leverage, deviance_residuals ** 2, alpha=0.5, color="blue", s=25)  
+    ax4.axhline(y=0, color="red", linestyle="--", linewidth=1)  
+    ax4.set_title("Residuals vs Leverage (Deviance Residuals)")  
+    ax4.set_xlabel("Leverage")  
+    ax4.set_ylabel("Deviance Residuals^2")  
+except Exception as e:  
+    print("Error during Residuals vs Leverage plotting:", e)  
+
+# Moran's I Scatterplot  
+ax5 = plt.subplot(3, 2, (5, 6))  # Span both columns in the last row  
+moran_scatterplot(moran, ax=ax5)  
+ax5.set_title("Moran's I Scatterplot (Deviance Residuals)", fontsize=14)  
+
+# Adjust layout with top margin for main title  
+plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  
+plt.show()
+```
+
+```{python}
+### Result
+Firstly, the VIF results show no multicollinearity issues.
+The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). 
+Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. 
+```
+
+## Geographically Weighted Regression
+
+Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.
+
+```{python}
+#| echo: false
+
+# packages
+import pandas as pd  
+import numpy as np  
+from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
+import matplotlib.pyplot as plt  
+from matplotlib.font_manager import FontProperties  
+import seaborn as sns 
+import geopandas as gpd
+from shapely.geometry import Point
+```
+
+```{python}
+#| echo: false
+# load data   
+
+listing = pd.read_csv('data/processed_airbnb_data.csv')  # inside airbnb with estimated nights
+
+ward = (
+    gpd.read_file('data/statistical-gis-boundaries-london/ESRI/London_Ward_CityMerged.shp') # london ward
+    .to_crs(epsg=27700)  
+)
+
+nature = (
+    gpd.read_file('data/ldn_poi/gis_osm_natural_free_1.shp') # nature poi
+    .to_crs(epsg=27700)  
+)
+
+transport = (
+    gpd.read_file('data/ldn_poi/gis_osm_transport_free_1.shp') # transport poi
+    .to_crs(epsg=27700)  
+) 
+
+tourism = (
+    gpd.read_file('data/ldn_poi/gis_osm_pois_free_1.shp') # tourism poi
+    .to_crs(epsg=27700)  
+) 
+```
+
+```{python}
+#| echo: false
+
+# convert listing data from csv to spatial data
+# create geometry
+geometry = [Point(xy) for xy in zip(listing['longitude'], listing['latitude'])]
+
+# GeoDataFrame
+listing_spatial = gpd.GeoDataFrame(listing, geometry=geometry, crs='EPSG:4326')
+
+# convert CRS
+listing_spatial = listing_spatial.to_crs(epsg=27700)
+
+# info check
+print(listing_spatial.head())
+```
+
+```{python}
+#| echo: false
+# Y: density of over-90-days listings per ward
+
+# keep listings > 90 only
+listing_spatial_90 = listing_spatial[listing_spatial['estimated_nights_booked'] >= 90]
+print(listing_spatial_90)
+
+# number per ward
+join_listing_ward = gpd.sjoin(ward, listing_spatial_90, how='left', predicate='intersects')
+ward_count = join_listing_ward.groupby('GSS_CODE').size().reset_index(name='listing_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['listing_count'] = ward['listing_count'].fillna(0)
+
+# ward area
+ward['area'] = ward.geometry.area
+
+# density
+ward['listing_density'] = ward['listing_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='listing_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Over-90-days Listings by Ward")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+#| echo: false
+# X1: density of green spaces per ward
+
+# number per ward
+join_nature_ward = gpd.sjoin(ward, nature, how='left', predicate='intersects')
+ward_count = join_nature_ward.groupby('GSS_CODE').size().reset_index(name='nature_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['nature_count'] = ward['nature_count'].fillna(0)
+
+# density
+ward['nature_density'] = ward['nature_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='nature_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Green Spaces by Ward")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+#| echo: false
+# X2: density of Transport Networks per ward
+
+# number per ward
+join_transport_ward = gpd.sjoin(ward, transport, how='left', predicate='intersects')
+ward_count = join_transport_ward.groupby('GSS_CODE').size().reset_index(name='transport_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['transport_count'] = ward['transport_count'].fillna(0)
+
+# density
+ward['transport_density'] = ward['transport_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='transport_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Transport Networks by Ward")
+plt.axis('off')
+plt.show()
+```
+
+```{python}
+#| echo: false
+# X3: density of Tourism Attractions per ward
+
+# 提取 code 列中以 '26' 开头的行
+tourism = tourism[tourism['code'].astype(str).str.startswith('26')]
+
+# number per ward
+join_tourism_ward = gpd.sjoin(ward, tourism, how='left', predicate='intersects')
+ward_count = join_tourism_ward.groupby('GSS_CODE').size().reset_index(name='tourism_count')
+ward = ward.merge(ward_count, on='GSS_CODE', how='left')
+ward['tourism_count'] = ward['tourism_count'].fillna(0)
+
+# density
+ward['tourism_density'] = ward['tourism_count'] / ward['area']
+
+# 可视化结果
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+ward.plot(column='tourism_density', cmap='viridis', legend=True, ax=ax)
+ax.set_title("Density of Tourism Attractions by Ward")
+plt.axis('off')
+plt.show()
+
+listing_ward = gpd.sjoin(listing_spatial, ward, how="left", predicate="intersects")
+
+columns_to_keep = ['id', 'room_type', 'price', 'minimum_nights', 'calculated_host_listings_count', 'GSS_CODE', 'geometry']
+listing_ward = listing_ward[columns_to_keep]
+
+# 查看结果
+print(listing_ward.head())
+
+# 保存结果
+listing_ward.to_file("data/listing_ward.shp", driver="ESRI Shapefile")
+```
+
+```{python}
+#| echo: false
+# X4: average Price per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_price = listing_ward.groupby('GSS_CODE', as_index=False)['price'].mean()
+avg_price.rename(columns={'price': 'avg_price'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_price'] = ward['GSS_CODE'].map(avg_price.set_index('GSS_CODE')['avg_price'])
+
+# 3. 检查结果
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+# X5: average Min Nights per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_night = listing_ward.groupby('GSS_CODE', as_index=False)['minimum_nights'].mean()
+avg_night.rename(columns={'minimum_nights': 'avg_night'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_night'] = ward['GSS_CODE'].map(avg_night.set_index('GSS_CODE')['avg_night'])
+
+# 3. 检查结果
+print(ward.info()) 
+```
+
+```{python}
+#| echo: false
+# X6: average Listings per ward
+
+# 1. 按 GSS_CODE 分组，计算 price 的均值
+avg_host_listing = listing_ward.groupby('GSS_CODE', as_index=False)['calculated_host_listings_count'].mean()
+avg_host_listing.rename(columns={'calculated_host_listings_count': 'avg_host_listing'}, inplace=True)
+
+# 2. 将均值合并回 ward 数据
+ward['avg_host_listing'] = ward['GSS_CODE'].map(avg_host_listing.set_index('GSS_CODE')['avg_host_listing'])
+
+# 3. 检查结果
+print(ward.info())
+
+# 1. 计算每个 GSS_CODE 中 'Entire' 类型的数量
+entire_count = listing_ward[listing_ward['room_type'].str.contains('Entire')].groupby('GSS_CODE').size()
+entire_count = entire_count.reset_index(name='entire_count')
+
+# 2. 将 'entire_count' 合并到 ward 数据中
+ward = ward.merge(entire_count, on='GSS_CODE', how='left')
+
+# 3. 计算 'Entire' 密度 (数量 / 面积)
+ward['entire_density'] = ward['entire_count'] / ward['area']
+
+# 4. 处理 NaN 值（如果某些 ward 没有 'Entire' 数据）
+ward['entire_count'] = ward['entire_count'].fillna(0)
+ward['entire_density'] = ward['entire_density'].fillna(0)
+
+# 5. 检查结果
+print(ward.info())
+```
+
+```{python}
+# 6. 保存结果到新的 Shapefile
 
 
+# 指定要保留的列
+columns_to_keep = ['listing_density', 'nature_density', 'transport_density', 
+                   'tourism_density', 'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']
 
-## References
+# 筛选所需列，同时保留 geometry
+gwr_data = ward[columns_to_keep + ['geometry']]
 
+# 保存筛选后的数据为新的 Shapefile
+gwr_data.to_file("data/gwr.shp", driver="ESRI Shapefile")
+```
 
----
+```{python}
+import pandas as pd
+import geopandas as gpd
+import numpy as np
+from mgwr.gwr import GWR, MGWR
+from mgwr.sel_bw import Sel_BW
+from shapely.geometry import Point
+import matplotlib.pyplot as plt
 
-### Regression Analysis of Detecting Factors associated with Policy Violations
+# 导入数据
+gwr = gpd.read_file("data/gwr.shp")
+```
 
-Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution[@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.
+```{python}
+# 提取坐标
+gwr['geometry'] = gwr.centroid
 
+# 提取坐标
+gwr['x'] = gwr.geometry.x
+gwr['y'] = gwr.geometry.y
+```
+
+```{python}
+# 定义因变量和自变量
+Y = gwr[['listing_de']].values
+X = gwr[['nature_den', 'transport_', 'tourism_de','avg_price','avg_night','avg_host_l','entire_den']].values
+coords = gwr[['x', 'y']].values
+
+# 选择最优带宽
+bw = Sel_BW(coords, Y, X).search()
+
+# 运行 GWR 模型
+model = GWR(coords, Y, X, bw)
+results = model.fit()
+
+# 输出结果
+print("GWR结果摘要：")
+print(f"R²: {results.R2}")
+print(f"AIC: {results.aic}")
+print(f"带宽: {bw}")
+print(f"参数: {results.params.shape}")
+```
+
+```{python}
+gwr['gwr_r2'] = results.localR2  # R² 的局部值
+for i, col in enumerate(['intercept', 'nature_density', 'transport_density', 'tourism_density', 
+                         'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']):
+    gwr[f'gwr_{col}'] = results.params[:, i]
+```
+
+```{python}
+# 设置画布
+fig, axes = plt.subplots(3, 3, figsize=(15, 12))
+
+# 绘制 R² 分布
+gwr.plot(column='gwr_r2', cmap='coolwarm', legend=True, ax=axes[0, 0])
+axes[0, 0].set_title('Local R² Distribution')
+
+# 绘制每个回归系数的空间分布
+variables = ['nature_density', 'transport_density', 'tourism_density',
+             'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']
+
+for i, var in enumerate(variables):
+    row, col = divmod(i + 1, 3)  # 计算子图位置
+    gwr.plot(column=f'gwr_{var}', cmap='coolwarm', legend=True, ax=axes[row, col])
+    axes[row, col].set_title(f'{var} Coefficient')
+
+# 调整布局
+plt.tight_layout()
+plt.show()
+```
+
+The GWR model shows high explanatory power, with R-squared values exceeding 0.8 across most of London and reaching 0.95 in central areas where non-compliant listings are concentrated. This confirms the strong relevance of the selected variables. However, significant spatial heterogeneity is observed, indicating that the variables cannot uniformly explain rule-breaking Airbnb listings. For public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower-left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation.
