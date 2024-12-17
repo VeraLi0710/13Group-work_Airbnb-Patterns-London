@@ -1142,38 +1142,38 @@ plt.show()
 ```
 
 ```{python}
-#| echo: false
-#| output: false
-#| include: false
 #| cache: true
-# combing the plots to a new plot
-zone['residuals'] = sar_model.u
+# #| echo: false
+# #| output: false
+# #| include: false
+# # combing the plots to a new plot
+# zone['residuals'] = sar_model.u
 
-# Create a figure with three subplots (one row, three columns)
-fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
+# # Create a figure with three subplots (one row, three columns)
+# fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
 
-# Plot for Residuals
-zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
-ax[0].set_title('SAR Model Residuals')
-ax[0].set_axis_off()
+# # Plot for Residuals
+# zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
+# ax[0].set_title('SAR Model Residuals')
+# ax[0].set_axis_off()
 
-# Plot for Rent Effect
-zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
-zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
-ax[1].set_title('Effect of rule breaking Airbnbs on rent')
-ax[1].set_axis_off()
+# # Plot for Rent Effect
+# zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
+# zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
+# ax[1].set_title('Effect of rule breaking Airbnbs on rent')
+# ax[1].set_axis_off()
 
-# Plot for Vacancy Effect
-zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
-zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
-ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
-ax[2].set_axis_off()
+# # Plot for Vacancy Effect
+# zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
+# zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
+# ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
+# ax[2].set_axis_off()
 
-#output
-plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=600, bbox_inches='tight')  
+# #output
+# plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tight')  
 
-# Adjust layout
-plt.tight_layout()
+# # Adjust layout
+# plt.tight_layout()
 ```
 
 ### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
