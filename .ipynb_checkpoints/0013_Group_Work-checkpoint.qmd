@@ -102,7 +102,7 @@ In the preparation of this report, Large Language Models, specifically OpenAI's 
 | Clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
 | Initial observations revealed significant policy violations.| Snapshot data is time-sensitive and may not fully capture temporal changes. |  
 | Spatial clustering analysis highlighted policy-violating hotspots.| Logistic regression model had low explanatory power (R² = 0.05). |  
-| Iterative refinement of models improved insights (GWLR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
+| Iterative refinement of models improved insights (GWR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
 | Identified policy violations' impact on rent and vacancy rates.| Incorporating new variables (e.g., attraction density) was computationally intensive. |  
 | Combined four quarters of snapshot data to mitigate time-sensitivity limitations.| Assessing the broader socioeconomic impact was limited by data availability. |
 
