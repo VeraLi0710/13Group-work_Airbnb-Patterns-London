@@ -1154,7 +1154,7 @@ zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values
 #| output: false
 #| include: false
 # Define the variable names to be visualized, corresponding to the regression results added
-var_names = ['coefficient']  # Adjust this if more variables from the model should be visualized
+var_names = ['coefficient']  
 
 fig, axes = plt.subplots(1, len(var_names), figsize=(12, 3))
 
@@ -1170,7 +1170,7 @@ for i, var in enumerate(var_names):
 
     # Highlight non-significant areas based on a significance threshold
     threshold = 1.96
-    non_significant = zone['t_values'].abs() < threshold  # Ensuring the use of absolute value for significance checking
+    non_significant = zone['t_values'].abs() < threshold  
     zone.loc[non_significant].plot(ax=ax, color='lightgrey', edgecolor='white')
 
 plt.tight_layout()
@@ -1272,19 +1272,19 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg  
 
 # Create Layout
-fig = plt.figure(figsize=(16, 6))  # 减小高度更紧凑  
+fig = plt.figure(figsize=(16, 6)) 
 
 # Path of png 
-img = mpimg.imread('plots/Results_of_SAR_and_GWR_model.png')  # 替换为你的图片路径  
+img = mpimg.imread('plots/Results_of_SAR_and_GWR_model.png')  
 
 # 
-ax = fig.add_axes([0.05, 0.18, 0.9, 0.75])  # [左, 下, 宽, 高]，上下的空隙进一步减少  
+ax = fig.add_axes([0.05, 0.18, 0.9, 0.75])  
 ax.imshow(img)  
-ax.axis('off')  # 隐藏坐标轴  
+ax.axis('off')  
 
 # Title
 fig.text(0.5, 0, 'Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs\non Monthly Rent and Vacancy Ratio',   
-         ha='center', fontsize=14, fontweight='bold')  # 标题紧贴底部，换行确保清晰  
+         ha='center', fontsize=14, fontweight='bold')  
 
 # 
 plt.show()
@@ -1500,17 +1500,14 @@ ax5 = plt.subplot(3, 2, (5, 6))  # Span both columns in the last row
 moran_scatterplot(moran, ax=ax5)  
 ax5.set_title("Moran's I Scatterplot (Deviance Residuals)", fontsize=14)  
 
-# 调整布局  
-plt.tight_layout(rect=[0, 0.05, 1, 1])  # 预留底部空间来放置标题  
-
-# 将主标题放置在底部  
-plt.figtext(0.5, 0.01,  # 设置位置：靠底部 (y=0.01)  
+plt.tight_layout(rect=[0, 0.05, 1, 1]) 
+ 
+plt.figtext(0.5, 0.01,  
             "Figure 5. Visualisation of Residuals and Moran's I",   
-            ha='center',  # 水平居中  
-            fontsize=16,  # 字体大小  
-            fontweight='bold')  # 加粗字体  
+            ha='center', 
+            fontsize=16, 
+            fontweight='bold')  
 
-# 显示图形  
 plt.show()
 ```
 
