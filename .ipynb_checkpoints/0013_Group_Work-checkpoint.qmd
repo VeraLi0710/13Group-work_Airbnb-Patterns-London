@@ -1539,13 +1539,6 @@ ward = ward.merge(ward_count, on="GSS_CODE", how="left").fillna({"listing_count"
 ## 4.4. Calculate area and listing density
 ward["area"] = ward.geometry.area
 ward["listing_density"] = ward["listing_count"] / ward["area"]
-
-## 4.5. Plot the density results
-fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-ward.plot(column="listing_density", cmap="viridis", legend=True, ax=ax)
-ax.set_title("Density of Over-90-Days Listings by Ward")
-plt.axis("off")
-plt.show()
 ```
 
 ```{python}
@@ -1566,13 +1559,6 @@ ward = ward.merge(nature_count, on="GSS_CODE", how="left").fillna({"nature_count
 ### 5.1.2. Calculate green space density
 ward["nature_density"] = ward["nature_count"] / ward["area"]
 
-### 5.1.3. Plot the results
-fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-ward.plot(column="nature_density", cmap="viridis", legend=True, ax=ax)
-ax.set_title("Density of Green Spaces by Ward")
-plt.axis("off")
-plt.show()
-
 # --------------------------------------------------------------
 ## 5.2 Density of Transport Networks (X2)
 ### 5.2.1. Spatial join: transport networks per ward
@@ -1586,13 +1572,6 @@ ward = ward.merge(transport_count, on="GSS_CODE", how="left").fillna(
 
 ### 5.2.2. Calculate transport network density
 ward["transport_density"] = ward["transport_count"] / ward["area"]
-
-### 5.2.3. Plot the results
-fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-ward.plot(column="transport_density", cmap="viridis", legend=True, ax=ax)
-ax.set_title("Density of Transport Networks by Ward")
-plt.axis("off")
-plt.show()
 
 # --------------------------------------------------------------
 ## 5.3 Density of Tourism Sites (X3)
@@ -1611,13 +1590,6 @@ ward["tourism_count"] = ward["tourism_count"].fillna(0)
 
 ### 5.3.3. Calculate tourism site density
 ward["tourism_density"] = ward["tourism_count"] / ward["area"]
-
-### 5.3.4 Plot the results
-fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-ward.plot(column="tourism_density", cmap="viridis", legend=True, ax=ax)
-ax.set_title("Density of Tourism Attractions by Ward")
-plt.axis("off")
-plt.show()
 ```
 
 ```{python}
@@ -1851,7 +1823,9 @@ plt.tight_layout()
 plt.show()
 ```
 
-The GWR model shows high explanatory power, with R-squared values exceeding 0.8 across most of London and reaching 0.95 in central areas where non-compliant listings are concentrated. This confirms the strong relevance of the selected variables. However, significant spatial heterogeneity is observed, indicating that the variables cannot uniformly explain rule-breaking Airbnb listings. For public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation.
+The GWR model shows strong explanatory power, explaining over 80% of the variation in non-compliant listings across most of London (R-squared ≥ 0.8), and 95% in central areas where they are concentrated (R-squared = 0.95).  
+
+Significant spatial heterogeneity is observed. For example, for public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation. This indicates that the variables cannot uniformly explain rule-breaking Airbnb listings.
 
 --- 
 
@@ -1864,3 +1838,4 @@ Combining London's current Housing Act 2015 (Ref 2), we further suggest implemen
 --- 
 
 ## References
+
