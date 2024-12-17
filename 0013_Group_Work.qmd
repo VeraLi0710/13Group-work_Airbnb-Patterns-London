@@ -1,7 +1,13 @@
 ---
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
+<<<<<<< Updated upstream
 title: Group Name's Group Project
+=======
+title: NA_Group2's Group Project
+assess:
+  group-date: '2024-12-17'
+>>>>>>> Stashed changes
 execute:
   echo: false
   freeze: true
@@ -65,6 +71,36 @@ else:
   df.to_parquet(file)
 ```
 
+<<<<<<< Updated upstream
+=======
+## Declaration of Authorship {.unnumbered .unlisted}
+
+We, [NA_Group2], pledge our honour that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
+
+Date: 17/12/2024
+
+Student Numbers: 4
+
+## Brief Group Reflection
+
+| What Went Well                                      | What Was Challenging                               |  
+|----------------------------------------------------|--------------------------------------------------|  
+| Clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
+| Initial observations revealed significant policy violations.| Snapshot data is time-sensitive and may not fully capture temporal changes. |  
+| Spatial clustering analysis highlighted policy-violating hotspots.| Logistic regression model had low explanatory power (R² = 0.05). |  
+| Iterative refinement of models improved insights (GWLR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
+| Identified policy violations' impact on rent and vacancy rates.| Incorporating new variables (e.g., attraction density) was computationally intensive. |  
+| Combined four quarters of snapshot data to mitigate time-sensitivity limitations.| Assessing the broader socioeconomic impact was limited by data availability. |
+
+## Priorities for Feedback
+
+Are there any areas on which you would appreciate more detailed feedback if we're able to offer it?
+
+{{< pagebreak >}}
+
+
+
+>>>>>>> Stashed changes
 ## 1. Who collected the InsideAirbnb data?
 
 :::
@@ -1182,10 +1218,17 @@ plt.tight_layout()
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
+<<<<<<< Updated upstream
 ```{python}
 ### Logistic Regression and visualisations
 To explore the relationship in the study area between variables and their spatial distribution characteristics, this study adopted the traditional logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 ```
+=======
+---
+
+### Logistic Regression: Factors Drive Policy Violations
+To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
+>>>>>>> Stashed changes
 
 ```{python}
 #| echo: false
