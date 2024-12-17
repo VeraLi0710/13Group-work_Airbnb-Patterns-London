@@ -78,7 +78,7 @@ Student Numbers: 4
 
 ## Declaration of Large Language Model Use
 
-In the preparation of this report, Large Language Models, specifically OpenAI's ChatGPT[还有其他的？], were utilized as a supplementary tool to support various stages of the report. Its usage was carefully managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:
+In the preparation of this report, Large Language Models, specifically OpenAI's ChatGPT and Anthropic's Claude, were utilized as a supplementary tool to support various stages of the report. Its usage was carefully managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:
 1. **Language Enhancement**: The LLMs were used to improve the grammar, sentence structure, readability, and clarity of the text.
   
 2. **Assistance with Code and Data Analysis**: In sections involving programming or data analysis, the LLMs provided guidance on debugging, refining code, optimizing algorithms, and suggesting alternative approaches to analytical problems.
@@ -1227,7 +1227,9 @@ From the analysis above, enforcing the 90-day policy is essential to address ris
 
 ---
 
-### Logistic Regression: Factors Drive Policy Violations
+### Analysis of Factors Associated with Policy-Violating Listings
+
+1. **Logistic Regression:**  
 To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 
 ```{python}
