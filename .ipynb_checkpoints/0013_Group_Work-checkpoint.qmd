@@ -79,7 +79,7 @@ Student Numbers: 4
 ## Declaration of Large Language Model Use
 
 In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthropic's Claude, were used as supplementary tools. Their usage was managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:  
-  
+
 1. **Language Enhancement**: The LLMs were used to improve the grammar, sentence structure, readability, and clarity of the text.
   
 2. **Assistance with Code and Data Analysis**: In sections involving programming or data analysis, the LLMs provided guidance on debugging, refining code, optimizing algorithms, and suggesting alternative approaches to analytical problems.
@@ -94,6 +94,9 @@ In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthrop
 **Visuals**: 6 figures × 150 per figure = 900 
 
 **Total**: 2,627
+
+{{< pagebreak >}}
+
 
 
 ## Brief Group Reflection
@@ -113,7 +116,7 @@ In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthrop
 
 **Accuracy of Policy Violation Estimates:** Given the limitations of InsideAirbnb data (e.g., no direct measure for annual rental days), we used proxies like reviews and minimum stay to estimate violations. We’d appreciate guidance on how to validate or improve this estimation method to reduce bias.
 
-**Model Discrepancy and Improvement:** While GWLR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWLR model.
+**Model Discrepancy and Improvement:** While GWR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWR model.
 
 {{< pagebreak >}}
 
@@ -1764,6 +1767,12 @@ X = gwr[
     ]
 ].values
 coords = gwr[["x", "y"]].values
+```
+
+```{python}
+#| echo: false
+#| warning: false
+#| output: false
 
 # --------------------------------------------------------------
 ## 11.2 Run GWR Model
@@ -1790,6 +1799,12 @@ else:
     ### 11.2.3 Save to cache
     with open(cache_file, "wb") as f:
         pickle.dump((bw, results), f)
+```
+
+```{python}
+#| echo: false
+#| warning: false
+#| output: false
 
 ### 11.2.4 Print summary of GWR results
 print("GWR Results Summary:")
@@ -1853,9 +1868,9 @@ However, significant spatial heterogeneity exists. In the lower-left central reg
 ## Conclusion / Policy Recommendations
 We conducted a spatial analysis using Inside Airbnb data and found that illegal listings in London exhibit a clear clustering pattern. These listings significantly impact local housing market rental levels and vacancy rates, highlighting the necessity and reasonableness of the current 90-day short-term rental policy.
 
-Further multi-factor analysis reveals that while illegal listings show some correlation with factors such as host type, property type, minimum rental period, and price, their overall impact is limited. Instead, traffic network density and tourist density emerge as the key drivers of illegal listing distribution. However, their influence varies significantly across regions, indicating that a single regulatory policy cannot effectively address illegal activities in all areas.
+Further multi-factor analysis reveals that while illegal listings show some correlation with factors such as host type, property type, minimum rental period, and price, their overall impact is limited. Instead, traffic network density and tourist density emerge as the key drivers of illegal listing distribution. However, their influence varies significantly across regions, indicating that a single regulatory policy cannot effectively address illegal activities in all areas.  
 
-**Policy Recommendations**
+**Policy Recommendations**  
 1. **Citywide Housing Database and Data Sharing**: We recommend that the government establish a citywide housing database and require short-term rental platforms to sign data-sharing agreements. These platforms should regularly upload housing information and usage data to support regulatory work.
 
 2. **Learning from European Cities**: Drawing on the experience of cities like Barcelona, short-term rental platforms should be compelled to remove unregistered listings and face stricter penalties for violations. [@Gianluca2025]
