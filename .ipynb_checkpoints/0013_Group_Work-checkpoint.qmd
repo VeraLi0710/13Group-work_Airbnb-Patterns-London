@@ -1,7 +1,9 @@
 ---
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
-title: Group Name's Group Project
+title: NA_Group2's Group Project
+assess:
+  group-date: '2024-12-17'
 execute:
   echo: false
   freeze: true
@@ -64,6 +66,33 @@ else:
   df = pd.read_parquet(f'{host}/{path}/{file}')
   df.to_parquet(file)
 ```
+
+## Declaration of Authorship {.unnumbered .unlisted}
+
+We, [NA_Group2], pledge our honour that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
+
+Date: 17/12/2024
+
+Student Numbers: 4
+
+## Brief Group Reflection
+
+| What Went Well                                      | What Was Challenging                               |  
+|----------------------------------------------------|--------------------------------------------------|  
+| Clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
+| Initial observations revealed significant policy violations.| Snapshot data is time-sensitive and may not fully capture temporal changes. |  
+| Spatial clustering analysis highlighted policy-violating hotspots.| Logistic regression model had low explanatory power (R² = 0.05). |  
+| Iterative refinement of models improved insights (GWLR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
+| Identified policy violations' impact on rent and vacancy rates.| Incorporating new variables (e.g., attraction density) was computationally intensive. |  
+| Combined four quarters of snapshot data to mitigate time-sensitivity limitations.| Assessing the broader socioeconomic impact was limited by data availability. |
+
+## Priorities for Feedback
+
+Are there any areas on which you would appreciate more detailed feedback if we're able to offer it?
+
+{{< pagebreak >}}
+
+
 
 ## 1. Who collected the InsideAirbnb data?
 
@@ -147,7 +176,7 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 
 ### The 90-Day Rule and Airbnb Commercialization  
 
-Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:
+Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data：
 
 ```{python}
 #| echo: false
@@ -560,13 +589,15 @@ plt.show()
 InsideAirbnb data shows London’s Airbnb market is highly commercialized, with significant 90-day rule compliance risks, requiring effective enforcement.
 
 1. **Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.
- 
+
 2. **Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.
 
 ---  
 
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
+
+## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
 We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:
 
@@ -940,7 +971,9 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
+::: {style="text-align: center;"}  
 ### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+:::
 
 ![](plots/combined_of_Moran_and_LISA.png)
 
@@ -1176,16 +1209,18 @@ plt.show()
 # plt.tight_layout()
 ```
 
+::: {style="text-align: center;"}  
 ### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+:::
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
-```{python}
-### Logistic Regression and visualisations
-To explore the relationship in the study area between variables and their spatial distribution characteristics, this study adopted the traditional logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
-```
+---
+
+### Logistic Regression: Factors Drive Policy Violations
+To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 
 ```{python}
 #| echo: false
@@ -1262,9 +1297,10 @@ X = add_constant(X)
 # Calculate VIF  
 vif_data = pd.DataFrame()  
 vif_data["Variable"] = X.columns  
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
+vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])] 
 
-vif_results = vif_data  
+print("\nVIF Results:")  
+print(vif_data.to_string(index=False))  
 ```
 
 ```{python}
@@ -1293,9 +1329,6 @@ print("Logistic regression complete.")
 ```
 
 ```{python}
-#| echo: false
-#| output: false
-#| include: false
 # Step 1: Clip predicted probabilities  
 regression_data["predicted_probs"] = regression_data["predicted_probs"].clip(1e-6, 1 - 1e-6)  
 
@@ -1310,16 +1343,19 @@ regression_data["deviance_residuals"] = np.sign(
     )  
 )  
 
+# Calculate Residuals Using Existing Predicted Probabilities  
+regression_data["residuals"] = regression_data["estimated_nights_booked_binary"] - regression_data["predicted_probs"]  
+
 # Step 3: Convert data into GeoDataFrame  
 regression_data["geometry"] = [  
     Point(xy) for xy in zip(regression_data["longitude"], regression_data["latitude"])  
 ]  
 gdf = gpd.GeoDataFrame(regression_data, geometry="geometry", crs="EPSG:4326")  
 
-# Step 4: Create KNN weight matrix  
+# Step 4: Create KNN Weight Matrix  
 weights = KNN.from_dataframe(gdf, k=3)  # k=3 means each point will connect to its 3 nearest neighbors  
 
-# Step 5: Check for isolated points in the weight matrix  
+# Step 5: Check for Isolated Points in the Weight Matrix  
 islands = weights.islands  # Return a list of indices that are isolated/disconnected  
 
 if len(islands) > 0:  
@@ -1330,14 +1366,43 @@ else:
     print("No isolated points found. Continuing with the original dataset.")  
     gdf_filtered = gdf  # If no isolated points, the original dataset is used  
 
+# Summary Statistics for Residuals  
+print("\nResiduals Summary Statistics:")  
+print(regression_data["residuals"].describe())  
+
+# Display Deviance Residuals Summary Statistics  
+print("\nDeviance Residuals Summary Statistics:")  
+print(regression_data["deviance_residuals"].describe())  
+
+# Display Extreme Deviance Residuals  
+print("\nExtreme Deviance Residuals (Top 5 Largest Absolute Values):")  
+extreme_residuals = regression_data["deviance_residuals"].abs().sort_values(ascending=False).head()  
+print(extreme_residuals)  
+
+# Display Predicted Probabilities Summary Statistics  
+print("\nPredicted Probabilities Summary Statistics:")  
+print(regression_data["predicted_probs"].describe())  
+
+# Check Distribution of Actual vs Predicted  
+print("\nActual vs Predicted Cross-tabulation:")  
+print(pd.crosstab(  
+    regression_data["estimated_nights_booked_binary"],  
+    (regression_data["predicted_probs"] > 0.5).astype(int),  
+    margins=True  
+))  
+
 # Step 6: Calculate Moran's I  
 moran = Moran(gdf_filtered["deviance_residuals"], weights)  
 
-# Print Moran's I results  
-print("Moran's I Results:")  
+# Print Moran's I Results  
+print("\nMoran's I Results:")  
 print(f"Moran's I: {moran.I:.4f}")  
 print(f"p-value: {moran.p_sim:.4f}")  
+<<<<<<< Updated upstream
 print(f"z-score: {moran.z_sim:.4f}")  
+=======
+print(f"z-score: {moran.z_sim:.4f}")
+>>>>>>> Stashed changes
 ```
 
 ```{python}
@@ -1399,13 +1464,13 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle
 plt.show()
 ```
 
-```{python}
-### Result
-Firstly, the VIF results show no multicollinearity issues.
-The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). 
-Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. 
-```
+**Missing Variables and Spatial Patterns?**
 
+Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the causes.  
+
+Additionally, residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.
+
+<<<<<<< Updated upstream
 ## Geographically Weighted Regression
 
 Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.
@@ -1723,3 +1788,9 @@ plt.show()
 ```
 
 The GWR model shows high explanatory power, with R-squared values exceeding 0.8 across most of London and reaching 0.95 in central areas where non-compliant listings are concentrated. This confirms the strong relevance of the selected variables. However, significant spatial heterogeneity is observed, indicating that the variables cannot uniformly explain rule-breaking Airbnb listings. For public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower-left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation.
+=======
+## References
+
+---
+
+>>>>>>> Stashed changes
