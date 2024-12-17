@@ -67,6 +67,26 @@ else:
   df.to_parquet(file)
 ```
 
+```{python}
+#| echo: false
+#| include: false
+import requests  
+#import csl
+url = "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/harvard-cite-them-right.csl"  
+response = requests.get(url)  
+
+with open("harvard-cite-them-right.csl", "wb") as file:  
+    file.write(response.content)
+
+#import bib
+url = "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/bio.bib"  
+
+response = requests.get(url)  
+
+with open("bio.bib", "wb") as file:  
+    file.write(response.content)  
+```
+
 ## Declaration of Authorship {.unnumbered .unlisted}
 
 We, [NA_Group2], pledge our honor that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
