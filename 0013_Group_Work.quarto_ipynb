@@ -54,7 +54,7 @@
         "    name: base\n",
         "---"
       ],
-      "id": "bca181fc"
+      "id": "930c3c89"
     },
     {
       "cell_type": "code",
@@ -64,7 +64,7 @@
         "import os\n",
         "import pandas as pd"
       ],
-      "id": "6c45a2b0",
+      "id": "d07bd551",
       "execution_count": null,
       "outputs": []
     },
@@ -83,7 +83,7 @@
         "  df = pd.read_parquet(f'{host}/{path}/{file}')\n",
         "  df.to_parquet(file)"
       ],
-      "id": "7dfe6add",
+      "id": "34abb014",
       "execution_count": null,
       "outputs": []
     },
@@ -168,7 +168,7 @@
         "\n",
         "## 6. With reference to the InsideAirbnb data (*i.e.* using numbers, figures, maps, and descriptive statistics), what does an analysis of Hosts and the types of properties that they list suggest about the nature of Airbnb lettings in London? \n"
       ],
-      "id": "6820d6cd"
+      "id": "8d64f43b"
     },
     {
       "cell_type": "code",
@@ -198,7 +198,7 @@
         "if not os.path.exists(output_dir):  \n",
         "    os.makedirs(output_dir) "
       ],
-      "id": "e90aa803",
+      "id": "45308514",
       "execution_count": null,
       "outputs": []
     },
@@ -219,7 +219,7 @@
         "\n",
         "airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  "
       ],
-      "id": "77c2da82",
+      "id": "57df0bef",
       "execution_count": null,
       "outputs": []
     },
@@ -231,7 +231,7 @@
         "\n",
         "Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:\n"
       ],
-      "id": "0cf96b84"
+      "id": "fda756fa"
     },
     {
       "cell_type": "code",
@@ -264,7 +264,7 @@
         "# Ensure both GeoDataFrames use the same CRS  \n",
         "borough_map = borough_map.to_crs(gdf.crs)  "
       ],
-      "id": "b67ccf4c",
+      "id": "39c3acd5",
       "execution_count": null,
       "outputs": []
     },
@@ -448,7 +448,7 @@
         "# -------------------------------  \n",
         "plt.show()"
       ],
-      "id": "3f3ab83b",
+      "id": "474d109f",
       "execution_count": null,
       "outputs": []
     },
@@ -466,7 +466,7 @@
         "\n",
         "To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：\n"
       ],
-      "id": "5e3abac0"
+      "id": "6960b0a1"
     },
     {
       "cell_type": "code",
@@ -539,7 +539,7 @@
         "avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  \n",
         "min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  "
       ],
-      "id": "f0f7c890",
+      "id": "ce2f7357",
       "execution_count": null,
       "outputs": []
     },
@@ -650,7 +650,7 @@
         "plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  \n",
         "plt.show()"
       ],
-      "id": "d8ae76ca",
+      "id": "8d370c90",
       "execution_count": null,
       "outputs": []
     },
@@ -694,7 +694,7 @@
         "1. **Hotspot Identification:** \n",
         "We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  \n"
       ],
-      "id": "cf1f3180"
+      "id": "cc72ad98"
     },
     {
       "cell_type": "code",
@@ -764,7 +764,7 @@
         "# Save the updated DataFrame\n",
         "combined_data.to_csv('data/borough_listings_ratio.csv', index=True)"
       ],
-      "id": "9a3a3ddc",
+      "id": "79f5f283",
       "execution_count": null,
       "outputs": []
     },
@@ -815,7 +815,7 @@
         "\n",
         "moran_plot(y, weights)"
       ],
-      "id": "a0486640",
+      "id": "e257b49a",
       "execution_count": null,
       "outputs": []
     },
@@ -880,7 +880,7 @@
         "\n",
         "print(f\"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}\")"
       ],
-      "id": "28c9aeeb",
+      "id": "d6473630",
       "execution_count": null,
       "outputs": []
     },
@@ -910,7 +910,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "34d41323",
+      "id": "7675231d",
       "execution_count": null,
       "outputs": []
     },
@@ -932,7 +932,7 @@
         "# merge the data\n",
         "borough_connect = borough.merge(connect, left_on=\"GSS_CODE\", right_on=\"Borough_code\")"
       ],
-      "id": "8e5796bb",
+      "id": "1539aa18",
       "execution_count": null,
       "outputs": []
     },
@@ -994,7 +994,7 @@
         "plt.savefig('plots/raw/LISA_monthly_rent.png')\n",
         "plt.show()"
       ],
-      "id": "977419aa",
+      "id": "1d8a64dc",
       "execution_count": null,
       "outputs": []
     },
@@ -1056,7 +1056,7 @@
         "plt.savefig('plots/raw/LISA_vacant_ratio.png')\n",
         "plt.show()"
       ],
-      "id": "afa6bb11",
+      "id": "ea6d603b",
       "execution_count": null,
       "outputs": []
     },
@@ -1093,7 +1093,7 @@
         "\n",
         "new_im.save('plots/combined_of_Moran_and_LISA.png')"
       ],
-      "id": "0fc15e77",
+      "id": "b7e57392",
       "execution_count": null,
       "outputs": []
     },
@@ -1108,7 +1108,7 @@
         "2. **Housing Market Impacts**  \n",
         "To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].\n"
       ],
-      "id": "3002d8f2"
+      "id": "df655e1e"
     },
     {
       "cell_type": "code",
@@ -1157,7 +1157,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "ac322d8d",
+      "id": "afc97521",
       "execution_count": null,
       "outputs": []
     },
@@ -1196,7 +1196,7 @@
         "# Fit GWR model with the determined optimal bandwidth\n",
         "gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()"
       ],
-      "id": "3e991053",
+      "id": "7b1c1451",
       "execution_count": null,
       "outputs": []
     },
@@ -1229,7 +1229,7 @@
         "gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_vacant.summary())"
       ],
-      "id": "d48f1d01",
+      "id": "b736b47c",
       "execution_count": null,
       "outputs": []
     },
@@ -1242,7 +1242,7 @@
         "zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients\n",
         "zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values"
       ],
-      "id": "06881a8c",
+      "id": "d859543b",
       "execution_count": null,
       "outputs": []
     },
@@ -1276,7 +1276,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "d202dd1c",
+      "id": "60e28fe1",
       "execution_count": null,
       "outputs": []
     },
@@ -1301,7 +1301,7 @@
         "vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])\n",
         "vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])"
       ],
-      "id": "273a1bc5",
+      "id": "3bb498f0",
       "execution_count": null,
       "outputs": []
     },
@@ -1319,7 +1319,7 @@
         "zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96\n",
         "zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96"
       ],
-      "id": "fe052add",
+      "id": "d271e39b",
       "execution_count": null,
       "outputs": []
     },
@@ -1349,7 +1349,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "135448f7",
+      "id": "0a205aa4",
       "execution_count": null,
       "outputs": []
     },
@@ -1391,7 +1391,7 @@
         "# Adjust layout\n",
         "plt.tight_layout()"
       ],
-      "id": "f66e86e4",
+      "id": "5c9985f2",
       "execution_count": null,
       "outputs": []
     },
@@ -1410,7 +1410,7 @@
         "### Logistic Regression: Factors Drive Policy Violations\n",
         "To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.\n"
       ],
-      "id": "c8bbe12c"
+      "id": "616cabd0"
     },
     {
       "cell_type": "code",
@@ -1434,7 +1434,7 @@
         "from pandas.plotting import table  \n",
         "import matplotlib.gridspec as gridspec  "
       ],
-      "id": "f4734298",
+      "id": "8506a712",
       "execution_count": null,
       "outputs": []
     },
@@ -1480,7 +1480,7 @@
         "regression_data = regression_data.drop(columns=[\"calculated_host_listings_count\", \"room_type\"])  \n",
         "regression_data = pd.concat([regression_data, room_type_df], axis=1)  "
       ],
-      "id": "85c2d689",
+      "id": "b7d44e8a",
       "execution_count": null,
       "outputs": []
     },
@@ -1505,7 +1505,7 @@
         "\n",
         "vif_results = vif_data  "
       ],
-      "id": "90a38a73",
+      "id": "734dc153",
       "execution_count": null,
       "outputs": []
     },
@@ -1536,7 +1536,7 @@
         "print(result.summary())  \n",
         "print(\"Logistic regression complete.\")"
       ],
-      "id": "03bf69aa",
+      "id": "0513be54",
       "execution_count": null,
       "outputs": []
     },
@@ -1590,7 +1590,7 @@
         "print(f\"p-value: {moran.p_sim:.4f}\")  \n",
         "print(f\"z-score: {moran.z_sim:.4f}\")  "
       ],
-      "id": "2afce1ff",
+      "id": "ce7826c4",
       "execution_count": null,
       "outputs": []
     },
@@ -1655,20 +1655,7 @@
         "plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  \n",
         "plt.show()"
       ],
-      "id": "69dc08db",
-      "execution_count": null,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "metadata": {},
-      "source": [
-        "### Result\n",
-        "Firstly, the VIF results show no multicollinearity issues.\n",
-        "The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). \n",
-        "Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. "
-      ],
-      "id": "2432a17d",
+      "id": "160383ec",
       "execution_count": null,
       "outputs": []
     },
@@ -1676,13 +1663,19 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
+        "# Missing Variables and Spatial Patterns?  \n",
+        "\n",
+        "Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the causes.  \n",
+        "\n",
+        "Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.\n",
+        "\n",
         "---\n",
         "\n",
         "## Geographically Weighted Regression\n",
         "\n",
         "Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.\n"
       ],
-      "id": "67250657"
+      "id": "6e74404a"
     },
     {
       "cell_type": "code",
@@ -1699,7 +1692,7 @@
         "import geopandas as gpd\n",
         "from shapely.geometry import Point"
       ],
-      "id": "ef6c333f",
+      "id": "c5e56f7a",
       "execution_count": null,
       "outputs": []
     },
@@ -1732,7 +1725,7 @@
         "    .to_crs(epsg=27700)  \n",
         ") "
       ],
-      "id": "57e4e7b2",
+      "id": "78517e26",
       "execution_count": null,
       "outputs": []
     },
@@ -1755,7 +1748,7 @@
         "# info check\n",
         "print(listing_spatial.head())"
       ],
-      "id": "dc0f87c6",
+      "id": "d88158d7",
       "execution_count": null,
       "outputs": []
     },
@@ -1789,7 +1782,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "abed75bc",
+      "id": "837c7859",
       "execution_count": null,
       "outputs": []
     },
@@ -1816,7 +1809,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "db9b3f29",
+      "id": "090c93ae",
       "execution_count": null,
       "outputs": []
     },
@@ -1843,7 +1836,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "efcdc01a",
+      "id": "e83be33a",
       "execution_count": null,
       "outputs": []
     },
@@ -1884,7 +1877,7 @@
         "# 保存结果\n",
         "listing_ward.to_file(\"data/listing_ward.shp\", driver=\"ESRI Shapefile\")"
       ],
-      "id": "99acf1f2",
+      "id": "72659801",
       "execution_count": null,
       "outputs": []
     },
@@ -1905,7 +1898,7 @@
         "# 3. 检查结果\n",
         "print(ward.info()) "
       ],
-      "id": "afa7965c",
+      "id": "ac7e2e17",
       "execution_count": null,
       "outputs": []
     },
@@ -1926,7 +1919,7 @@
         "# 3. 检查结果\n",
         "print(ward.info()) "
       ],
-      "id": "5d2defa3",
+      "id": "8f53ed2f",
       "execution_count": null,
       "outputs": []
     },
@@ -1964,7 +1957,7 @@
         "# 5. 检查结果\n",
         "print(ward.info())"
       ],
-      "id": "da2415db",
+      "id": "0cc8903b",
       "execution_count": null,
       "outputs": []
     },
@@ -1985,7 +1978,7 @@
         "# 保存筛选后的数据为新的 Shapefile\n",
         "gwr_data.to_file(\"data/gwr.shp\", driver=\"ESRI Shapefile\")"
       ],
-      "id": "4f80f5db",
+      "id": "53f184c3",
       "execution_count": null,
       "outputs": []
     },
@@ -2004,7 +1997,7 @@
         "# 导入数据\n",
         "gwr = gpd.read_file(\"data/gwr.shp\")"
       ],
-      "id": "0d6fef71",
+      "id": "bb6f0a5d",
       "execution_count": null,
       "outputs": []
     },
@@ -2019,7 +2012,7 @@
         "gwr['x'] = gwr.geometry.x\n",
         "gwr['y'] = gwr.geometry.y"
       ],
-      "id": "b2ffbc91",
+      "id": "7b8c77bf",
       "execution_count": null,
       "outputs": []
     },
@@ -2046,7 +2039,7 @@
         "print(f\"带宽: {bw}\")\n",
         "print(f\"参数: {results.params.shape}\")"
       ],
-      "id": "592d8b70",
+      "id": "b4c045a8",
       "execution_count": null,
       "outputs": []
     },
@@ -2059,7 +2052,7 @@
         "                         'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']):\n",
         "    gwr[f'gwr_{col}'] = results.params[:, i]"
       ],
-      "id": "3f9c5515",
+      "id": "92251c30",
       "execution_count": null,
       "outputs": []
     },
@@ -2087,7 +2080,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "fb302261",
+      "id": "b179c4c2",
       "execution_count": null,
       "outputs": []
     },
@@ -2101,7 +2094,7 @@
         "\n",
         "## References"
       ],
-      "id": "be583172"
+      "id": "f73ac30b"
     }
   ],
   "metadata": {
