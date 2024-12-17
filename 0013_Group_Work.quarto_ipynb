@@ -54,7 +54,7 @@
         "    name: base\n",
         "---"
       ],
-      "id": "bca181fc"
+      "id": "85bbd23a"
     },
     {
       "cell_type": "code",
@@ -64,7 +64,7 @@
         "import os\n",
         "import pandas as pd"
       ],
-      "id": "6c45a2b0",
+      "id": "e751eebf",
       "execution_count": null,
       "outputs": []
     },
@@ -83,7 +83,7 @@
         "  df = pd.read_parquet(f'{host}/{path}/{file}')\n",
         "  df.to_parquet(file)"
       ],
-      "id": "7dfe6add",
+      "id": "12a72ecc",
       "execution_count": null,
       "outputs": []
     },
@@ -99,6 +99,15 @@
         "\n",
         "Student Numbers: 4\n",
         "\n",
+        "## Word Count \n",
+        "\n",
+        "**Text Content**: 1,303   [[[[+++++ yezhen part and conclusion????????????]]]\n",
+        "\n",
+        "**Visuals**: 6 figures × 150 per figure = 900 \n",
+        "\n",
+        "**Total**: 2,500 [[[[[[[[[[[[]]]]]]]]]]]]]]\n",
+        "\n",
+        "\n",
         "## Brief Group Reflection\n",
         "\n",
         "| What Went Well                                      | What Was Challenging                               |  \n",
@@ -112,7 +121,7 @@
         "\n",
         "## Priorities for Feedback\n",
         "\n",
-        "[[[[[[[[[[[[[[[insert]]]]]]]]]]]] \n",
+        "**Code Consistency:** When working together, our code and methods often feel disconnected and lack coherence. How can we ensure clearer, more consistent approaches across the team?\n",
         "\n",
         "**Accuracy of Policy Violation Estimates:** Given the limitations of InsideAirbnb data (e.g., no direct measure for annual rental days), we used proxies like reviews and minimum stay to estimate violations. We’d appreciate guidance on how to validate or improve this estimation method to reduce bias.\n",
         "\n",
@@ -126,49 +135,60 @@
         "\n",
         "## 1. Who collected the InsideAirbnb data?\n",
         "\n",
-        ":::\n",
-        "The data was collected, integrated, and published by Inside Airbnb’s policy and housing researchers, led by founder Murray Cox, an activist using data-driven insights to address housing challenges [@inside_airbnb_about_nodate].\n",
-        ":::\n",
         "\n",
+        "The data was collected, integrated, and published by Inside Airbnb’s policy and housing researchers, led by founder Murray Cox, an activist using data-driven insights to address housing challenges [@inside_airbnb_about_nodate].\n",
+        "\n",
+        "---\n",
         "\n",
         "## 2. Why did they collect the InsideAirbnb data?\n",
         "\n",
-        "::: \n",
-        "Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighbourhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].\n",
-        ":::\n",
         "\n",
+        "Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighbourhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].\n",
+        "\n",
+        "---\n",
         "\n",
         "## 3. How did they collect it?\n",
         "\n",
-        "::: \n",
+        "\n",
         "Inside Airbnb used Python-based web scraping to collect publicly available data from the Airbnb website [@alsudais_incorrect_2021]. The data is captured as a time-specific snapshot, including availability calendars (up to 365 days), reviews, names, photos, and other publicly visible details. After collection, the data was cleaned, analyzed, and aggregated. Airbnb’s categorization of unavailable nights (booked or blocked) and location anonymization were retained unchanged, while neighborhood names were refined using city-defined boundaries for accuracy [@inside_airbnb_about_nodate].\n",
-        ":::\n",
+        "\n",
+        "---\n",
         "\n",
         "## 4. How does the method of collection (Q3) impact the completeness and/or accuracy of the InsideAirbnb data? How well does it represent the process it seeks to study, and what wider issues does this raise?\n",
         "\n",
-        "::: \n",
+        "\n",
         "The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has following limitations:\n",
-        "1. The data comes solely from Airbnb, which may delete or hide listings due to business or regulatory pressures, reducing representativeness. For example, in 2015, Airbnb removed over 1,000 entire-home listings in New York City [@cox_how_2016].\n",
-        "2. The data's snapshot nature cannot reflect ongoing changes, such as newly added or removed listings. This compromises its temporal completeness. Meanwhile, when new versions of dataset overwrite old ones, there are significant differences in entries and reviews across releases. Without specifying the dataset version, research results may lack reproducibility and reliability.\n",
+        "1. The data only includes Airbnb listings, which may be removed or hidden due to business or regulatory pressures. For example, in 2015, Airbnb deleted over 1,000 entire-home listings in New York City [@cox_how_2016].\n",
+        "\n",
+        "2. The data's snapshot nature cannot reflect ongoing changes, such as newly added or removed listings. Differences between dataset versions can also affect reliability and reproducibility if the version used is not specified.\n",
+        "\n",
         "3. The data excludes off-platform bookings, such as private arrangements to avoid platform fees or bypass rental day regulations. Additionally, booked dates are marked as unavailable, creating the false impression that popular listings are unrentable. These factors lead to an underestimation of actual bookings and occupancy rates.\n",
-        "4. The anonymization of geolocation data shifts locations by up to 150 meters and scatters listings within buildings, reducing spatial accuracy for neighborhood analysis.\n",
-        "5. Airbnb's 'Experience' and 'Listing' features sometimes unintentionally have the same ID, despite representing different entities. This leads to 'Experience' reviews being misclassified as 'Listing' reviews, causing inaccuracies in review data [@alsudais_incorrect_2021].\n",
-        ":::\n",
+        "\n",
+        "4. Geolocation data is anonymized, shifting locations by up to 150 meters and scattering listings within buildings, which reduces accuracy for neighborhood-level analysis.\n",
+        "\n",
+        "5. Airbnb sometimes assigns the same ID to both 'Experiences' and 'Listings,' causing 'Experience' reviews to be misclassified as 'Listing' reviews and leading to inaccuracies in review data [@alsudais_incorrect_2021].\n",
+        "\n",
+        "---\n",
         "\n",
         "## 5. What ethical considerations does the use of the InsideAirbnb data raise? \n",
         "\n",
-        "::: \n",
-        "1. **Respecting the Inside Airbnb's Vision: Ensuring Data Serves the Public Good**  \n",
-        "Inside Airbnb’s core value is to reveal the impacts of short-term rentals and advocate for local communities. If used for some commercial purposes, the data could harm residents. For instance, investors might use the data to identify high-profit areas for short-term rentals, leading to increased property purchases for rentals and worsening the housing crisis. Therefore, researchers and policymakers should align their work with the mission by prioritizing community interests and exercising caution when sharing data with commercial entities to prevent misuse that could harm local communities.\n",
+        "\n",
+        "1. **Preventing Misuse of Data for Commercial Gain**  \n",
+        "    Inside Airbnb’s data is meant to reveal the impacts of short-term rentals and to support local communities. However, malicious exploitation of the data—such as investors using it to identify high-profit areas for short-term rentals—could lead to negative consequences, such as increased property purchases for rentals, displacement of residents, and worsening housing crises. This undermines the platform’s mission and further harms vulnerable groups. Researchers and policymakers have a responsibility to ensure that their use of the data aligns with community interests and to avoid sharing data in ways that enable harmful commercial use.\n",
+        "\n",
+        "\n",
+        "\n",
         "3. **Protecting User Privacy**  \n",
-        "Data collection relies on web scraping technology, meaning Airbnb hosts and guests may not have explicitly authorized the use of their data. Meanwhile, even when geographic data is anonymized, it can unintentionally reveal location details in small communities or standalone properties. Short-term rental activity is sometimes associated with housing shortages, rising rents, and negative impacts on local residents. Once short-term rental listings are identified, hosts and guests may face risks such as harassment, discrimination, or economic loss. Therefore, research outputs should be generalized to prevent the indirect identification of specific properties and avoid language that reinforces negative perceptions of individuals.\n",
+        "    Since the data is collected through web scraping, Airbnb hosts and guests may not have given consent for its use. Even anonymized geographic data can unintentionally expose sensitive information, especially in small communities or for standalone properties. Publicly identifying short-term rental activity could subject hosts and guests to harassment, discrimination, or financial loss. Research outputs should generalize findings to avoid unintentionally identifying individuals and use neutral language to prevent stigmatization of particular groups.\n",
+        "\n",
         "5. **Ensuring Representation of Vulnerable Communities: Promoting Equity in Data Interpretation**  \n",
-        "Although Inside Airbnb data is open, ordinary residents, especially those in low-income communities, often lack the technical skills to analyze and interpret the data. As a result, the power to interpret the data is concentrated in the hands of a few technically skilled residents, activists, and researchers. This may lead to policymaking that favors the needs of these elite groups, while potential information related to vulnerable communities in the data may be underestimated, overlooked, or misunderstood. Data-driven policies and decisions should not serve only as tools for technical elites but should act as a means to promote social fairness and justice. Therefore, as discussed on ‘Data Feminism’, researchers and policymakers should consciously consider vulnerable communities, encourage their participation in data analysis and interpretation, and present findings in an accessible way to amplify their voices [@dignazio_data_2020]\n",
-        ":::\n",
+        "    While Inside Airbnb data is openly available, the ability to analyze and interpret it is often limited to technically skilled individuals, such as researchers or local activists. This can result in policies that prioritize the perspectives of these groups while neglecting the needs of underrepresented or vulnerable communities. To address this imbalance, researchers and policymakers should engage marginalized communities in the interpretation process, present findings in accessible formats, and ensure data-driven decisions promote social equity, as highlighted in Data Feminism [@dignazio_data_2020].\n",
+        "\n",
+        "---\n",
         "\n",
         "## 6. With reference to the InsideAirbnb data (*i.e.* using numbers, figures, maps, and descriptive statistics), what does an analysis of Hosts and the types of properties that they list suggest about the nature of Airbnb lettings in London? \n"
       ],
-      "id": "6820d6cd"
+      "id": "d4774dd1"
     },
     {
       "cell_type": "code",
@@ -198,7 +218,7 @@
         "if not os.path.exists(output_dir):  \n",
         "    os.makedirs(output_dir) "
       ],
-      "id": "e90aa803",
+      "id": "65a0eb5e",
       "execution_count": null,
       "outputs": []
     },
@@ -219,7 +239,7 @@
         "\n",
         "airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  "
       ],
-      "id": "77c2da82",
+      "id": "439c7c46",
       "execution_count": null,
       "outputs": []
     },
@@ -231,7 +251,7 @@
         "\n",
         "Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:\n"
       ],
-      "id": "0cf96b84"
+      "id": "a1256c1f"
     },
     {
       "cell_type": "code",
@@ -264,7 +284,7 @@
         "# Ensure both GeoDataFrames use the same CRS  \n",
         "borough_map = borough_map.to_crs(gdf.crs)  "
       ],
-      "id": "b67ccf4c",
+      "id": "d24166e1",
       "execution_count": null,
       "outputs": []
     },
@@ -448,7 +468,7 @@
         "# -------------------------------  \n",
         "plt.show()"
       ],
-      "id": "3f3ab83b",
+      "id": "b64754bb",
       "execution_count": null,
       "outputs": []
     },
@@ -458,15 +478,15 @@
       "source": [
         "### Key Findings  \n",
         "\n",
-        "1. **Central London is a Compliance Hotspot**:  \n",
-        "    Central London shows the highest concentration of short-term rentals, with entire homes dominating in high-demand areas prone to violations of the 90-day rule (Figure 1, Map).\n",
+        "1. **Spatial Hotspot**:  \n",
+        "    Central London has the highest density of short-term rentals, with entire homes dominating high-demand, high-violation areas of the 90-day rule. (Figure 1, Map).\n",
         "\n",
         "2. **Frequent Breaches of the 90-Day Limit**:  \n",
         "    Booking data, based on reviews, pricing, and minimum nights [@insideairbnb2023], shows entire homes and hotel-like properties often exceed the 90-day limit, especially in commercialized areas (Figure 1, Panel 1). \n",
         "\n",
         "To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：\n"
       ],
-      "id": "5e3abac0"
+      "id": "1b4f6b65"
     },
     {
       "cell_type": "code",
@@ -539,7 +559,7 @@
         "avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  \n",
         "min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  "
       ],
-      "id": "f0f7c890",
+      "id": "88488b53",
       "execution_count": null,
       "outputs": []
     },
@@ -650,7 +670,7 @@
         "plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  \n",
         "plt.show()"
       ],
-      "id": "d8ae76ca",
+      "id": "c40c9b56",
       "execution_count": null,
       "outputs": []
     },
@@ -659,20 +679,14 @@
       "metadata": {},
       "source": [
         "3. **Multi-Listing Hosts Dominate the Market**:  \n",
-        "    Multi-listing hosts manage 62.38% of Airbnb listings with longer average booking durations than single-listing hosts. They primarily operate entire homes and hotel-like properties, which are highly commercialized with shorter stays and higher prices (Figure 2, Top Left; heatmap).\n",
+        "    Multi-listing hosts manage 62.38% of Airbnb listings with longer average booking durations than single-listing. They primarily operate entire and hotel-like properties, which are highly commercialized with shorter stays and higher prices (Figure 2, Top Left; heatmap).\n",
         "\n",
         "4. **Entire Homes are the Highest Risk**:  \n",
-        "    Entire homes make up 66.97% of listings, with an highest average booking days, and are most likely to breach the 90-day rule. Hotel-like properties, while fewer, also show risks due to short minimum stays (2.13 nights) and high commercialization (Figure 2, Top Right; heatmap).\n",
+        "    Entire homes (66.97% of listings) have the highest average booking days and are most likely to breach the 90-day rule, followed by hotel-like properties with short minimum stays (2.13 nights) and high commercialization.(Figure 2, Top Right; heatmap).\n",
         "\n",
         "\n",
-        "\n",
-        "\n",
-        "### Summary and Next Steps  \n",
-        "InsideAirbnb data shows London’s Airbnb market is highly commercialized, with significant 90-day rule compliance risks, requiring effective enforcement.\n",
-        "\n",
-        "1. **Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.\n",
-        " \n",
-        "2. **Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.\n",
+        "### Initial conclusion \n",
+        "InsideAirbnb data reveals London’s highly commercialized Airbnb market with significant 90-day rule violations, concentrated in high-risk areas. Multi-listing hosts and commercialized properties are key drivers, requiring further spatial and regression analysis to assess impacts and improve enforcement.\n",
         "\n",
         "---  \n",
         "\n",
@@ -694,7 +708,7 @@
         "1. **Hotspot Identification:** \n",
         "We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  \n"
       ],
-      "id": "cf1f3180"
+      "id": "c699e7e1"
     },
     {
       "cell_type": "code",
@@ -764,7 +778,7 @@
         "# Save the updated DataFrame\n",
         "combined_data.to_csv('data/borough_listings_ratio.csv', index=True)"
       ],
-      "id": "9a3a3ddc",
+      "id": "5415b752",
       "execution_count": null,
       "outputs": []
     },
@@ -815,7 +829,7 @@
         "\n",
         "moran_plot(y, weights)"
       ],
-      "id": "a0486640",
+      "id": "2a7bb403",
       "execution_count": null,
       "outputs": []
     },
@@ -880,7 +894,7 @@
         "\n",
         "print(f\"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}\")"
       ],
-      "id": "28c9aeeb",
+      "id": "5ea27ccb",
       "execution_count": null,
       "outputs": []
     },
@@ -910,7 +924,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "34d41323",
+      "id": "8cb47bd4",
       "execution_count": null,
       "outputs": []
     },
@@ -932,7 +946,7 @@
         "# merge the data\n",
         "borough_connect = borough.merge(connect, left_on=\"GSS_CODE\", right_on=\"Borough_code\")"
       ],
-      "id": "8e5796bb",
+      "id": "0a38588a",
       "execution_count": null,
       "outputs": []
     },
@@ -994,7 +1008,7 @@
         "plt.savefig('plots/raw/LISA_monthly_rent.png')\n",
         "plt.show()"
       ],
-      "id": "977419aa",
+      "id": "87b4c044",
       "execution_count": null,
       "outputs": []
     },
@@ -1056,7 +1070,7 @@
         "plt.savefig('plots/raw/LISA_vacant_ratio.png')\n",
         "plt.show()"
       ],
-      "id": "afa6bb11",
+      "id": "679ef661",
       "execution_count": null,
       "outputs": []
     },
@@ -1093,7 +1107,7 @@
         "\n",
         "new_im.save('plots/combined_of_Moran_and_LISA.png')"
       ],
-      "id": "0fc15e77",
+      "id": "b4c53a62",
       "execution_count": null,
       "outputs": []
     },
@@ -1108,7 +1122,7 @@
         "2. **Housing Market Impacts**  \n",
         "To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].\n"
       ],
-      "id": "3002d8f2"
+      "id": "4daafb40"
     },
     {
       "cell_type": "code",
@@ -1157,7 +1171,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "ac322d8d",
+      "id": "c8fff0f0",
       "execution_count": null,
       "outputs": []
     },
@@ -1196,7 +1210,7 @@
         "# Fit GWR model with the determined optimal bandwidth\n",
         "gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()"
       ],
-      "id": "3e991053",
+      "id": "f002785b",
       "execution_count": null,
       "outputs": []
     },
@@ -1229,7 +1243,7 @@
         "gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_vacant.summary())"
       ],
-      "id": "d48f1d01",
+      "id": "fb3ade5f",
       "execution_count": null,
       "outputs": []
     },
@@ -1242,7 +1256,7 @@
         "zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients\n",
         "zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values"
       ],
-      "id": "06881a8c",
+      "id": "d346b9b4",
       "execution_count": null,
       "outputs": []
     },
@@ -1276,7 +1290,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "d202dd1c",
+      "id": "5f0988e9",
       "execution_count": null,
       "outputs": []
     },
@@ -1301,7 +1315,7 @@
         "vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])\n",
         "vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])"
       ],
-      "id": "273a1bc5",
+      "id": "ad399bef",
       "execution_count": null,
       "outputs": []
     },
@@ -1319,7 +1333,7 @@
         "zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96\n",
         "zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96"
       ],
-      "id": "fe052add",
+      "id": "0b5f2d90",
       "execution_count": null,
       "outputs": []
     },
@@ -1349,7 +1363,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "135448f7",
+      "id": "ca6851aa",
       "execution_count": null,
       "outputs": []
     },
@@ -1391,7 +1405,7 @@
         "# Adjust layout\n",
         "plt.tight_layout()"
       ],
-      "id": "f66e86e4",
+      "id": "6336290e",
       "execution_count": null,
       "outputs": []
     },
@@ -1410,7 +1424,7 @@
         "### Logistic Regression: Factors Drive Policy Violations\n",
         "To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.\n"
       ],
-      "id": "c8bbe12c"
+      "id": "a54082e5"
     },
     {
       "cell_type": "code",
@@ -1434,7 +1448,7 @@
         "from pandas.plotting import table  \n",
         "import matplotlib.gridspec as gridspec  "
       ],
-      "id": "f4734298",
+      "id": "38185afe",
       "execution_count": null,
       "outputs": []
     },
@@ -1480,7 +1494,7 @@
         "regression_data = regression_data.drop(columns=[\"calculated_host_listings_count\", \"room_type\"])  \n",
         "regression_data = pd.concat([regression_data, room_type_df], axis=1)  "
       ],
-      "id": "85c2d689",
+      "id": "bd259fd2",
       "execution_count": null,
       "outputs": []
     },
@@ -1505,7 +1519,7 @@
         "\n",
         "vif_results = vif_data  "
       ],
-      "id": "90a38a73",
+      "id": "7ae8de72",
       "execution_count": null,
       "outputs": []
     },
@@ -1536,7 +1550,7 @@
         "print(result.summary())  \n",
         "print(\"Logistic regression complete.\")"
       ],
-      "id": "03bf69aa",
+      "id": "835c2de2",
       "execution_count": null,
       "outputs": []
     },
@@ -1590,7 +1604,7 @@
         "print(f\"p-value: {moran.p_sim:.4f}\")  \n",
         "print(f\"z-score: {moran.z_sim:.4f}\")  "
       ],
-      "id": "2afce1ff",
+      "id": "a1846a7c",
       "execution_count": null,
       "outputs": []
     },
@@ -1598,6 +1612,7 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
         "# Create a 3x2 subplot layout  \n",
         "fig = plt.figure(figsize=(15, 18))  \n",
         "\n",
@@ -1655,20 +1670,7 @@
         "plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  \n",
         "plt.show()"
       ],
-      "id": "69dc08db",
-      "execution_count": null,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "metadata": {},
-      "source": [
-        "### Result\n",
-        "Firstly, the VIF results show no multicollinearity issues.\n",
-        "The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). \n",
-        "Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. "
-      ],
-      "id": "2432a17d",
+      "id": "7649daf1",
       "execution_count": null,
       "outputs": []
     },
@@ -1676,13 +1678,19 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
+        "# Missing Variables and Spatial Patterns?  \n",
+        "\n",
+        "Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the causes.  \n",
+        "\n",
+        "Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.\n",
+        "\n",
         "---\n",
         "\n",
         "## Geographically Weighted Regression\n",
         "\n",
         "Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.\n"
       ],
-      "id": "67250657"
+      "id": "5e0727dc"
     },
     {
       "cell_type": "code",
@@ -1699,7 +1707,7 @@
         "import geopandas as gpd\n",
         "from shapely.geometry import Point"
       ],
-      "id": "ef6c333f",
+      "id": "0376928b",
       "execution_count": null,
       "outputs": []
     },
@@ -1732,7 +1740,7 @@
         "    .to_crs(epsg=27700)  \n",
         ") "
       ],
-      "id": "57e4e7b2",
+      "id": "47f389bc",
       "execution_count": null,
       "outputs": []
     },
@@ -1741,6 +1749,7 @@
       "metadata": {},
       "source": [
         "#| echo: false\n",
+        "#| include: false\n",
         "\n",
         "# convert listing data from csv to spatial data\n",
         "# create geometry\n",
@@ -1755,7 +1764,7 @@
         "# info check\n",
         "print(listing_spatial.head())"
       ],
-      "id": "dc0f87c6",
+      "id": "81826801",
       "execution_count": null,
       "outputs": []
     },
@@ -1789,7 +1798,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "abed75bc",
+      "id": "136fb609",
       "execution_count": null,
       "outputs": []
     },
@@ -1816,7 +1825,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "db9b3f29",
+      "id": "28b0fe02",
       "execution_count": null,
       "outputs": []
     },
@@ -1843,7 +1852,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-      "id": "efcdc01a",
+      "id": "2d426df5",
       "execution_count": null,
       "outputs": []
     },
@@ -1884,7 +1893,7 @@
         "# 保存结果\n",
         "listing_ward.to_file(\"data/listing_ward.shp\", driver=\"ESRI Shapefile\")"
       ],
-      "id": "99acf1f2",
+      "id": "973a43e4",
       "execution_count": null,
       "outputs": []
     },
@@ -1905,7 +1914,7 @@
         "# 3. 检查结果\n",
         "print(ward.info()) "
       ],
-      "id": "afa7965c",
+      "id": "9a5c2b8c",
       "execution_count": null,
       "outputs": []
     },
@@ -1926,7 +1935,7 @@
         "# 3. 检查结果\n",
         "print(ward.info()) "
       ],
-      "id": "5d2defa3",
+      "id": "20d94971",
       "execution_count": null,
       "outputs": []
     },
@@ -1964,7 +1973,7 @@
         "# 5. 检查结果\n",
         "print(ward.info())"
       ],
-      "id": "da2415db",
+      "id": "0b2531f0",
       "execution_count": null,
       "outputs": []
     },
@@ -1972,6 +1981,8 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
+        "#| output: false\n",
         "# 6. 保存结果到新的 Shapefile\n",
         "\n",
         "\n",
@@ -1985,7 +1996,7 @@
         "# 保存筛选后的数据为新的 Shapefile\n",
         "gwr_data.to_file(\"data/gwr.shp\", driver=\"ESRI Shapefile\")"
       ],
-      "id": "4f80f5db",
+      "id": "ed807549",
       "execution_count": null,
       "outputs": []
     },
@@ -1993,6 +2004,7 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
         "import pandas as pd\n",
         "import geopandas as gpd\n",
         "import numpy as np\n",
@@ -2004,7 +2016,7 @@
         "# 导入数据\n",
         "gwr = gpd.read_file(\"data/gwr.shp\")"
       ],
-      "id": "0d6fef71",
+      "id": "3041c4c8",
       "execution_count": null,
       "outputs": []
     },
@@ -2012,6 +2024,7 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
         "# 提取坐标\n",
         "gwr['geometry'] = gwr.centroid\n",
         "\n",
@@ -2019,7 +2032,7 @@
         "gwr['x'] = gwr.geometry.x\n",
         "gwr['y'] = gwr.geometry.y"
       ],
-      "id": "b2ffbc91",
+      "id": "efcc949c",
       "execution_count": null,
       "outputs": []
     },
@@ -2027,6 +2040,8 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
+        "#| output: false\n",
         "# 定义因变量和自变量\n",
         "Y = gwr[['listing_de']].values\n",
         "X = gwr[['nature_den', 'transport_', 'tourism_de','avg_price','avg_night','avg_host_l','entire_den']].values\n",
@@ -2046,7 +2061,7 @@
         "print(f\"带宽: {bw}\")\n",
         "print(f\"参数: {results.params.shape}\")"
       ],
-      "id": "592d8b70",
+      "id": "8c36655a",
       "execution_count": null,
       "outputs": []
     },
@@ -2054,12 +2069,14 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
+        "#| output: false\n",
         "gwr['gwr_r2'] = results.localR2  # R² 的局部值\n",
         "for i, col in enumerate(['intercept', 'nature_density', 'transport_density', 'tourism_density', \n",
         "                         'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']):\n",
         "    gwr[f'gwr_{col}'] = results.params[:, i]"
       ],
-      "id": "3f9c5515",
+      "id": "b27e06cb",
       "execution_count": null,
       "outputs": []
     },
@@ -2067,6 +2084,7 @@
       "cell_type": "code",
       "metadata": {},
       "source": [
+        "#| echo: false\n",
         "# 设置画布\n",
         "fig, axes = plt.subplots(3, 3, figsize=(15, 12))\n",
         "\n",
@@ -2087,7 +2105,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "fb302261",
+      "id": "142a1ad9",
       "execution_count": null,
       "outputs": []
     },
@@ -2101,7 +2119,7 @@
         "\n",
         "## References"
       ],
-      "id": "be583172"
+      "id": "c0154c7e"
     }
   ],
   "metadata": {
