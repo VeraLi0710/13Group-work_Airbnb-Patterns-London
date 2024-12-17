@@ -54,11 +54,7 @@
         "    name: base\n",
         "---"
       ],
-<<<<<<< HEAD
-      "id": "ca905e99"
-=======
-      "id": "659543fe"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "780184d2"
     },
     {
       "cell_type": "code",
@@ -68,11 +64,7 @@
         "import os\n",
         "import pandas as pd"
       ],
-<<<<<<< HEAD
-      "id": "570a2220",
-=======
-      "id": "ebe139a0",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "910251a2",
       "execution_count": null,
       "outputs": []
     },
@@ -91,11 +83,7 @@
         "  df = pd.read_parquet(f'{host}/{path}/{file}')\n",
         "  df.to_parquet(file)"
       ],
-<<<<<<< HEAD
-      "id": "6dfe6d91",
-=======
-      "id": "f21c4b8b",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "f567f8f6",
       "execution_count": null,
       "outputs": []
     },
@@ -216,11 +204,7 @@
         "\n",
         "## 6. With reference to the InsideAirbnb data (*i.e.* using numbers, figures, maps, and descriptive statistics), what does an analysis of Hosts and the types of properties that they list suggest about the nature of Airbnb lettings in London? \n"
       ],
-<<<<<<< HEAD
-      "id": "6e7b7fa7"
-=======
-      "id": "b4ebc82a"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "28a1956f"
     },
     {
       "cell_type": "code",
@@ -231,6 +215,7 @@
         "#Reading airbnb data 2013.12\n",
         "import pandas as pd  \n",
         "import numpy as np  \n",
+        "import geopandas as gpd\n",
         "from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  \n",
         "import matplotlib.pyplot as plt  \n",
         "from matplotlib.font_manager import FontProperties  \n",
@@ -250,11 +235,7 @@
         "if not os.path.exists(output_dir):  \n",
         "    os.makedirs(output_dir) "
       ],
-<<<<<<< HEAD
-      "id": "3f127c20",
-=======
-      "id": "eb64ec23",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "00f25c86",
       "execution_count": null,
       "outputs": []
     },
@@ -275,11 +256,7 @@
         "\n",
         "airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  "
       ],
-<<<<<<< HEAD
-      "id": "d48ad913",
-=======
-      "id": "3c5d045f",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "271b59d0",
       "execution_count": null,
       "outputs": []
     },
@@ -291,11 +268,7 @@
         "\n",
         "Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:\n"
       ],
-<<<<<<< HEAD
-      "id": "33f584a7"
-=======
-      "id": "4744e65e"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "77ad8370"
     },
     {
       "cell_type": "code",
@@ -303,7 +276,6 @@
       "source": [
         "#| echo: false\n",
         "#| warning: false\n",
-<<<<<<< HEAD
         "\n",
         "# -------------------------------  \n",
         "# 1. Setup the Main Figure Layout  \n",
@@ -488,35 +460,7 @@
         "\n",
         "plt.show()"
       ],
-      "id": "79a097d9",
-=======
-        "# 1. Data Cleaning and Preparation  \n",
-        "# -------------------------------  \n",
-        "# Select relevant columns and drop rows with missing values  \n",
-        "data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  \n",
-        "                    'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  \n",
-        "                    'price', 'latitude', 'longitude']].dropna()  \n",
-        "\n",
-        "# Filter data where availability_365 is greater than 0  \n",
-        "data = data[data['availability_365'] > 0]  \n",
-        "\n",
-        "import geopandas as gpd  \n",
-        "# Load the borough map as a GeoDataFrame  \n",
-        "borough_map = gpd.read_file(\"data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp\")\n",
-        "\n",
-        "# Convert the cleaned data into a GeoDataFrame  \n",
-        "gdf = gpd.GeoDataFrame(  \n",
-        "    data,   \n",
-        "    geometry=gpd.points_from_xy(data['longitude'], data['latitude']),  \n",
-        "    crs=\"EPSG:4326\"  # WGS84 coordinate system  \n",
-        ")  \n",
-        "# Reproject the GeoDataFrame to EPSG:27700 (British National Grid)  \n",
-        "gdf = gdf.to_crs(\"EPSG:27700\")  \n",
-        "# Ensure both GeoDataFrames use the same CRS  \n",
-        "borough_map = borough_map.to_crs(gdf.crs)  "
-      ],
-      "id": "c0044e8f",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "e0c01787",
       "execution_count": null,
       "outputs": []
     },
@@ -526,7 +470,6 @@
       "source": [
         "#| echo: false\n",
         "#| warning: false\n",
-<<<<<<< HEAD
         "# -------------------------------  \n",
         "# 1. Setup the Main Figure Layout  \n",
         "# -------------------------------  \n",
@@ -535,25 +478,12 @@
         "\n",
         "x_offset = 0.75  \n",
         "y_offsets = [0.75, 0.55, 0.35, 0.15]  \n",
-=======
-        "\n",
-        "# -------------------------------  \n",
-        "# 1. Setup the Main Figure Layout  \n",
-        "# -------------------------------  \n",
-        "fig = plt.figure(figsize=(16, 10))  # Main figure size  \n",
-        "gs = GridSpec(1, 1, figure=fig)  # Single grid for the map  \n",
-        "\n",
-        "# Subplot positions and sizes  \n",
-        "x_offset = 0.75  \n",
-        "y_offsets = [0.82, 0.62, 0.42, 0.22]  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "subplot_width, subplot_height = 0.18, 0.12  \n",
         "\n",
         "# -------------------------------  \n",
         "# 2. Plot the Map of Airbnb Listings  \n",
         "# -------------------------------  \n",
         "ax_map = fig.add_subplot(gs[0, 0])  \n",
-<<<<<<< HEAD
         "borough_map.plot(ax=ax_map, color=\"lightblue\", edgecolor=\"darkblue\", alpha=0.44)  \n",
         "\n",
         "# Define room type colors  \n",
@@ -562,31 +492,16 @@
         "    \"Private room\": \"#77DD77\",  \n",
         "    \"Shared room\": \"#FDFD96\",  \n",
         "    \"Hotel room\": \"#FFA07A\",  \n",
-=======
-        "borough_map.plot(ax=ax_map, color='lightblue', edgecolor='darkblue', alpha=0.44)  \n",
-        "\n",
-        "# Define room type colors  \n",
-        "room_type_colors = {  \n",
-        "    'Entire home/apt': '#FF7F7F',  \n",
-        "    'Private room': '#77DD77',  \n",
-        "    'Shared room': '#FDFD96',  \n",
-        "    'Hotel room': '#FFA07A'  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "}  \n",
         "\n",
         "# Plot Airbnb listings by room type  \n",
         "for room_type, color in room_type_colors.items():  \n",
-<<<<<<< HEAD
         "    gdf[gdf[\"room_type\"] == room_type].plot(  \n",
-=======
-        "    gdf[gdf['room_type'] == room_type].plot(  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "        ax=ax_map, color=color, markersize=2, label=room_type, alpha=0.7  \n",
         "    )  \n",
         "\n",
         "# Add legend  \n",
         "legend = ax_map.legend(  \n",
-<<<<<<< HEAD
         "    title=\"Room Type\", loc=\"upper left\", fontsize=10, frameon=True, edgecolor=\"lightgray\"  \n",
         ")  \n",
         "legend.get_title().set_fontsize(10)  \n",
@@ -595,17 +510,6 @@
         "# Add map title  \n",
         "ax_map.set_title(\"Airbnb Listings in London\", fontsize=13, pad=15)  \n",
         "# Clean up the map axes  \n",
-=======
-        "    title=\"Room Type\", loc='upper left', fontsize=10, frameon=True, edgecolor='lightgray'  \n",
-        ")  \n",
-        "legend.get_title().set_fontsize(10)  \n",
-        "legend.get_title().set_fontweight('bold')  \n",
-        "\n",
-        "# Add map title  \n",
-        "plt.title('Airbnb Listings in London', fontsize=13)  \n",
-        "\n",
-        "# Remove axes and borders for a cleaner map  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "ax_map.set_xticks([]), ax_map.set_yticks([])  \n",
         "for spine in ax_map.spines.values():  \n",
         "    spine.set_visible(False)  \n",
@@ -613,7 +517,6 @@
         "# -------------------------------  \n",
         "# 3. Subplot 1: Estimated Booking Days  \n",
         "# -------------------------------  \n",
-<<<<<<< HEAD
         "ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])   \n",
         "bins = [0, 30, 60, 89.999, 120, 150, 180, 210, 240, 270, 300, 330, 356]  \n",
         "labels = [  \n",
@@ -650,44 +553,12 @@
         "ax1.tick_params(axis=\"y\", labelsize=7)  \n",
         "ax1.set_xlim(0, 356)  \n",
         "ax1.axvline(x=90, color=\"black\", linestyle=\"--\", linewidth=1)  \n",
-=======
-        "ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])  \n",
-        "\n",
-        "# Define bins and labels for booking days  \n",
-        "bins = [0, 30, 60, 89.999, 120, 150, 180, 210, 240, 270, 300, 330, 356]  \n",
-        "labels = ['0-30', '30-60', '60-90', '90-120', '120-150', '150-180', '180-210',  \n",
-        "          '210-240', '240-270', '270-300', '300-330', '330-356', '356+']  \n",
-        "\n",
-        "# Assign colors based on booking days  \n",
-        "data['booking_color'] = data['estimated_nights_booked'].apply(  \n",
-        "    lambda x: 'blue' if x <= 89 else 'red'  \n",
-        ")  \n",
-        "\n",
-        "# Plot histogram  \n",
-        "sns.histplot(  \n",
-        "    data=data, x='estimated_nights_booked', hue='booking_color',  \n",
-        "    palette={'blue': '#6A9FB5', 'red': '#FF6F61'}, multiple='dodge',  \n",
-        "    edgecolor='black', linewidth=0.5, binwidth=15, ax=ax1  \n",
-        ")  \n",
-        "ax1.set_title('1. Estimated Booking Days', fontsize=10, fontweight='bold')  \n",
-        "ax1.set_xlabel('Booking Days (0-356)', fontsize=8)  \n",
-        "ax1.set_ylabel('Listings', fontsize=8)  \n",
-        "ax1.tick_params(axis='x', rotation=45, labelsize=7)  \n",
-        "ax1.tick_params(axis='y', labelsize=7)  \n",
-        "ax1.set_xlim(0, 356)  \n",
-        "\n",
-        "# Add vertical line at 90  \n",
-        "ax1.axvline(x=90, color='black', linestyle='--', linewidth=1)  \n",
-        "\n",
-        "# Set custom x-axis ticks and labels  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "ax1.set_xticks(bins)  \n",
         "ax1.set_xticklabels(labels, rotation=45, fontsize=6.5)  \n",
         "\n",
         "# Add custom legend  \n",
         "ax1.legend(  \n",
         "    handles=[  \n",
-<<<<<<< HEAD
         "        plt.Line2D([0], [0], color=\"#6A9FB5\", lw=4, label=\"< 90\"),  \n",
         "        plt.Line2D([0], [0], color=\"#FF6F61\", lw=4, label=\">=90\"),  \n",
         "    ],  \n",
@@ -697,21 +568,11 @@
         "    title_fontsize=8,  \n",
         ")  \n",
         "ax1.spines[\"top\"].set_visible(False)  \n",
-=======
-        "        plt.Line2D([0], [0], color='#6A9FB5', lw=4, label='< 90'),  \n",
-        "        plt.Line2D([0], [0], color='#FF6F61', lw=4, label='>=90')  \n",
-        "    ],  \n",
-        "    title=\"Booking Days\", loc='upper right', fontsize=8, title_fontsize=8  \n",
-        ")  \n",
-        "ax1.spines['top'].set_visible(False)  \n",
-        "ax1.spines['right'].set_visible(False)  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "\n",
         "# -------------------------------  \n",
         "# 4. Subplot 2: Listings per Host  \n",
         "# -------------------------------  \n",
         "ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])  \n",
-<<<<<<< HEAD
         "sns.histplot(  \n",
         "    listings_per_host,  \n",
         "    kde=False,  \n",
@@ -731,33 +592,10 @@
         "ax2.set_xlim(0.5, 11.5)  \n",
         "ax2.spines[\"top\"].set_visible(False)  \n",
         "ax2.spines[\"right\"].set_visible(False)  \n",
-=======
-        "\n",
-        "# Group listings per host and create a new column for \"10+\"  \n",
-        "listings_per_host = data.groupby('host_id').size()  \n",
-        "listings_per_host = listings_per_host.apply(lambda x: x if x <= 10 else 11)  \n",
-        "\n",
-        "# Plot histogram  \n",
-        "sns.histplot(  \n",
-        "    listings_per_host, kde=False, color='lightblue',  \n",
-        "    edgecolor='black', linewidth=0.5, binwidth=0.8, ax=ax2  \n",
-        ")  \n",
-        "ax2.set_title('2. Listings per Host', fontsize=10, fontweight='bold')  \n",
-        "ax2.set_xlabel('Number of Listings', fontsize=8)  \n",
-        "ax2.set_ylabel('Hosts', fontsize=8)  \n",
-        "ax2.tick_params(axis='x', labelsize=7)  \n",
-        "ax2.tick_params(axis='y', labelsize=7)  \n",
-        "ax2.set_xticks(range(1, 12))  \n",
-        "ax2.set_xticklabels([str(i) for i in range(1, 11)] + ['10+'])  \n",
-        "ax2.set_xlim(0.5, 11.5)  \n",
-        "ax2.spines['top'].set_visible(False)  \n",
-        "ax2.spines['right'].set_visible(False)  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "\n",
         "# -------------------------------  \n",
         "# 5. Subplot 3: Room Type Count  \n",
         "# -------------------------------  \n",
-<<<<<<< HEAD
         "ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])   \n",
         "room_type_count = data[\"room_type\"].value_counts()  \n",
         "room_type_count.index = [\"Entire home\", \"Private room\", \"Shared room\", \"Hotel room\"]  \n",
@@ -776,31 +614,11 @@
         "ax3.tick_params(axis=\"y\", labelsize=7)  \n",
         "ax3.spines[\"top\"].set_visible(False)  \n",
         "ax3.spines[\"right\"].set_visible(False)  \n",
-=======
-        "ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])  \n",
-        "\n",
-        "# Plot bar chart  \n",
-        "room_type_count = data['room_type'].value_counts()  \n",
-        "room_type_count.index = ['Entire home', 'Private room', 'Shared room', 'Hotel room']  \n",
-        "sns.barplot(  \n",
-        "    x=room_type_count.index, y=room_type_count.values,  \n",
-        "    palette=['#FF7F7F', '#AEC6CF', '#FDFD96', '#FFA07A'],  \n",
-        "    edgecolor='black', linewidth=0.5, width=0.4, ax=ax3  \n",
-        ")  \n",
-        "ax3.set_title('3. Room Type Count', fontsize=10, fontweight='bold')  \n",
-        "ax3.set_xlabel('Room Type', fontsize=8)  \n",
-        "ax3.set_ylabel('Count', fontsize=8)  \n",
-        "ax3.tick_params(axis='x', labelsize=7)  \n",
-        "ax3.tick_params(axis='y', labelsize=7)  \n",
-        "ax3.spines['top'].set_visible(False)  \n",
-        "ax3.spines['right'].set_visible(False)  \n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "\n",
         "# -------------------------------  \n",
         "# 6. Subplot 4: Minimum Nights Distribution  \n",
         "# -------------------------------  \n",
         "ax4 = fig.add_axes([x_offset, y_offsets[3], subplot_width, subplot_height])  \n",
-<<<<<<< HEAD
         "sns.histplot(  \n",
         "    data[\"minimum_nights\"],  \n",
         "    bins=1000,  \n",
@@ -834,41 +652,7 @@
         "\n",
         "plt.show()"
       ],
-      "id": "a7f1b7f4",
-=======
-        "\n",
-        "# Plot histogram  \n",
-        "sns.histplot(  \n",
-        "    data['minimum_nights'], bins=1000, kde=False,  \n",
-        "    color='lightcoral', edgecolor='black', linewidth=0.5, ax=ax4  \n",
-        ")  \n",
-        "ax4.set_title('4. Minimum Nights Distribution', fontsize=10, fontweight='bold')  \n",
-        "ax4.set_xlabel('Minimum Nights', fontsize=8)  \n",
-        "ax4.set_ylabel('Listings', fontsize=8)  \n",
-        "ax4.tick_params(axis='x', labelsize=7)  \n",
-        "ax4.tick_params(axis='y', labelsize=7)  \n",
-        "ax4.set_xlim(0, 40)  \n",
-        "ax4.spines['top'].set_visible(False)  \n",
-        "ax4.spines['right'].set_visible(False)  \n",
-        "\n",
-        "# -------------------------------  \n",
-        "# 7. Add a Table Header  \n",
-        "# -------------------------------  \n",
-        "fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  \n",
-        "\n",
-        "# -------------------------------  \n",
-        "# 8. Save the Figure  \n",
-        "# -------------------------------  \n",
-        "os.makedirs('plots', exist_ok=True)  # Create 'plots' folder if it doesn't exist  \n",
-        "plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches='tight')  \n",
-        "\n",
-        "# -------------------------------  \n",
-        "# 9. Display the Figure  \n",
-        "# -------------------------------  \n",
-        "plt.show()"
-      ],
-      "id": "6e295996",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "4712b44c",
       "execution_count": null,
       "outputs": []
     },
@@ -886,11 +670,7 @@
         "\n",
         "To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy:\n"
       ],
-<<<<<<< HEAD
-      "id": "9dbd4588"
-=======
-      "id": "aac981a7"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "8646f171"
     },
     {
       "cell_type": "code",
@@ -963,11 +743,7 @@
         "avg_price_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='price', aggfunc='mean').round(2)  \n",
         "min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type', values='minimum_nights', aggfunc='mean').round(2)  "
       ],
-<<<<<<< HEAD
-      "id": "abab449d",
-=======
-      "id": "69578713",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "ce3b5888",
       "execution_count": null,
       "outputs": []
     },
@@ -982,15 +758,9 @@
         "# -------------------------------  \n",
         "fig = plt.figure(figsize=(16, 14))  \n",
         "\n",
-<<<<<<< HEAD
         "# Main title \n",
         "fig.text(0.5, 0.02, 'Figure 2: Analysis of Airbnb Listings by Host and Room Types',   \n",
         "         ha='center', fontsize=16, fontweight='bold') \n",
-=======
-        "# Main title  \n",
-        "fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  \n",
-        "\n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "# First Row: Tables  \n",
         "# Left: Host Type Table  \n",
         "ax1 = fig.add_axes([0.1, 0.7, 0.35, 0.15])  \n",
@@ -1084,11 +854,7 @@
         "plt.savefig('plots/figure_2_Airbnb_Listings_Analysis.png', dpi=600, bbox_inches='tight')  \n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "e679eba7",
-=======
-      "id": "5ef3736f",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "c93f3003",
       "execution_count": null,
       "outputs": []
     },
@@ -1126,11 +892,7 @@
         "1. **Hotspot Identification:** \n",
         "We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  \n"
       ],
-<<<<<<< HEAD
-      "id": "f43d4051"
-=======
-      "id": "7dc19d8c"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "58458eae"
     },
     {
       "cell_type": "code",
@@ -1200,11 +962,7 @@
         "# Save the updated DataFrame\n",
         "combined_data.to_csv('data/borough_listings_ratio.csv', index=True)"
       ],
-<<<<<<< HEAD
-      "id": "2f31331a",
-=======
-      "id": "5bac9915",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "5e6c76f2",
       "execution_count": null,
       "outputs": []
     },
@@ -1255,11 +1013,7 @@
         "\n",
         "moran_plot(y, weights)"
       ],
-<<<<<<< HEAD
-      "id": "3bb77a0b",
-=======
-      "id": "ab1ab145",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "e186a368",
       "execution_count": null,
       "outputs": []
     },
@@ -1324,11 +1078,7 @@
         "\n",
         "print(f\"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}\")"
       ],
-<<<<<<< HEAD
-      "id": "14236e55",
-=======
-      "id": "28fc153b",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "069b5dc3",
       "execution_count": null,
       "outputs": []
     },
@@ -1358,11 +1108,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "5b7127f6",
-=======
-      "id": "2efae407",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "62000599",
       "execution_count": null,
       "outputs": []
     },
@@ -1384,11 +1130,7 @@
         "# merge the data\n",
         "borough_connect = borough.merge(connect, left_on=\"GSS_CODE\", right_on=\"Borough_code\")"
       ],
-<<<<<<< HEAD
-      "id": "00414c52",
-=======
-      "id": "9326818a",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "9b0d1f28",
       "execution_count": null,
       "outputs": []
     },
@@ -1450,11 +1192,7 @@
         "plt.savefig('plots/raw/LISA_monthly_rent.png')\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "188dc897",
-=======
-      "id": "39a70b88",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "c8fd1fe5",
       "execution_count": null,
       "outputs": []
     },
@@ -1516,11 +1254,7 @@
         "plt.savefig('plots/raw/LISA_vacant_ratio.png')\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "408937c5",
-=======
-      "id": "db9c0eec",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "67bb9ba9",
       "execution_count": null,
       "outputs": []
     },
@@ -1557,8 +1291,7 @@
         "\n",
         "new_im.save('plots/combined_of_Moran_and_LISA.png')"
       ],
-<<<<<<< HEAD
-      "id": "09c608d8",
+      "id": "ae945898",
       "execution_count": null,
       "outputs": []
     },
@@ -1585,10 +1318,7 @@
         " \n",
         "plt.show()"
       ],
-      "id": "c1f9f7ec",
-=======
-      "id": "acdc2d11",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "227ae39c",
       "execution_count": null,
       "outputs": []
     },
@@ -1596,21 +1326,10 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-<<<<<<< HEAD
         "2. **Housing Market Impacts**  \n",
         "To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   \n"
       ],
-      "id": "11dadc1d"
-=======
-        "### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio\n",
-        "\n",
-        "![](plots/combined_of_Moran_and_LISA.png)\n",
-        "\n",
-        "2. **Housing Market Impacts**  \n",
-        "To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   \n"
-      ],
-      "id": "fb43a87b"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "1cea2f50"
     },
     {
       "cell_type": "code",
@@ -1659,11 +1378,7 @@
         "plt.axis('off')\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "4be1c965",
-=======
-      "id": "3200572d",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "9c702b00",
       "execution_count": null,
       "outputs": []
     },
@@ -1702,11 +1417,7 @@
         "# Fit GWR model with the determined optimal bandwidth\n",
         "gwr_results_rent = GWR(g_coords, g_y_rent, g_X_rent, gwr_bw_rent, fixed=False, kernel='bisquare').fit()"
       ],
-<<<<<<< HEAD
-      "id": "cc79fcd3",
-=======
-      "id": "297d21c9",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "db81b928",
       "execution_count": null,
       "outputs": []
     },
@@ -1739,11 +1450,7 @@
         "gwr_results_vacant = GWR(g_coords, g_y_vacant, g_X_vacant, gwr_bw_vacant, fixed=False, kernel='bisquare').fit()\n",
         "print(gwr_results_vacant.summary())"
       ],
-<<<<<<< HEAD
-      "id": "b954aecc",
-=======
-      "id": "43dd0720",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "cf92544c",
       "execution_count": null,
       "outputs": []
     },
@@ -1756,11 +1463,7 @@
         "zone['coefficient'] = gwr_results_rent.params[:, 1]  # Add coefficients\n",
         "zone['t_values'] = gwr_results_rent.tvalues[:, 1]  # Add t-values"
       ],
-<<<<<<< HEAD
-      "id": "15671aa2",
-=======
-      "id": "92cb9717",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "bd639165",
       "execution_count": null,
       "outputs": []
     },
@@ -1794,11 +1497,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "a0f809c4",
-=======
-      "id": "13e3e160",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "53a1e836",
       "execution_count": null,
       "outputs": []
     },
@@ -1823,11 +1522,7 @@
         "vacant_coefs = pd.DataFrame(gwr_model_vacant.params, columns=['Intercept', 'Effect_of_Ratio_of_more_than_90_on_Vacancy'])\n",
         "vacant_tvals = pd.DataFrame(gwr_model_vacant.tvalues, columns=['t_Intercept', 't_Effect_on_Vacancy'])"
       ],
-<<<<<<< HEAD
-      "id": "4f90dacf",
-=======
-      "id": "50443595",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "8f05addd",
       "execution_count": null,
       "outputs": []
     },
@@ -1845,11 +1540,7 @@
         "zone['Significant_Rent'] = rent_tvals['t_Effect_on_Rent'].abs() > 1.96\n",
         "zone['Significant_Vacancy'] = vacant_tvals['t_Effect_on_Vacancy'].abs() > 1.96"
       ],
-<<<<<<< HEAD
-      "id": "6c992776",
-=======
-      "id": "e8db92d8",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "6c7e85bd",
       "execution_count": null,
       "outputs": []
     },
@@ -1879,11 +1570,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "dda573b7",
-=======
-      "id": "0b26992d",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "269f2ee1",
       "execution_count": null,
       "outputs": []
     },
@@ -1925,8 +1612,7 @@
         "# Adjust layout\n",
         "plt.tight_layout()"
       ],
-<<<<<<< HEAD
-      "id": "2446d9c8",
+      "id": "fdd95930",
       "execution_count": null,
       "outputs": []
     },
@@ -1955,10 +1641,7 @@
         "# \n",
         "plt.show()"
       ],
-      "id": "fa541451",
-=======
-      "id": "47b4312a",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "148fdc66",
       "execution_count": null,
       "outputs": []
     },
@@ -1966,13 +1649,6 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-<<<<<<< HEAD
-=======
-        "### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio\n",
-        "\n",
-        "![](plots/Results_of_SAR_and_GWR_model.png)\n",
-        "\n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and stability in affected hotspots.\n",
         "\n",
         "---\n",
@@ -1981,11 +1657,7 @@
         "\n",
         "1. **Logistic Regression:** To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted a logistic regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.\n"
       ],
-<<<<<<< HEAD
-      "id": "5e1cb6bf"
-=======
-      "id": "6265bb6e"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "3c1baed1"
     },
     {
       "cell_type": "code",
@@ -2009,11 +1681,7 @@
         "from pandas.plotting import table  \n",
         "import matplotlib.gridspec as gridspec  "
       ],
-<<<<<<< HEAD
-      "id": "7923d279",
-=======
-      "id": "2a09cb42",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "5c911a09",
       "execution_count": null,
       "outputs": []
     },
@@ -2059,11 +1727,7 @@
         "regression_data = regression_data.drop(columns=[\"calculated_host_listings_count\", \"room_type\"])  \n",
         "regression_data = pd.concat([regression_data, room_type_df], axis=1)  "
       ],
-<<<<<<< HEAD
-      "id": "d8170de6",
-=======
-      "id": "0524bbde",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "25ae9852",
       "execution_count": null,
       "outputs": []
     },
@@ -2088,11 +1752,7 @@
         "\n",
         "vif_results = vif_data  "
       ],
-<<<<<<< HEAD
-      "id": "9ffe4b08",
-=======
-      "id": "0c3c84ce",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "99ce7285",
       "execution_count": null,
       "outputs": []
     },
@@ -2123,11 +1783,7 @@
         "print(result.summary())  \n",
         "print(\"Logistic regression complete.\")"
       ],
-<<<<<<< HEAD
-      "id": "a3912998",
-=======
-      "id": "8531a14b",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "7daee2d6",
       "execution_count": null,
       "outputs": []
     },
@@ -2182,11 +1838,7 @@
         "print(f\"p-value: {moran.p_sim:.4f}\")  \n",
         "print(f\"z-score: {moran.z_sim:.4f}\")  "
       ],
-<<<<<<< HEAD
-      "id": "eb65f5c8",
-=======
-      "id": "1048c3f0",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "bb20e1c2",
       "execution_count": null,
       "outputs": []
     },
@@ -2198,15 +1850,6 @@
         "# Create a 3x2 subplot layout  \n",
         "fig = plt.figure(figsize=(15, 18))  \n",
         "\n",
-<<<<<<< HEAD
-=======
-        "# Add main title  \n",
-        "plt.suptitle(\"Figure 5. Visualisation of Residuals and Moran's I\",   \n",
-        "             fontsize=16,   \n",
-        "             fontweight='bold',   \n",
-        "             y=0.95)  # Adjust y position of the title  \n",
-        "\n",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
         "# Residuals vs Fitted Values  \n",
         "ax1 = plt.subplot(3, 2, 1)  \n",
         "sns.scatterplot(x=gdf_filtered[\"predicted_probs\"], y=gdf_filtered[\"deviance_residuals\"],  \n",
@@ -2251,7 +1894,6 @@
         "moran_scatterplot(moran, ax=ax5)  \n",
         "ax5.set_title(\"Moran's I Scatterplot (Deviance Residuals)\", fontsize=14)  \n",
         "\n",
-<<<<<<< HEAD
         "# 调整布局  \n",
         "plt.tight_layout(rect=[0, 0.05, 1, 1])  # 预留底部空间来放置标题  \n",
         "\n",
@@ -2265,14 +1907,7 @@
         "# 显示图形  \n",
         "plt.show()"
       ],
-      "id": "dbc64920",
-=======
-        "# Adjust layout with top margin for main title  \n",
-        "plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  \n",
-        "plt.show()"
-      ],
-      "id": "6555fd88",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "e135e3c1",
       "execution_count": null,
       "outputs": []
     },
@@ -2288,11 +1923,7 @@
         "\n",
         "2. **Geographically Weighted Regression:** To address spatial heterogeneity, research suggests adopting the Geographically Weighted Regression (GWR) model, which allows variable coefficients to vary by location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. Thus, we incorporate these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap [@geofabrik2024london].\n"
       ],
-<<<<<<< HEAD
-      "id": "094b8e96"
-=======
-      "id": "685f8e58"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "9ff18a96"
     },
     {
       "cell_type": "code",
@@ -2315,11 +1946,7 @@
         "from mgwr.sel_bw import Sel_BW\n",
         "from shapely.geometry import Point"
       ],
-<<<<<<< HEAD
-      "id": "cb46fcb3",
-=======
-      "id": "5fbdd310",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "181c7ea4",
       "execution_count": null,
       "outputs": []
     },
@@ -2353,11 +1980,7 @@
         "    epsg=27700\n",
         ")  # Tourism POIs"
       ],
-<<<<<<< HEAD
-      "id": "c29b2f2c",
-=======
-      "id": "727a7822",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "9f8ab80f",
       "execution_count": null,
       "outputs": []
     },
@@ -2381,11 +2004,7 @@
         "## 3.2. Reproject to British National Grid (EPSG:27700)\n",
         "listing_spatial = listing_spatial.to_crs(epsg=27700)"
       ],
-<<<<<<< HEAD
-      "id": "17e51a21",
-=======
-      "id": "1eec8f54",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "c59ebd9f",
       "execution_count": null,
       "outputs": []
     },
@@ -2416,11 +2035,7 @@
         "ward[\"area\"] = ward.geometry.area\n",
         "ward[\"listing_density\"] = ward[\"listing_count\"] / ward[\"area\"]"
       ],
-<<<<<<< HEAD
-      "id": "49e1b3dd",
-=======
-      "id": "c9c01736",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "7cf9a970",
       "execution_count": null,
       "outputs": []
     },
@@ -2477,11 +2092,7 @@
         "### 5.3.3. Calculate tourism site density\n",
         "ward[\"tourism_density\"] = ward[\"tourism_count\"] / ward[\"area\"]"
       ],
-<<<<<<< HEAD
-      "id": "181079f7",
-=======
-      "id": "392e7fe2",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "17cd15fe",
       "execution_count": null,
       "outputs": []
     },
@@ -2501,11 +2112,7 @@
         "## 6.2. Save to a new Shapefile\n",
         "final_data.to_file(\"data/final_results.shp\", driver=\"ESRI Shapefile\")"
       ],
-<<<<<<< HEAD
-      "id": "22677e62",
-=======
-      "id": "1c9b0a55",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "bbbcb59f",
       "execution_count": null,
       "outputs": []
     },
@@ -2539,11 +2146,7 @@
         "## 7.4. Save the spatially joined data to a Shapefile\n",
         "listing_ward.to_file(\"data/listing_ward.shp\", driver=\"ESRI Shapefile\")"
       ],
-<<<<<<< HEAD
-      "id": "4839b162",
-=======
-      "id": "cc51b4dc",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "59056e3e",
       "execution_count": null,
       "outputs": []
     },
@@ -2580,11 +2183,7 @@
         "### 8.2.3 Check the updated ward data\n",
         "print(ward.info())"
       ],
-<<<<<<< HEAD
-      "id": "40495fe6",
-=======
-      "id": "17886c4e",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "55f85190",
       "execution_count": null,
       "outputs": []
     },
@@ -2634,11 +2233,7 @@
         "### 9.2.5. Check the updated ward data\n",
         "print(ward.info())"
       ],
-<<<<<<< HEAD
-      "id": "9220cf31",
-=======
-      "id": "076a24cc",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "ebb03187",
       "execution_count": null,
       "outputs": []
     },
@@ -2667,11 +2262,7 @@
         "gwr_data = ward[columns_to_keep + [\"geometry\"]]\n",
         "gwr_data.to_file(\"data/gwr.shp\", driver=\"ESRI Shapefile\")"
       ],
-<<<<<<< HEAD
-      "id": "715a9120",
-=======
-      "id": "1cdbaad9",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "62e0c889",
       "execution_count": null,
       "outputs": []
     },
@@ -2709,11 +2300,7 @@
         "].values\n",
         "coords = gwr[[\"x\", \"y\"]].values"
       ],
-<<<<<<< HEAD
-      "id": "cc11d6e2",
-=======
-      "id": "0853ddbe",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "a594645d",
       "execution_count": null,
       "outputs": []
     },
@@ -2751,11 +2338,7 @@
         "    with open(cache_file, \"wb\") as f:\n",
         "        pickle.dump((bw, results), f)"
       ],
-<<<<<<< HEAD
-      "id": "d4e09dbf",
-=======
-      "id": "a8cf5058",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "ed9bdc39",
       "execution_count": null,
       "outputs": []
     },
@@ -2782,11 +2365,7 @@
         "                         'avg_price', 'avg_night', 'avg_host_listing', 'entire_density']):\n",
         "    gwr[f'gwr_{col}'] = results.params[:, i]"
       ],
-<<<<<<< HEAD
-      "id": "1bdf2e88",
-=======
-      "id": "03f040d1",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "692518cc",
       "execution_count": null,
       "outputs": []
     },
@@ -2828,11 +2407,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-<<<<<<< HEAD
-      "id": "1d058653",
-=======
-      "id": "c9836802",
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "50ef7f59",
       "execution_count": null,
       "outputs": []
     },
@@ -2865,11 +2440,7 @@
         "\n",
         "## References"
       ],
-<<<<<<< HEAD
-      "id": "ac02e70a"
-=======
-      "id": "745be6c8"
->>>>>>> d20680cb38bf22a91d03556ce3517abfd2bb82b9
+      "id": "91aa1028"
     }
   ],
   "metadata": {
