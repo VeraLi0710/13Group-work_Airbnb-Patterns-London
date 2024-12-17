@@ -69,7 +69,7 @@ else:
 
 ## Declaration of Authorship {.unnumbered .unlisted}
 
-We, [NA_Group2], pledge our honour that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
+We, [NA_Group2], pledge our honor that the work presented in this assessment is our own. Where information has been derived from other sources, we confirm that this has been indicated in the work. Where a Large Language Model such as ChatGPT has been used we confirm that we have made its contribution to the final submission clear.
 
 Date: 17/12/2024
 
@@ -78,7 +78,7 @@ Student Numbers: 4
 
 ## Declaration of Large Language Model Use
 
-In the preparation of this report, Large Language Models, specifically OpenAI's ChatGPT and Anthropic's Claude, were utilized as a supplementary tool to support various stages of the report. Its usage was carefully managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:  
+In the preparation of this report, Large Language Models, specifically OpenAI's ChatGPT and Anthropic's Claude, were utilized as supplementary tools to support various stages of the report. Its usage was carefully managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:  
 1. **Language Enhancement**: The LLMs were used to improve the grammar, sentence structure, readability, and clarity of the text.
   
 2. **Assistance with Code and Data Analysis**: In sections involving programming or data analysis, the LLMs provided guidance on debugging, refining code, optimizing algorithms, and suggesting alternative approaches to analytical problems.
@@ -99,9 +99,9 @@ In the preparation of this report, Large Language Models, specifically OpenAI's 
 
 | What Went Well                                      | What Was Challenging                               |  
 |----------------------------------------------------|--------------------------------------------------|  
-| Clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
+| A clear focus on the 90-day policy as the core theme.| InsideAirbnb lacks direct data on annual rental days, requiring estimation. |  
 | Initial observations revealed significant policy violations.| Snapshot data is time-sensitive and may not fully capture temporal changes. |  
-| Spatial clustering analysis highlighted policy-violating hotspots.| Logistic regression model had low explanatory power (R² = 0.05). |  
+| Spatial clustering analysis highlighted policy-violating hotspots.| The logistic regression model had low explanatory power (R² = 0.05). |  
 | Iterative refinement of models improved insights (GWLR R² = 0.55–0.96).| Residual analysis and Moran's I indicated spatial heterogeneity. |  
 | Identified policy violations' impact on rent and vacancy rates.| Incorporating new variables (e.g., attraction density) was computationally intensive. |  
 | Combined four quarters of snapshot data to mitigate time-sensitivity limitations.| Assessing the broader socioeconomic impact was limited by data availability. |
@@ -142,7 +142,7 @@ Inside Airbnb used Python-based web scraping to collect publicly available data 
 ## 4. How does the method of collection (Q3) impact the completeness and/or accuracy of the InsideAirbnb data? How well does it represent the process it seeks to study, and what wider issues does this raise?
 
 
-The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has following limitations:  
+The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has the following limitations:  
 
 1. The data includes only Airbnb listings, which may be removed or hidden by Airbnb due to business or regulatory pressures. For example, in 2015, Airbnb deleted over 1,000 entire-home listings in New York [@cox_how_2016].
 
@@ -427,12 +427,12 @@ plt.show()
 ### Key Findings  
 
 1. **Spatial Hotspot**:  
-    Central London has the highest density of short-term rentals, with entire homes dominating high-demand, high-violation areas of the 90-day rule. (Figure 1, Map).
+    Central London has the highest density of short-term rentals, with entire homes dominating high-demand, high-violation areas of the 90-day rule (Figure 1, Map).
 
 2. **Frequent Breaches of the 90-Day Limit**:  
     Booking data, based on reviews, pricing, and minimum nights [@insideairbnb2023], shows entire homes and hotel-like properties often exceed the 90-day limit, especially in commercialized areas (Figure 1, Panel 1). 
 
-To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy：
+To address the limitations of using only snapshot data, we merged datasets from December 2023 to September 2024 and removed duplicates to ensure greater accuracy:
 
 ```{python}
 #| echo: false
@@ -610,7 +610,7 @@ plt.show()
     Multi-listing hosts manage 62.38% of Airbnb listings with longer average booking durations than single-listing. They primarily operate entire and hotel-like properties, which are highly commercialized with shorter stays and higher prices (Figure 2, Top Left; heatmap).
 
 4. **Entire Homes are the Highest Risk**:  
-    Entire homes (66.97% of listings) have the highest average booking days and are most likely to breach the 90-day rule, followed by hotel-like properties with short minimum stays (2.13 nights) and high commercialization.(Figure 2, Top Right; heatmap).
+    Entire homes (66.97% of listings) have the highest average booking days and are most likely to breach the 90-day rule, followed by hotel-like properties with short minimum stays (2.13 nights) and high commercialization (Figure 2, Top Right; heatmap).
 
 
 ### Initial conclusion 
@@ -627,7 +627,7 @@ We decided to further analyze the December 2023 Inside Airbnb dataset to provide
     Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents and reduced housing availability—issues tied to Airbnb-driven gentrification [@smith2006].
 
 2. **Analyzing Drivers of Violations:**  
-   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, pricie and location...)
+   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, price, and location...)
 
 This approach will highlight the need for effective regulation, and clarify enforcement priorities to enhance the efficiency of enforcement efforts.
 
@@ -1229,7 +1229,7 @@ From the analysis above, enforcing the 90-day policy is essential to address ris
 
 ### Analysis of Factors Associated with Policy-Violating Listings
 
-1. **Logistic Regression:** To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
+1. **Logistic Regression:** To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted a logistic regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 
 ```{python}
 #| echo: false
@@ -1851,10 +1851,9 @@ Significant spatial heterogeneity is observed. For example, for public transport
 ## Discussion
 We conducted a spatial analysis based on Inside Airbnb data and found that illegal listings in London exhibit a clear clustering pattern and have a significant impact on local housing market rental levels and vacancy rates. This suggests that the current 90-day short-term rental policy is necessary and reasonable. Further multi-factor analysis shows that although there is a certain correlation between illegal listings and factors such as host type, property type, minimum rental period, and price, their impact is limited. In contrast, traffic network density and tourist density are the key driving factors for the distribution of illegal listings. However, the direction and degree of their influence vary significantly among different regions, indicating that a single regulatory policy is difficult to effectively solve all illegal activities in all regions.
 
-Therefore, we suggest that the government should establish a citywide housing database and require short-term rental platforms to sign data sharing agreements with the government, regularly uploading housing information and usage data to support regulatory work. At the same time, we can learn from the experience of European cities such as Barcelona and force short-term rental platforms to remove unregistered listings and impose stricter penalties on platform violations. （Ref 1, https://www.sciencedirect.com/science/article/pii/S0264275124008175）
+Therefore, we suggest that the government should establish a citywide housing database and require short-term rental platforms to sign data-sharing agreements with the government, regularly uploading housing information and usage data to support regulatory work. At the same time, we can learn from the experience of European cities such as Barcelona and force short-term rental platforms to remove unregistered listings and impose stricter penalties on platform violations. （Ref 1, https://www.sciencedirect.com/science/article/pii/S0264275124008175）
 Combining London's current Housing Act 2015 (Ref 2), we further suggest implementing differential regulation by region. Based on data analysis, the government can allocate more enforcement resources to hotspot areas of illegal listings and optimise patrol and rectification measures, thereby improving regulatory efficiency and reducing the occurrence of illegal activities.
 
 --- 
 
 ## References
-
