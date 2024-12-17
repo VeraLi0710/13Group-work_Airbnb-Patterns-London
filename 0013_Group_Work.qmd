@@ -88,11 +88,11 @@ In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthrop
 
 ## Word Count 
 
-**Text Content**: 1,303   [[[[+++++ yezhen part and conclusion????????????]]]
+**Text Content**: 1,727
 
 **Visuals**: 6 figures × 150 per figure = 900 
 
-**Total**: 2,500 [[[[[[[[[[[[]]]]]]]]]]]]]]
+**Total**: 2,627
 
 
 ## Brief Group Reflection
