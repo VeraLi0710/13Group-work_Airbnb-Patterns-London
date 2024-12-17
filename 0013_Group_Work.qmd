@@ -1223,7 +1223,9 @@ plt.show()
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
 
-### Logistic Regression and visualisations
+---
+
+### Logistic Regression: What Factors Drive Policy Violations?
 To explore the relationship in the study area between variables and their spatial distribution characteristics, this study adopted the traditional logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 
 ```{python}
@@ -1464,10 +1466,10 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle
 plt.show()
 ```
 
-### Result
-Firstly, the VIF results show no multicollinearity issues.
-The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). 
-Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. 
+***Results***
+Key property and host characteristics were identified as drivers of policy violations, with all variables showing statistical significance (p < 0.001). However, the model’s low pseudo R-squared (0.05) highlights limited explanatory power.
+
+Residual analysis and Moran’s I test (I = 0.0855, p = 0.001) revealed weak but significant spatial patterns, suggesting missing factors and unexplained spatial heterogeneity. Further refinement is needed to improve the model's accuracy.
 
 ## References
 
