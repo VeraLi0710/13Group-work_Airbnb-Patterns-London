@@ -259,7 +259,7 @@ ax4.spines['right'].set_visible(False)
 # -------------------------------  
 # 7. Add a Table Header  
 # -------------------------------  
-fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  
+fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.00001)  
 
 # -------------------------------  
 # 8. Save the Figure  

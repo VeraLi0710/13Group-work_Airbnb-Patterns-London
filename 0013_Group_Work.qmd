@@ -593,7 +593,6 @@ fig.text(0.5, 0.01, 'Figure 1: Airbnb Listings Analysis in London',
          ha='center', fontsize=18, fontweight='bold')
 
 plt.show()
-
 ```
 
 ### Key Findings  
@@ -1680,6 +1679,8 @@ from shapely.geometry import Point
 from mgwr.gwr import GWR, MGWR
 from mgwr.sel_bw import Sel_BW
 from shapely.geometry import Point
+import requests
+import os
 ```
 
 ```{python}
@@ -1690,24 +1691,145 @@ from shapely.geometry import Point
 # Step 2: Load Data
 ## 2.1. Load Airbnb listings data
 listing = pd.read_csv(
-    "data/processed_airbnb_data.csv"
+    "https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/main/data/processed_airbnb_data.csv"
 )  # Estimated nights of Airbnb stays
+```
 
+```{python}
 ## 2.2. Load London ward boundaries and reproject to EPSG:27700
-ward = gpd.read_file(
-    "data/statistical-gis-boundaries-london/ESRI/London_Ward_CityMerged.shp"
-).to_crs(epsg=27700)
+# Shapefiles
+files = [
+    "London_Ward_CityMerged.shp",
+    "London_Ward_CityMerged.dbf",
+    "London_Ward_CityMerged.shx",
+    "London_Ward_CityMerged.prj"
+]
 
+# GitHub pathway
+base_url = "https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/main/data/statistical-gis-boundaries-london/ESRI/"
+output_dir = "./shapefile"  # save to local
+os.makedirs(output_dir, exist_ok=True)
+
+# download
+for file in files:
+    file_url = base_url + file
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        with open(os.path.join(output_dir, file), "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded: {file}")
+    else:
+        print(f"Failed to download: {file}")
+
+# read Shapefile and convert crs
+shapefile_path = os.path.join(output_dir, "London_Ward_CityMerged.shp")
+ward = gpd.read_file(shapefile_path).to_crs(epsg=27700)
+
+# check info
+print(ward.head())
+```
+
+```{python}
 ## 2.3. Load points of interest (POIs) and reproject
-nature = gpd.read_file("data/ldn_poi/gis_osm_natural_free_1.shp").to_crs(
-    epsg=27700
-)  # Nature POIs
-transport = gpd.read_file("data/ldn_poi/gis_osm_transport_free_1.shp").to_crs(
-    epsg=27700
-)  # Transport POIs
-tourism = gpd.read_file("data/ldn_poi/gis_osm_pois_free_1.shp").to_crs(
-    epsg=27700
-)  # Tourism POIs
+### 2.3.1 Nature POIs
+# Shapefiles
+files = [
+    "gis_osm_natural_free_1.shp",
+    "gis_osm_natural_free_1.dbf",
+    "gis_osm_natural_free_1.shx",
+    "gis_osm_natural_free_1.prj"
+]
+
+# GitHub pathway
+base_url = "https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/main/data/ldn_poi/"
+output_dir = "./ldn_poi"  # save to local
+os.makedirs(output_dir, exist_ok=True)
+
+# download
+for file in files:
+    file_url = base_url + file
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        with open(os.path.join(output_dir, file), "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded: {file}")
+    else:
+        print(f"Failed to download: {file}")
+
+# read Shapefile and convert crs
+shapefile_path = os.path.join(output_dir, "gis_osm_natural_free_1.shp")
+nature = gpd.read_file(shapefile_path).to_crs(epsg=27700)
+
+# check info
+print(nature.head())
+```
+
+```{python}
+### 2.3.2 Transport POIs
+# Shapefiles
+files = [
+    "gis_osm_transport_free_1.shp",
+    "gis_osm_transport_free_1.dbf",
+    "gis_osm_transport_free_1.shx",
+    "gis_osm_transport_free_1.prj"
+]
+
+# GitHub pathway
+base_url = "https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/main/data/ldn_poi/"
+output_dir = "./ldn_poi"  # save to local
+os.makedirs(output_dir, exist_ok=True)
+
+# download
+for file in files:
+    file_url = base_url + file
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        with open(os.path.join(output_dir, file), "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded: {file}")
+    else:
+        print(f"Failed to download: {file}")
+
+# read Shapefile and convert crs
+shapefile_path = os.path.join(output_dir, "gis_osm_transport_free_1.shp")
+transport = gpd.read_file(shapefile_path).to_crs(epsg=27700)
+
+# check info
+print(transport.head())
+```
+
+```{python}
+### 2.3.3 Tourism POIs
+# Shapefiles
+files = [
+    "gis_osm_pois_free_1.shp",
+    "gis_osm_pois_free_1.dbf",
+    "gis_osm_pois_free_1.shx",
+    "gis_osm_pois_free_1.prj"
+]
+
+# GitHub pathway
+base_url = "https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/main/data/ldn_poi/"
+output_dir = "./ldn_poi"  # save to local
+os.makedirs(output_dir, exist_ok=True)
+
+# download
+for file in files:
+    file_url = base_url + file
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        with open(os.path.join(output_dir, file), "wb") as f:
+            f.write(response.content)
+        print(f"Downloaded: {file}")
+    else:
+        print(f"Failed to download: {file}")
+
+# read Shapefile and convert crs
+shapefile_path = os.path.join(output_dir, "gis_osm_pois_free_1.shp")
+tourism = gpd.read_file(shapefile_path).to_crs(epsg=27700)
+
+# check info
+print(tourism.head())
 ```
 
 ```{python}
@@ -1804,10 +1926,6 @@ ward["tourism_count"] = ward["tourism_count"].fillna(0)
 ward["tourism_density"] = ward["tourism_count"] / ward["area"]
 ```
 
-```{python}
-#| echo: false
-#| warning: false
-#| output: false
 
 # Step 6: Export Results to Shapefile
 ## 6.1. Keep required columns and geometry
@@ -1816,7 +1934,6 @@ final_data = ward[columns_to_keep]
 
 ## 6.2. Save to a new Shapefile
 final_data.to_file("data/final_results.shp", driver="ESRI Shapefile")
-```
 
 ```{python}
 #| echo: false
@@ -1841,9 +1958,6 @@ listing_ward = listing_ward[columns_to_keep]
 
 ## 7.3. Preview the joined data
 print(listing_ward.head())
-
-## 7.4. Save the spatially joined data to a Shapefile
-listing_ward.to_file("data/listing_ward.shp", driver="ESRI Shapefile")
 ```
 
 ```{python}
@@ -1941,7 +2055,7 @@ columns_to_keep = [
 
 ## 10.2 Create a new dataset with selected columns and save as Shapefile
 gwr_data = ward[columns_to_keep + ["geometry"]]
-gwr_data.to_file("data/gwr.shp", driver="ESRI Shapefile")
+print(gwr_data.info())
 ```
 
 ```{python}
@@ -1953,7 +2067,7 @@ gwr_data.to_file("data/gwr.shp", driver="ESRI Shapefile")
 # --------------------------------------------------------------
 ## 11.1 Prepare GWR Input Data
 ### 11.1.1 Read the Shapefile data for GWR
-gwr = gpd.read_file("data/gwr.shp")
+gwr = gwr_data
 
 ### 11.1.2 Extract centroids and coordinates for GWR
 gwr["geometry"] = gwr.centroid
@@ -1961,16 +2075,16 @@ gwr["x"] = gwr.geometry.x
 gwr["y"] = gwr.geometry.y
 
 ### 11.1.3 Define dependent variable (Y), independent variables (X), and coordinates
-Y = gwr[["listing_de"]].values
+Y = gwr[["listing_density"]].values
 X = gwr[
     [
-        "nature_den",
-        "transport_",
-        "tourism_de",
+        "nature_density",
+        "transport_density",
+        "tourism_density",
         "avg_price",
         "avg_night",
-        "avg_host_l",
-        "entire_den",
+        "avg_host_listing",
+        "entire_density",
     ]
 ].values
 coords = gwr[["x", "y"]].values
