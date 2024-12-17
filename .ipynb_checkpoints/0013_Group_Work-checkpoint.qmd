@@ -627,11 +627,11 @@ We decided to further analyze the December 2023 Inside Airbnb dataset to provide
     Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents and reduced housing availability—issues tied to Airbnb-driven gentrification [@smith2006].
 
 2. **Analyzing Drivers of Violations:**  
-   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, price, and location...)
+   Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, price, location...)
 
 This approach will highlight the need for effective regulation, and clarify enforcement priorities to enhance the efficiency of enforcement efforts.
 
-### Spatial Analysis of Policy Violations and Local Impacts  
+### Spatial Analysis of Policy Violations / Local Impacts  
 
 1. **Hotspot Identification:** 
 We analyzed the spatial clustering of Airbnb rule-breaking properties using Moran’s I and LISA cluster maps (Figure 3). High-High clusters were found in central boroughs, such as Westminster, and eastern areas like Hackney, where violations are linked to a combination of high tourism demand, profitability of short-term rentals, and housing market pressures [@bosma2024].  
@@ -988,7 +988,7 @@ new_im.save('plots/combined_of_Moran_and_LISA.png')
 ![](plots/combined_of_Moran_and_LISA.png)
 
 2. **Housing Market Impacts**  
-To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, with the highest rent surges in central London and higher vacancy rates in eastern boroughs.   Similar findings as [@jain2021nowcasting].
+To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   
 
 ```{python}
 #| echo: false
@@ -1223,7 +1223,7 @@ plt.tight_layout()
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
-From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and community stability in affected hotspots.
+From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and stability in affected hotspots.
 
 ---
 
@@ -1847,12 +1847,21 @@ Significant spatial heterogeneity is observed. For example, for public transport
 
 --- 
 
-## Discussion
-We conducted a spatial analysis based on Inside Airbnb data and found that illegal listings in London exhibit a clear clustering pattern and have a significant impact on local housing market rental levels and vacancy rates. This suggests that the current 90-day short-term rental policy is necessary and reasonable. Further multi-factor analysis shows that although there is a certain correlation between illegal listings and factors such as host type, property type, minimum rental period, and price, their impact is limited. In contrast, traffic network density and tourist density are the key driving factors for the distribution of illegal listings. However, the direction and degree of their influence vary significantly among different regions, indicating that a single regulatory policy is difficult to effectively solve all illegal activities in all regions.
+## Conclusion / Policy Recommendations
+We conducted a spatial analysis using Inside Airbnb data and found that illegal listings in London exhibit a clear clustering pattern. These listings significantly impact local housing market rental levels and vacancy rates, highlighting the necessity and reasonableness of the current 90-day short-term rental policy.
 
-Therefore, we suggest that the government should establish a citywide housing database and require short-term rental platforms to sign data-sharing agreements with the government, regularly uploading housing information and usage data to support regulatory work. At the same time, we can learn from the experience of European cities such as Barcelona and force short-term rental platforms to remove unregistered listings and impose stricter penalties on platform violations. （Ref 1, https://www.sciencedirect.com/science/article/pii/S0264275124008175）
-Combining London's current Housing Act 2015 (Ref 2), we further suggest implementing differential regulation by region. Based on data analysis, the government can allocate more enforcement resources to hotspot areas of illegal listings and optimise patrol and rectification measures, thereby improving regulatory efficiency and reducing the occurrence of illegal activities.
+Further multi-factor analysis reveals that while illegal listings show some correlation with factors such as host type, property type, minimum rental period, and price, their overall impact is limited. Instead, traffic network density and tourist density emerge as the key drivers of illegal listing distribution. However, their influence varies significantly across regions, indicating that a single regulatory policy cannot effectively address illegal activities in all areas.
+
+**Policy Recommendations**
+1. **Citywide Housing Database and Data Sharing**: We recommend that the government establish a citywide housing database and require short-term rental platforms to sign data-sharing agreements. These platforms should regularly upload housing information and usage data to support regulatory work.
+
+2. **Learning from European Cities**: Drawing on the experience of cities like Barcelona, short-term rental platforms should be compelled to remove unregistered listings and face stricter penalties for violations. [@Gianluca2025]
+
+3. **Differential Regional Regulation**: Building on London’s Housing Act 2016 [@Housing2016], we suggest implementing region-specific regulations. Based on data analysis, enforcement resources can be allocated more effectively to hotspot areas of illegal listings, optimizing patrols and rectification measures.
+
+These measures would improve regulatory efficiency and help reduce illegal activities across London’s diverse regions.
 
 --- 
 
 ## References
+
