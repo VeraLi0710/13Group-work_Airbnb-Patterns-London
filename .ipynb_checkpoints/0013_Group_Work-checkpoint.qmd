@@ -79,7 +79,7 @@ Student Numbers: 4
 ## Declaration of Large Language Model Use
 
 In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthropic's Claude, were used as supplementary tools. Their usage was managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:  
-  
+
 1. **Language Enhancement**: The LLMs were used to improve the grammar, sentence structure, readability, and clarity of the text.
   
 2. **Assistance with Code and Data Analysis**: In sections involving programming or data analysis, the LLMs provided guidance on debugging, refining code, optimizing algorithms, and suggesting alternative approaches to analytical problems.
@@ -113,7 +113,7 @@ In this report, Large Language Models, specifically OpenAI's ChatGPT and Anthrop
 
 **Accuracy of Policy Violation Estimates:** Given the limitations of InsideAirbnb data (e.g., no direct measure for annual rental days), we used proxies like reviews and minimum stay to estimate violations. We’d appreciate guidance on how to validate or improve this estimation method to reduce bias.
 
-**Model Discrepancy and Improvement:** While GWLR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWLR model.
+**Model Discrepancy and Improvement:** While GWR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWR model.
 
 {{< pagebreak >}}
 
@@ -1790,7 +1790,9 @@ else:
     ### 11.2.3 Save to cache
     with open(cache_file, "wb") as f:
         pickle.dump((bw, results), f)
+```
 
+```{python}
 ### 11.2.4 Print summary of GWR results
 print("GWR Results Summary:")
 print(f"R²: {results.R2}")
