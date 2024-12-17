@@ -132,6 +132,7 @@ Inside Airbnb used Python-based web scraping to collect publicly available data 
 
 
 The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has following limitations:
+
 1. The data only includes Airbnb listings, which may be removed or hidden due to business or regulatory pressures. For example, in 2015, Airbnb deleted over 1,000 entire-home listings in New York City [@cox_how_2016].
 
 2. The data's snapshot nature cannot reflect ongoing changes, such as newly added or removed listings. Differences between dataset versions can also affect reliability and reproducibility if the version used is not specified.
