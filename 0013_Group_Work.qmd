@@ -1848,6 +1848,8 @@ for i, (var, title) in enumerate(zip(variables, titles)):
     axes[row, col].axis('off')  # Remove axes for clean plots
 
 ## 12.4. Adjust layout and display the figure
+fig.suptitle('Figure 6: Spatial Distribution of GWR Results for Airbnb Listings Analysis', 
+             fontsize=16, fontweight='bold', y=1.00)  
 plt.tight_layout()
 plt.show()
 ```
