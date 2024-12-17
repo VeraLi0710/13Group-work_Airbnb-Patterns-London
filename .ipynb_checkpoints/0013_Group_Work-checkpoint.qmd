@@ -182,6 +182,7 @@ The Inside Airbnb data reveals key market trends and geographic distribution of 
 #Reading airbnb data 2013.12
 import pandas as pd  
 import numpy as np  
+import geopandas as gpd
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
@@ -224,78 +225,48 @@ Airbnb has reduced long-term rentals, raised rents, and driven commercialization
 ```{python}
 #| echo: false
 #| warning: false
-# 1. Data Cleaning and Preparation  
-# -------------------------------  
-# Select relevant columns and drop rows with missing values  
-data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  
-                    'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  
-                    'price', 'latitude', 'longitude']].dropna()  
-
-# Filter data where availability_365 is greater than 0  
-data = data[data['availability_365'] > 0]  
-
-import geopandas as gpd  
-# Load the borough map as a GeoDataFrame  
-borough_map = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
-
-# Convert the cleaned data into a GeoDataFrame  
-gdf = gpd.GeoDataFrame(  
-    data,   
-    geometry=gpd.points_from_xy(data['longitude'], data['latitude']),  
-    crs="EPSG:4326"  # WGS84 coordinate system  
-)  
-# Reproject the GeoDataFrame to EPSG:27700 (British National Grid)  
-gdf = gdf.to_crs("EPSG:27700")  
-# Ensure both GeoDataFrames use the same CRS  
-borough_map = borough_map.to_crs(gdf.crs)  
-```
-
-```{python}
-#| echo: false
-#| warning: false
 
 # -------------------------------  
 # 1. Setup the Main Figure Layout  
 # -------------------------------  
-fig = plt.figure(figsize=(16, 10))  # Main figure size  
-gs = GridSpec(1, 1, figure=fig)  # Single grid for the map  
-
-# Subplot positions and sizes  
+fig = plt.figure(figsize=(16, 10))   
+gs = GridSpec(1, 1, figure=fig)  
+ 
 x_offset = 0.75  
-y_offsets = [0.82, 0.62, 0.42, 0.22]  
+y_offsets = [0.75, 0.55, 0.35, 0.15]  
 subplot_width, subplot_height = 0.18, 0.12  
 
 # -------------------------------  
 # 2. Plot the Map of Airbnb Listings  
 # -------------------------------  
 ax_map = fig.add_subplot(gs[0, 0])  
-borough_map.plot(ax=ax_map, color='lightblue', edgecolor='darkblue', alpha=0.44)  
+borough_map.plot(ax=ax_map, color="lightblue", edgecolor="darkblue", alpha=0.44)  
 
 # Define room type colors  
 room_type_colors = {  
-    'Entire home/apt': '#FF7F7F',  
-    'Private room': '#77DD77',  
-    'Shared room': '#FDFD96',  
-    'Hotel room': '#FFA07A'  
+    "Entire home/apt": "#FF7F7F",  
+    "Private room": "#77DD77",  
+    "Shared room": "#FDFD96",  
+    "Hotel room": "#FFA07A",  
 }  
 
 # Plot Airbnb listings by room type  
 for room_type, color in room_type_colors.items():  
-    gdf[gdf['room_type'] == room_type].plot(  
+    gdf[gdf["room_type"] == room_type].plot(  
         ax=ax_map, color=color, markersize=2, label=room_type, alpha=0.7  
     )  
 
 # Add legend  
 legend = ax_map.legend(  
-    title="Room Type", loc='upper left', fontsize=10, frameon=True, edgecolor='lightgray'  
+    title="Room Type", loc="upper left", fontsize=10, frameon=True, edgecolor="lightgray"  
 )  
 legend.get_title().set_fontsize(10)  
-legend.get_title().set_fontweight('bold')  
+legend.get_title().set_fontweight("bold")  
 
 # Add map title  
-plt.title('Airbnb Listings in London', fontsize=13)  
+ax_map.set_title("Airbnb Listings in London", fontsize=13, pad=15)    
 
-# Remove axes and borders for a cleaner map  
+# Clean up the map axes  
 ax_map.set_xticks([]), ax_map.set_yticks([])  
 for spine in ax_map.spines.values():  
     spine.set_visible(False)  
@@ -303,128 +274,325 @@ for spine in ax_map.spines.values():
 # -------------------------------  
 # 3. Subplot 1: Estimated Booking Days  
 # -------------------------------  
-ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])  
-
-# Define bins and labels for booking days  
+ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height]) 
 bins = [0, 30, 60, 89.999, 120, 150, 180, 210, 240, 270, 300, 330, 356]  
-labels = ['0-30', '30-60', '60-90', '90-120', '120-150', '150-180', '180-210',  
-          '210-240', '240-270', '270-300', '300-330', '330-356', '356+']  
+labels = [  
+    "0-30",  
+    "30-60",  
+    "60-90",  
+    "90-120",  
+    "120-150",  
+    "150-180",  
+    "180-210",  
+    "210-240",  
+    "240-270",  
+    "270-300",  
+    "300-330",  
+    "330-356",  
+    "356+",  
+]  
 
-# Assign colors based on booking days  
-data['booking_color'] = data['estimated_nights_booked'].apply(  
-    lambda x: 'blue' if x <= 89 else 'red'  
-)  
-
-# Plot histogram  
 sns.histplot(  
-    data=data, x='estimated_nights_booked', hue='booking_color',  
-    palette={'blue': '#6A9FB5', 'red': '#FF6F61'}, multiple='dodge',  
-    edgecolor='black', linewidth=0.5, binwidth=15, ax=ax1  
+    data=data,  
+    x="estimated_nights_booked",  
+    hue="booking_color",  
+    palette={"blue": "#6A9FB5", "red": "#FF6F61"},  
+    multiple="dodge",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    binwidth=15,  
+    ax=ax1,  
 )  
-ax1.set_title('1. Estimated Booking Days', fontsize=10, fontweight='bold')  
-ax1.set_xlabel('Booking Days (0-356)', fontsize=8)  
-ax1.set_ylabel('Listings', fontsize=8)  
-ax1.tick_params(axis='x', rotation=45, labelsize=7)  
-ax1.tick_params(axis='y', labelsize=7)  
+ax1.set_title("1. Estimated Booking Days", fontsize=10, fontweight="bold")  
+ax1.set_xlabel("Booking Days (0-356)", fontsize=8)  
+ax1.set_ylabel("Listings", fontsize=8)  
+ax1.tick_params(axis="x", rotation=45, labelsize=7)  
+ax1.tick_params(axis="y", labelsize=7)  
 ax1.set_xlim(0, 356)  
-
-# Add vertical line at 90  
-ax1.axvline(x=90, color='black', linestyle='--', linewidth=1)  
-
-# Set custom x-axis ticks and labels  
+ax1.axvline(x=90, color="black", linestyle="--", linewidth=1)  
 ax1.set_xticks(bins)  
 ax1.set_xticklabels(labels, rotation=45, fontsize=6.5)  
 
 # Add custom legend  
 ax1.legend(  
     handles=[  
-        plt.Line2D([0], [0], color='#6A9FB5', lw=4, label='< 90'),  
-        plt.Line2D([0], [0], color='#FF6F61', lw=4, label='>=90')  
+        plt.Line2D([0], [0], color="#6A9FB5", lw=4, label="< 90"),  
+        plt.Line2D([0], [0], color="#FF6F61", lw=4, label=">=90"),  
     ],  
-    title="Booking Days", loc='upper right', fontsize=8, title_fontsize=8  
+    title="Booking Days",  
+    loc="upper right",  
+    fontsize=8,  
+    title_fontsize=8,  
 )  
-ax1.spines['top'].set_visible(False)  
-ax1.spines['right'].set_visible(False)  
+ax1.spines["top"].set_visible(False)  
 
 # -------------------------------  
 # 4. Subplot 2: Listings per Host  
 # -------------------------------  
-ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])  
-
-# Group listings per host and create a new column for "10+"  
-listings_per_host = data.groupby('host_id').size()  
-listings_per_host = listings_per_host.apply(lambda x: x if x <= 10 else 11)  
-
-# Plot histogram  
+ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])   
 sns.histplot(  
-    listings_per_host, kde=False, color='lightblue',  
-    edgecolor='black', linewidth=0.5, binwidth=0.8, ax=ax2  
+    listings_per_host,  
+    kde=False,  
+    color="lightblue",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    binwidth=0.8,  
+    ax=ax2,  
 )  
-ax2.set_title('2. Listings per Host', fontsize=10, fontweight='bold')  
-ax2.set_xlabel('Number of Listings', fontsize=8)  
-ax2.set_ylabel('Hosts', fontsize=8)  
-ax2.tick_params(axis='x', labelsize=7)  
-ax2.tick_params(axis='y', labelsize=7)  
+ax2.set_title("2. Listings per Host", fontsize=10, fontweight="bold")  
+ax2.set_xlabel("Number of Listings", fontsize=8)  
+ax2.set_ylabel("Hosts", fontsize=8)  
+ax2.tick_params(axis="x", labelsize=7)  
+ax2.tick_params(axis="y", labelsize=7)  
 ax2.set_xticks(range(1, 12))  
-ax2.set_xticklabels([str(i) for i in range(1, 11)] + ['10+'])  
+ax2.set_xticklabels([str(i) for i in range(1, 11)] + ["10+"])  
 ax2.set_xlim(0.5, 11.5)  
-ax2.spines['top'].set_visible(False)  
-ax2.spines['right'].set_visible(False)  
+ax2.spines["top"].set_visible(False)  
+ax2.spines["right"].set_visible(False)  
 
 # -------------------------------  
 # 5. Subplot 3: Room Type Count  
 # -------------------------------  
-ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])  
-
-# Plot bar chart  
-room_type_count = data['room_type'].value_counts()  
-room_type_count.index = ['Entire home', 'Private room', 'Shared room', 'Hotel room']  
+ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])    
+room_type_count = data["room_type"].value_counts()  
+room_type_count.index = ["Entire home", "Private room", "Shared room", "Hotel room"]  
 sns.barplot(  
-    x=room_type_count.index, y=room_type_count.values,  
-    palette=['#FF7F7F', '#AEC6CF', '#FDFD96', '#FFA07A'],  
-    edgecolor='black', linewidth=0.5, width=0.4, ax=ax3  
+    x=room_type_count.index,  
+    y=room_type_count.values,  
+    palette=["#FF7F7F", "#AEC6CF", "#FDFD96", "#FFA07A"],  
+    edgecolor="black",  
+    linewidth=0.5,  
+    ax=ax3,  
 )  
-ax3.set_title('3. Room Type Count', fontsize=10, fontweight='bold')  
-ax3.set_xlabel('Room Type', fontsize=8)  
-ax3.set_ylabel('Count', fontsize=8)  
-ax3.tick_params(axis='x', labelsize=7)  
-ax3.tick_params(axis='y', labelsize=7)  
-ax3.spines['top'].set_visible(False)  
-ax3.spines['right'].set_visible(False)  
+ax3.set_title("3. Room Type Count", fontsize=10, fontweight="bold")  
+ax3.set_xlabel("Room Type", fontsize=8)  
+ax3.set_ylabel("Count", fontsize=8)  
+ax3.tick_params(axis="x", labelsize=7)  
+ax3.tick_params(axis="y", labelsize=7)  
+ax3.spines["top"].set_visible(False)  
+ax3.spines["right"].set_visible(False)  
 
 # -------------------------------  
 # 6. Subplot 4: Minimum Nights Distribution  
 # -------------------------------  
 ax4 = fig.add_axes([x_offset, y_offsets[3], subplot_width, subplot_height])  
-
-# Plot histogram  
 sns.histplot(  
-    data['minimum_nights'], bins=1000, kde=False,  
-    color='lightcoral', edgecolor='black', linewidth=0.5, ax=ax4  
+    data["minimum_nights"],  
+    bins=1000,  
+    kde=False,  
+    color="lightcoral",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    ax=ax4,  
 )  
-ax4.set_title('4. Minimum Nights Distribution', fontsize=10, fontweight='bold')  
-ax4.set_xlabel('Minimum Nights', fontsize=8)  
-ax4.set_ylabel('Listings', fontsize=8)  
-ax4.tick_params(axis='x', labelsize=7)  
-ax4.tick_params(axis='y', labelsize=7)  
+ax4.set_title("4. Minimum Nights Distribution", fontsize=10, fontweight="bold")  
+ax4.set_xlabel("Minimum Nights", fontsize=8)  
+ax4.set_ylabel("Listings", fontsize=8)  
+ax4.tick_params(axis="x", labelsize=7)  
+ax4.tick_params(axis="y", labelsize=7)  
 ax4.set_xlim(0, 40)  
-ax4.spines['top'].set_visible(False)  
-ax4.spines['right'].set_visible(False)  
+ax4.spines["top"].set_visible(False)  
+ax4.spines["right"].set_visible(False)  
 
 # -------------------------------  
-# 7. Add a Table Header  
+# 7. Save and Display the Plot  
 # -------------------------------  
-fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  
+os.makedirs("plots", exist_ok=True)  
+plt.savefig(  
+    "plots/figure_1_Airbnb_Listings_in_London_optimized.png", dpi=600, bbox_inches="tight"  
+)  
 
 # -------------------------------  
-# 8. Save the Figure  
+plt.subplots_adjust(bottom=0.05)  
+fig.text(0.5, 0.01, 'Figure 1: Airbnb Listings Analysis in London',   
+         ha='center', fontsize=18, fontweight='bold')
+
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| warning: false
 # -------------------------------  
-os.makedirs('plots', exist_ok=True)  # Create 'plots' folder if it doesn't exist  
-plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches='tight')  
+# 1. Setup the Main Figure Layout  
+# -------------------------------  
+fig = plt.figure(figsize=(16, 10)) 
+gs = GridSpec(1, 1, figure=fig) 
+
+x_offset = 0.75  
+y_offsets = [0.75, 0.55, 0.35, 0.15]  
+subplot_width, subplot_height = 0.18, 0.12  
 
 # -------------------------------  
-# 9. Display the Figure  
+# 2. Plot the Map of Airbnb Listings  
 # -------------------------------  
+ax_map = fig.add_subplot(gs[0, 0])  
+borough_map.plot(ax=ax_map, color="lightblue", edgecolor="darkblue", alpha=0.44)  
+
+# Define room type colors  
+room_type_colors = {  
+    "Entire home/apt": "#FF7F7F",  
+    "Private room": "#77DD77",  
+    "Shared room": "#FDFD96",  
+    "Hotel room": "#FFA07A",  
+}  
+
+# Plot Airbnb listings by room type  
+for room_type, color in room_type_colors.items():  
+    gdf[gdf["room_type"] == room_type].plot(  
+        ax=ax_map, color=color, markersize=2, label=room_type, alpha=0.7  
+    )  
+
+# Add legend  
+legend = ax_map.legend(  
+    title="Room Type", loc="upper left", fontsize=10, frameon=True, edgecolor="lightgray"  
+)  
+legend.get_title().set_fontsize(10)  
+legend.get_title().set_fontweight("bold")  
+
+# Add map title  
+ax_map.set_title("Airbnb Listings in London", fontsize=13, pad=15)  
+# Clean up the map axes  
+ax_map.set_xticks([]), ax_map.set_yticks([])  
+for spine in ax_map.spines.values():  
+    spine.set_visible(False)  
+
+# -------------------------------  
+# 3. Subplot 1: Estimated Booking Days  
+# -------------------------------  
+ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])   
+bins = [0, 30, 60, 89.999, 120, 150, 180, 210, 240, 270, 300, 330, 356]  
+labels = [  
+    "0-30",  
+    "30-60",  
+    "60-90",  
+    "90-120",  
+    "120-150",  
+    "150-180",  
+    "180-210",  
+    "210-240",  
+    "240-270",  
+    "270-300",  
+    "300-330",  
+    "330-356",  
+    "356+",  
+]  
+
+sns.histplot(  
+    data=data,  
+    x="estimated_nights_booked",  
+    hue="booking_color",  
+    palette={"blue": "#6A9FB5", "red": "#FF6F61"},  
+    multiple="dodge",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    binwidth=15,  
+    ax=ax1,  
+)  
+ax1.set_title("1. Estimated Booking Days", fontsize=10, fontweight="bold")  
+ax1.set_xlabel("Booking Days (0-356)", fontsize=8)  
+ax1.set_ylabel("Listings", fontsize=8)  
+ax1.tick_params(axis="x", rotation=45, labelsize=7)  
+ax1.tick_params(axis="y", labelsize=7)  
+ax1.set_xlim(0, 356)  
+ax1.axvline(x=90, color="black", linestyle="--", linewidth=1)  
+ax1.set_xticks(bins)  
+ax1.set_xticklabels(labels, rotation=45, fontsize=6.5)  
+
+# Add custom legend  
+ax1.legend(  
+    handles=[  
+        plt.Line2D([0], [0], color="#6A9FB5", lw=4, label="< 90"),  
+        plt.Line2D([0], [0], color="#FF6F61", lw=4, label=">=90"),  
+    ],  
+    title="Booking Days",  
+    loc="upper right",  
+    fontsize=8,  
+    title_fontsize=8,  
+)  
+ax1.spines["top"].set_visible(False)  
+
+# -------------------------------  
+# 4. Subplot 2: Listings per Host  
+# -------------------------------  
+ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])  
+sns.histplot(  
+    listings_per_host,  
+    kde=False,  
+    color="lightblue",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    binwidth=0.8,  
+    ax=ax2,  
+)  
+ax2.set_title("2. Listings per Host", fontsize=10, fontweight="bold")  
+ax2.set_xlabel("Number of Listings", fontsize=8)  
+ax2.set_ylabel("Hosts", fontsize=8)  
+ax2.tick_params(axis="x", labelsize=7)  
+ax2.tick_params(axis="y", labelsize=7)  
+ax2.set_xticks(range(1, 12))  
+ax2.set_xticklabels([str(i) for i in range(1, 11)] + ["10+"])  
+ax2.set_xlim(0.5, 11.5)  
+ax2.spines["top"].set_visible(False)  
+ax2.spines["right"].set_visible(False)  
+
+# -------------------------------  
+# 5. Subplot 3: Room Type Count  
+# -------------------------------  
+ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])   
+room_type_count = data["room_type"].value_counts()  
+room_type_count.index = ["Entire home", "Private room", "Shared room", "Hotel room"]  
+sns.barplot(  
+    x=room_type_count.index,  
+    y=room_type_count.values,  
+    palette=["#FF7F7F", "#AEC6CF", "#FDFD96", "#FFA07A"],  
+    edgecolor="black",  
+    linewidth=0.5,  
+    ax=ax3,  
+)  
+ax3.set_title("3. Room Type Count", fontsize=10, fontweight="bold")  
+ax3.set_xlabel("Room Type", fontsize=8)  
+ax3.set_ylabel("Count", fontsize=8)  
+ax3.tick_params(axis="x", labelsize=7)  
+ax3.tick_params(axis="y", labelsize=7)  
+ax3.spines["top"].set_visible(False)  
+ax3.spines["right"].set_visible(False)  
+
+# -------------------------------  
+# 6. Subplot 4: Minimum Nights Distribution  
+# -------------------------------  
+ax4 = fig.add_axes([x_offset, y_offsets[3], subplot_width, subplot_height])  
+sns.histplot(  
+    data["minimum_nights"],  
+    bins=1000,  
+    kde=False,  
+    color="lightcoral",  
+    edgecolor="black",  
+    linewidth=0.5,  
+    ax=ax4,  
+)  
+ax4.set_title("4. Minimum Nights Distribution", fontsize=10, fontweight="bold")  
+ax4.set_xlabel("Minimum Nights", fontsize=8)  
+ax4.set_ylabel("Listings", fontsize=8)  
+ax4.tick_params(axis="x", labelsize=7)  
+ax4.tick_params(axis="y", labelsize=7)  
+ax4.set_xlim(0, 40)  
+ax4.spines["top"].set_visible(False)  
+ax4.spines["right"].set_visible(False)  
+
+# -------------------------------  
+# 7. Save and Display the Plot  
+# -------------------------------  
+os.makedirs("plots", exist_ok=True)  
+plt.savefig(  
+    "plots/figure_1_Airbnb_Listings_in_London_optimized.png", dpi=600, bbox_inches="tight"  
+)  
+
+# -------------------------------  
+plt.subplots_adjust(bottom=0.05)  
+fig.text(0.5, 0.01, 'Figure 1: Airbnb Listings Analysis in London',   
+         ha='center', fontsize=18, fontweight='bold')
+
 plt.show()
 ```
 
@@ -513,9 +681,9 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
 
-# Main title  
-fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  
-
+# Main title 
+fig.text(0.5, 0.02, 'Figure 2: Analysis of Airbnb Listings by Host and Room Types',   
+         ha='center', fontsize=16, fontweight='bold') 
 # First Row: Tables  
 # Left: Host Type Table  
 ax1 = fig.add_axes([0.1, 0.7, 0.35, 0.15])  
@@ -987,9 +1155,26 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/combined_of_Moran_and_LISA.png)
+# Create Layout  
+fig = plt.figure(figsize=(16, 5.5), dpi=800)  
+
+# Path of png  
+img = mpimg.imread('plots/combined_of_Moran_and_LISA.png')  
+
+# Adjust layout 
+ax = fig.add_axes([0.05, 0.1, 0.9, 0.85])  
+ax.imshow(img)  
+ax.axis('off')  
+# title position
+fig.text(0.5, 0.015, 'Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs,\nmonthly rent and vacancy ratio',  
+         ha='center', fontsize=14, fontweight='bold')  
+ 
+plt.show()
+```
 
 2. **Housing Market Impacts**  
 To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   
@@ -1223,9 +1408,28 @@ plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tigh
 plt.tight_layout()
 ```
 
-### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/Results_of_SAR_and_GWR_model.png)
+# Create Layout
+fig = plt.figure(figsize=(16, 6))  # 减小高度更紧凑  
+
+# Path of png 
+img = mpimg.imread('plots/Results_of_SAR_and_GWR_model.png')  # 替换为你的图片路径  
+
+# 
+ax = fig.add_axes([0.05, 0.18, 0.9, 0.75])  # [左, 下, 宽, 高]，上下的空隙进一步减少  
+ax.imshow(img)  
+ax.axis('off')  # 隐藏坐标轴  
+
+# Title
+fig.text(0.5, 0, 'Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs\non Monthly Rent and Vacancy Ratio',   
+         ha='center', fontsize=14, fontweight='bold')  # 标题紧贴底部，换行确保清晰  
+
+# 
+plt.show()
+```
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and stability in affected hotspots.
 
@@ -1393,12 +1597,6 @@ print(f"z-score: {moran.z_sim:.4f}")
 # Create a 3x2 subplot layout  
 fig = plt.figure(figsize=(15, 18))  
 
-# Add main title  
-plt.suptitle("Figure 5. Visualisation of Residuals and Moran's I",   
-             fontsize=16,   
-             fontweight='bold',   
-             y=0.95)  # Adjust y position of the title  
-
 # Residuals vs Fitted Values  
 ax1 = plt.subplot(3, 2, 1)  
 sns.scatterplot(x=gdf_filtered["predicted_probs"], y=gdf_filtered["deviance_residuals"],  
@@ -1443,8 +1641,17 @@ ax5 = plt.subplot(3, 2, (5, 6))  # Span both columns in the last row
 moran_scatterplot(moran, ax=ax5)  
 ax5.set_title("Moran's I Scatterplot (Deviance Residuals)", fontsize=14)  
 
-# Adjust layout with top margin for main title  
-plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  
+# 调整布局  
+plt.tight_layout(rect=[0, 0.05, 1, 1])  # 预留底部空间来放置标题  
+
+# 将主标题放置在底部  
+plt.figtext(0.5, 0.01,  # 设置位置：靠底部 (y=0.01)  
+            "Figure 5. Visualisation of Residuals and Moran's I",   
+            ha='center',  # 水平居中  
+            fontsize=16,  # 字体大小  
+            fontweight='bold')  # 加粗字体  
+
+# 显示图形  
 plt.show()
 ```
 

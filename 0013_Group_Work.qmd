@@ -182,6 +182,7 @@ The Inside Airbnb data reveals key market trends and geographic distribution of 
 #Reading airbnb data 2013.12
 import pandas as pd  
 import numpy as np  
+import geopandas as gpd
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
