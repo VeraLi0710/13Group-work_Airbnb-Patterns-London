@@ -1229,8 +1229,7 @@ From the analysis above, enforcing the 90-day policy is essential to address ris
 
 ### Analysis of Factors Associated with Policy-Violating Listings
 
-1. **Logistic Regression:**  
-To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
+1. **Logistic Regression:** To explore the relationship in the study area between variables and their spatial distribution characteristics, we adopted logistics regression model to establish the model and evaluated the performance of the model through the residual and spatial autocorrelation test.
 
 ```{python}
 #| echo: false
@@ -1444,17 +1443,13 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle
 plt.show()
 ```
 
-# Missing Variables and Spatial Patterns?  
-
 Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the variability in policy violations.  
 
-Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.
+Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating **missing factors** and **spatial heterogeneity**. Further model improvements are needed to better capture these complexities.
 
 ---
 
-## Geographically Weighted Regression
-
-To address spatial heterogeneity, research suggests adopting the Geographically Weighted Regression (GWR) model, which allows variable coefficients to vary by location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. Thus, we incorporate these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap [@geofabrik2024london].
+2. **Geographically Weighted Regression:** To address spatial heterogeneity, research suggests adopting the Geographically Weighted Regression (GWR) model, which allows variable coefficients to vary by location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. Thus, we incorporate these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap [@geofabrik2024london].
 
 ```{python}
 #| echo: false
