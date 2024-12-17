@@ -408,11 +408,8 @@ plt.show()
 ```
 
 ```{python}
-import os  
-import matplotlib.pyplot as plt  
-from matplotlib.gridspec import GridSpec  
-import seaborn as sns  
-
+#| echo: false
+#| warning: false
 # -------------------------------  
 # 1. Setup the Main Figure Layout  
 # -------------------------------  
