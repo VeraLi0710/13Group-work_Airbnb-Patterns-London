@@ -410,7 +410,7 @@ ax4.spines['right'].set_visible(False)
 # -------------------------------  
 # 7. Add a Table Header  
 # -------------------------------  
-fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  
+fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.1)  
 
 # -------------------------------  
 # 8. Save the Figure  
@@ -510,7 +510,7 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 fig = plt.figure(figsize=(16, 14))  
 
 # Main title  
-fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  
+fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.05)  
 
 # First Row: Tables  
 # Left: Host Type Table  
@@ -983,7 +983,6 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-
 ![](plots/combined_of_Moran_and_LISA.png)
 
 <p style="text-align: center;">  
@@ -1221,7 +1220,6 @@ plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tigh
 # Adjust layout
 plt.tight_layout()
 ```
-
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
@@ -1862,7 +1860,7 @@ Further multi-factor analysis reveals that while illegal listings show some corr
 
 2.	**Learning from European Cities**: Drawing on the experience of cities like Barcelona, short-term rental platforms should be compelled to remove unregistered listings and face stricter penalties for violations. [@Gianluca2025]
 
-3.	**Differential Regional Regulation**: Building on London’s Housing Act 2015 (Ref 2), we suggest implementing region-specific regulations. Based on data analysis, enforcement resources can be allocated more effectively to hotspot areas of illegal listings, optimizing patrols and rectification measures.
+3.	**Differential Regional Regulation**: Building on London’s Housing Act 2016 [@Housing2016], we suggest implementing region-specific regulations. Based on data analysis, enforcement resources can be allocated more effectively to hotspot areas of illegal listings, optimizing patrols and rectification measures.
 
 These measures would improve regulatory efficiency and help reduce illegal activities across London’s diverse regions.
 
