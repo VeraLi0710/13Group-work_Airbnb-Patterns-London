@@ -510,9 +510,9 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
 
-# Main title  
-fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  
-
+# Main title 
+fig.text(0.5, 0.02, 'Figure 2: Analysis of Airbnb Listings by Host and Room Types',   
+         ha='center', fontsize=16, fontweight='bold') 
 # First Row: Tables  
 # Left: Host Type Table  
 ax1 = fig.add_axes([0.1, 0.7, 0.35, 0.15])  
@@ -984,9 +984,26 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/combined_of_Moran_and_LISA.png)
+# Create Layout  
+fig = plt.figure(figsize=(16, 5.5), dpi=800)  
+
+# Path of png  
+img = mpimg.imread('plots/combined_of_Moran_and_LISA.png')  
+
+# Adjust layout 
+ax = fig.add_axes([0.05, 0.1, 0.9, 0.85])  
+ax.imshow(img)  
+ax.axis('off')  
+# title position
+fig.text(0.5, 0.015, 'Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs,\nmonthly rent and vacancy ratio',  
+         ha='center', fontsize=14, fontweight='bold')  
+ 
+plt.show()
+```
 
 2. **Housing Market Impacts**  
 To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   
@@ -1220,9 +1237,28 @@ plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tigh
 plt.tight_layout()
 ```
 
-### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/Results_of_SAR_and_GWR_model.png)
+# Create Layout
+fig = plt.figure(figsize=(16, 6))  # 减小高度更紧凑  
+
+# Path of png 
+img = mpimg.imread('plots/Results_of_SAR_and_GWR_model.png')  # 替换为你的图片路径  
+
+# 
+ax = fig.add_axes([0.05, 0.18, 0.9, 0.75])  # [左, 下, 宽, 高]，上下的空隙进一步减少  
+ax.imshow(img)  
+ax.axis('off')  # 隐藏坐标轴  
+
+# Title
+fig.text(0.5, 0, 'Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs\non Monthly Rent and Vacancy Ratio',   
+         ha='center', fontsize=14, fontweight='bold')  # 标题紧贴底部，换行确保清晰  
+
+# 
+plt.show()
+```
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and stability in affected hotspots.
 
@@ -1390,12 +1426,6 @@ print(f"z-score: {moran.z_sim:.4f}")
 # Create a 3x2 subplot layout  
 fig = plt.figure(figsize=(15, 18))  
 
-# Add main title  
-plt.suptitle("Figure 5. Visualisation of Residuals and Moran's I",   
-             fontsize=16,   
-             fontweight='bold',   
-             y=0.95)  # Adjust y position of the title  
-
 # Residuals vs Fitted Values  
 ax1 = plt.subplot(3, 2, 1)  
 sns.scatterplot(x=gdf_filtered["predicted_probs"], y=gdf_filtered["deviance_residuals"],  
@@ -1440,8 +1470,17 @@ ax5 = plt.subplot(3, 2, (5, 6))  # Span both columns in the last row
 moran_scatterplot(moran, ax=ax5)  
 ax5.set_title("Moran's I Scatterplot (Deviance Residuals)", fontsize=14)  
 
-# Adjust layout with top margin for main title  
-plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  
+# 调整布局  
+plt.tight_layout(rect=[0, 0.05, 1, 1])  # 预留底部空间来放置标题  
+
+# 将主标题放置在底部  
+plt.figtext(0.5, 0.01,  # 设置位置：靠底部 (y=0.01)  
+            "Figure 5. Visualisation of Residuals and Moran's I",   
+            ha='center',  # 水平居中  
+            fontsize=16,  # 字体大小  
+            fontweight='bold')  # 加粗字体  
+
+# 显示图形  
 plt.show()
 ```
 
