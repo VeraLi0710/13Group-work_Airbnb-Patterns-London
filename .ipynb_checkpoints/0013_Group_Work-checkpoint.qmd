@@ -117,7 +117,7 @@ The data was collected, integrated, and published by Inside Airbnb’s policy an
 ## 2. Why did they collect the InsideAirbnb data?
 
 
-Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighbourhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].
+Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighborhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].
 
 ---
 

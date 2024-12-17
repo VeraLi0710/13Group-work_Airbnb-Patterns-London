@@ -75,6 +75,17 @@ Date: 17/12/2024
 
 Student Numbers: 4
 
+
+## Declaration of Large Language Model Use
+
+In the preparation of this report, Large Language Models, specifically OpenAI's ChatGPT[还有其他的？], were utilized as a supplementary tool to support various stages of the report. Its usage was carefully managed to ensure the integrity, originality, and quality of the report. The specific ways in which the LLMs contributed are as follows:
+- **Language Enhancement**: The LLMs were used to improve the grammar, sentence structure, readability, and clarity of the text.
+  
+- **Assistance with Code and Data Analysis**: In sections involving programming or data analysis, the LLMs provided guidance on debugging, refining code, optimizing algorithms, and suggesting alternative approaches to analytical problems.
+
+- **Concept Clarification**: For technical or theoretical components, the LLMs served as a resource to clarify complex concepts, provide background explanations, and ensure accuracy in the presentation of ideas.
+
+
 ## Word Count 
 
 **Text Content**: 1,303   [[[[+++++ yezhen part and conclusion????????????]]]
@@ -117,7 +128,7 @@ The data was collected, integrated, and published by Inside Airbnb’s policy an
 ## 2. Why did they collect the InsideAirbnb data?
 
 
-Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighbourhoods. They aim to provide data that empower communities make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].
+Inside Airbnb collects data to help communities understand Airbnb's impact on housing and neighborhoods. They aim to provide data that empowers communities to make informed decisions, manage short-term rentals, protect residents from negative effects like rising rents and housing shortages, and support collective efforts by residents and activists [@cox_inside_2023].
 
 ---
 
@@ -133,7 +144,7 @@ Inside Airbnb used Python-based web scraping to collect publicly available data 
 
 The Inside Airbnb data reveals key market trends and geographic distribution of listings, offering a foundation for analyzing short-term rental impacts on residential neighborhoods. But it has following limitations:  
 
-1. The data only includes Airbnb listings, which may be removed or hidden due to business or regulatory pressures. For example, in 2015, Airbnb deleted over 1,000 entire-home listings in New York City [@cox_how_2016].
+1. The data includes only Airbnb listings, which may be removed or hidden by Airbnb due to business or regulatory pressures. For example, in 2015, Airbnb deleted over 1,000 entire-home listings in New York [@cox_how_2016].
 
 2. The data's snapshot nature cannot reflect ongoing changes, such as newly added or removed listings. Differences between dataset versions can also affect reliability and reproducibility if the version used is not specified.
 
@@ -149,14 +160,12 @@ The Inside Airbnb data reveals key market trends and geographic distribution of 
 
 
 1. **Preventing Misuse of Data for Commercial Gain**  
-    Inside Airbnb’s data is meant to reveal the impacts of short-term rentals and to support local communities. However, malicious exploitation of the data—such as investors using it to identify high-profit areas for short-term rentals—could lead to negative consequences, such as increased property purchases for rentals, displacement of residents, and worsening housing crises. This undermines the platform’s mission and further harms vulnerable groups. Researchers and policymakers have a responsibility to ensure that their use of the data aligns with community interests and to avoid sharing data in ways that enable harmful commercial use.
+    Inside Airbnb’s data is meant to reveal the impacts of short-term rentals and to support local communities. However, malicious exploitation of the data—such as investors using it to identify high-profit areas for short-term rentals—could lead to negative consequences, including increased property purchases for rentals, displacement of residents, and worsening housing crises. This undermines the platform’s mission and further harms vulnerable groups. Researchers and policymakers have a responsibility to ensure that their use of the data aligns with community interests and to avoid sharing data in ways that enable harmful commercial use.
 
-
-
-3. **Protecting User Privacy**  
+2. **Protecting User Privacy**  
     Since the data is collected through web scraping, Airbnb hosts and guests may not have given consent for its use. Even anonymized geographic data can unintentionally expose sensitive information, especially in small communities or for standalone properties. Publicly identifying short-term rental activity could subject hosts and guests to harassment, discrimination, or financial loss. Research outputs should generalize findings to avoid unintentionally identifying individuals and use neutral language to prevent stigmatization of particular groups.
 
-5. **Ensuring Representation of Vulnerable Communities: Promoting Equity in Data Interpretation**  
+3. **Ensuring Representation of Vulnerable Communities: Promoting Equity in Data Interpretation**  
     While Inside Airbnb data is openly available, the ability to analyze and interpret it is often limited to technically skilled individuals, such as researchers or local activists. This can result in policies that prioritize the perspectives of these groups while neglecting the needs of underrepresented or vulnerable communities. To address this imbalance, researchers and policymakers should engage marginalized communities in the interpretation process, present findings in accessible formats, and ensure data-driven decisions promote social equity, as highlighted in Data Feminism [@dignazio_data_2020].
 
 ---
@@ -615,7 +624,7 @@ InsideAirbnb data reveals London’s highly commercialized Airbnb market with si
 We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:
 
 1. **Identifying Violation Hotspots and Impacts:**  
-    Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents, reduced housing availability—issues tied to Airbnb-driven gentrification [@smith2006].
+    Spatial clustering will identify areas with high concentrations of 90-day rule violations. These hotspots will be analyzed for impacts on local communities, focusing on rising rents and reduced housing availability—issues tied to Airbnb-driven gentrification [@smith2006].
 
 2. **Analyzing Drivers of Violations:**  
    Regression analysis helps identify key factors driving these violations (e.g. property type, host behavior, pricie and location...)
