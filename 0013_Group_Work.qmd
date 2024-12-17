@@ -250,7 +250,7 @@ import requests
 # Select relevant columns and drop rows with missing values  
 airbnb_data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  
                            'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  
-                           'price', 'latitude', 'longitude']].dropna()  
+                           'price', 'latitude', 'longitude','neighbourhood']].dropna()  
 
 # Filter data where availability_365 is greater than 0  
 airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0]  
@@ -741,7 +741,7 @@ merged_data.to_csv('data/borough_listings_ratio.csv', index=True)
 from esda.moran import Moran  
 # Load data
 ratio = pd.read_csv("data/borough_listings_ratio.csv")
-borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+borough = borough_map
 
 # merge
 borough_ratio = borough.merge(ratio, left_on="GSS_CODE", right_on="Borough_code")
@@ -867,8 +867,7 @@ from libpysal.weights import Queen, lag_spatial
 from esda.moran import Moran_BV, Moran_Local_BV
 
 # load data
-connect = pd.read_csv("data/connect.csv")
-borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+connect = pd.read_csv("https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/connect.csv")
 
 # merge the data
 borough_connect = borough.merge(connect, left_on="GSS_CODE", right_on="Borough_code")
@@ -1045,8 +1044,8 @@ To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR ana
 # SAR model
 from spreg import ML_Lag
 # Import data
-data = pd.read_csv("data/connect.csv")
-shp = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+data = connect
+shp = borough_map
 
 # Merge data and transform coordinate system
 zone = shp.merge(data, left_on="GSS_CODE", right_on="Borough_code")
