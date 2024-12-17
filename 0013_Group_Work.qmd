@@ -1553,7 +1553,11 @@ listing = pd.read_csv(
 ```
 
 ```{python}
-## 2.2. Load London ward boundaries and reproject to EPSG:27700
+#| echo: false
+#| warning: false
+#| output: false
+
+## 2.2. Load London ward boundaries
 # Shapefiles
 files = [
     "London_Ward_CityMerged.shp",
@@ -1587,6 +1591,10 @@ print(ward.head())
 ```
 
 ```{python}
+#| echo: false
+#| warning: false
+#| output: false
+
 ## 2.3. Load points of interest (POIs) and reproject
 ### 2.3.1 Nature POIs
 # Shapefiles
@@ -1622,6 +1630,10 @@ print(nature.head())
 ```
 
 ```{python}
+#| echo: false
+#| warning: false
+#| output: false
+
 ### 2.3.2 Transport POIs
 # Shapefiles
 files = [
@@ -1656,6 +1668,10 @@ print(transport.head())
 ```
 
 ```{python}
+#| echo: false
+#| warning: false
+#| output: false
+
 ### 2.3.3 Tourism POIs
 # Shapefiles
 files = [
@@ -1783,24 +1799,16 @@ ward["tourism_count"] = ward["tourism_count"].fillna(0)
 ward["tourism_density"] = ward["tourism_count"] / ward["area"]
 ```
 
-# Step 6: Export Results to Shapefile
-## 6.1. Keep required columns and geometry
-columns_to_keep = ["listing_density", "nature_density", "transport_density", "geometry"]
-final_data = ward[columns_to_keep]
-
-## 6.2. Save to a new Shapefile
-final_data.to_file("data/final_results.shp", driver="ESRI Shapefile")
-
 ```{python}
 #| echo: false
 #| warning: false
 #| output: false
 
-# Step 7: Spatial Join and Filtering Airbnb Data
-## 7.1. Perform a spatial join: Airbnb data with ward boundaries
+# Step 6: Spatial Join and Filtering Airbnb Data
+## 6.1. Perform a spatial join: Airbnb data with ward boundaries
 listing_ward = gpd.sjoin(listing_spatial, ward, how="left", predicate="intersects")
 
-## 7.2. Select relevant columns to keep
+## 6.2. Select relevant columns to keep
 columns_to_keep = [
     "id",
     "room_type",
@@ -1812,7 +1820,7 @@ columns_to_keep = [
 ]
 listing_ward = listing_ward[columns_to_keep]
 
-## 7.3. Preview the joined data
+## 6.3. Preview the joined data
 print(listing_ward.head())
 ```
 
@@ -1821,29 +1829,29 @@ print(listing_ward.head())
 #| warning: false
 #| output: false
 
-# Step 8: Calculate Average Price and Minimum Nights per Ward
+# Step 7: Calculate Average Price and Minimum Nights per Ward
 # --------------------------------------------------------------
-## 8.1 Calculate Average Price
-### 8.1.1 Group by GSS_CODE and calculate the average price
+## 7.1 Calculate Average Price
+### 7.1.1 Group by GSS_CODE and calculate the average price
 avg_price = listing_ward.groupby("GSS_CODE", as_index=False)["price"].mean()
 avg_price.rename(columns={"price": "avg_price"}, inplace=True)
 
-### 8.1.2. Merge the average price back to the ward data
+### 7.1.2. Merge the average price back to the ward data
 ward["avg_price"] = ward["GSS_CODE"].map(avg_price.set_index("GSS_CODE")["avg_price"])
 
-### 8.1.3. Check the updated ward data
+### 7.1.3. Check the updated ward data
 print(ward.info())
 
 # --------------------------------------------------------------
-## 8.2 Calculate Average Minimum Nights
+## 7.2 Calculate Average Minimum Nights
 ### 8.2.1 Group by GSS_CODE and calculate the average minimum nights
 avg_night = listing_ward.groupby("GSS_CODE", as_index=False)["minimum_nights"].mean()
 avg_night.rename(columns={"minimum_nights": "avg_night"}, inplace=True)
 
-### 8.2.2 Merge the average minimum nights back to the ward data
+### 7.2.2 Merge the average minimum nights back to the ward data
 ward["avg_night"] = ward["GSS_CODE"].map(avg_night.set_index("GSS_CODE")["avg_night"])
 
-### 8.2.3 Check the updated ward data
+### 7.2.3 Check the updated ward data
 print(ward.info())
 ```
 
@@ -1852,10 +1860,10 @@ print(ward.info())
 #| warning: false
 #| output: false
 
-# Step 9: Calculate Average Host Listings and Entire Home Density
+# Step 8: Calculate Average Host Listings and Entire Home Density
 # --------------------------------------------------------------
-## 9.1 Average Host Listings
-### 9.1.1 Calculate the average number of host listings per ward
+## 8.1 Average Host Listings
+### 8.1.1 Calculate the average number of host listings per ward
 avg_host_listing = listing_ward.groupby("GSS_CODE", as_index=False)[
     "calculated_host_listings_count"
 ].mean()
@@ -1863,31 +1871,31 @@ avg_host_listing.rename(
     columns={"calculated_host_listings_count": "avg_host_listing"}, inplace=True
 )
 
-### 9.1.2. Merge the average host listings back to the ward data
+### 8.1.2. Merge the average host listings back to the ward data
 ward["avg_host_listing"] = ward["GSS_CODE"].map(
     avg_host_listing.set_index("GSS_CODE")["avg_host_listing"]
 )
 
-### 9.1.3. Check the updated ward data
+### 8.1.3. Check the updated ward data
 print(ward.info())
 
 # --------------------------------------------------------------
-## 9.2 Calculate 'Entire Home' Density
-### 9.2.1 Filter rows where room_type contains 'Entire'
+## 8.2 Calculate 'Entire Home' Density
+### 8.2.1 Filter rows where room_type contains 'Entire'
 entire_count = listing_ward[listing_ward["room_type"].str.contains("Entire")]
 entire_count = entire_count.groupby("GSS_CODE").size().reset_index(name="entire_count")
 
-### 9.2.2 Merge the count of 'Entire' listings back to the ward data
+### 8.2.2 Merge the count of 'Entire' listings back to the ward data
 ward = ward.merge(entire_count, on="GSS_CODE", how="left")
 
-### 9.2.3 Calculate the density of 'Entire' listings per ward area
+### 8.2.3 Calculate the density of 'Entire' listings per ward area
 ward["entire_density"] = ward["entire_count"] / ward["area"]
 
-### 9.2.4 Fill NaN values for wards with no 'Entire' listings
+### 8.2.4 Fill NaN values for wards with no 'Entire' listings
 ward["entire_count"] = ward["entire_count"].fillna(0)
 ward["entire_density"] = ward["entire_density"].fillna(0)
 
-### 9.2.5. Check the updated ward data
+### 8.2.5. Check the updated ward data
 print(ward.info())
 ```
 
@@ -1896,8 +1904,8 @@ print(ward.info())
 #| warning: false
 #| output: false
 
-# Step 10: Save Results to Shapefile
-## 10.1. Define the columns to retain
+# Step 9: Save Results to Shapefile
+## 9.1 Define the columns to retain
 columns_to_keep = [
     "listing_density",
     "nature_density",
@@ -1909,7 +1917,7 @@ columns_to_keep = [
     "entire_density",
 ]
 
-## 10.2 Create a new dataset with selected columns and save as Shapefile
+## 9.2 Create a new dataset with selected columns and save as Shapefile
 gwr_data = ward[columns_to_keep + ["geometry"]]
 print(gwr_data.info())
 ```
@@ -1919,18 +1927,18 @@ print(gwr_data.info())
 #| warning: false
 #| output: false
 
-# Step 11: Perform GWR
+# Step 10: Perform GWR
 # --------------------------------------------------------------
-## 11.1 Prepare GWR Input Data
-### 11.1.1 Read the Shapefile data for GWR
+## 10.1 Prepare GWR Input Data
+### 10.1.1 Read the Shapefile data for GWR
 gwr = gwr_data
 
-### 11.1.2 Extract centroids and coordinates for GWR
+### 10.1.2 Extract centroids and coordinates for GWR
 gwr["geometry"] = gwr.centroid
 gwr["x"] = gwr.geometry.x
 gwr["y"] = gwr.geometry.y
 
-### 11.1.3 Define dependent variable (Y), independent variables (X), and coordinates
+### 10.1.3 Define dependent variable (Y), independent variables (X), and coordinates
 Y = gwr[["listing_density"]].values
 X = gwr[
     [
@@ -1952,7 +1960,7 @@ coords = gwr[["x", "y"]].values
 #| output: false
 
 # --------------------------------------------------------------
-## 11.2 Run GWR Model
+## 10.2 Run GWR Model
 import pickle
 import os
 
@@ -1966,14 +1974,14 @@ if os.path.exists(cache_file):
         bw, results = pickle.load(f)
 else:
     print("Running GWR model...")
-    ### 11.2.1 Determine the optimal bandwidth
+    ### 10.2.1 Determine the optimal bandwidth
     bw = Sel_BW(coords, Y, X).search()
     
-    ### 11.2.2 Fit the GWR model
+    ### 10.2.2 Fit the GWR model
     model = GWR(coords, Y, X, bw)
     results = model.fit()
     
-    ### 11.2.3 Save to cache
+    ### 10.2.3 Save to cache
     with open(cache_file, "wb") as f:
         pickle.dump((bw, results), f)
 ```
@@ -1983,7 +1991,7 @@ else:
 #| warning: false
 #| output: false
 
-### 11.2.4 Print summary of GWR results
+### 10.2.4 Print summary of GWR results
 print("GWR Results Summary:")
 print(f"R²: {results.R2}")
 print(f"AIC: {results.aic}")
@@ -1991,7 +1999,7 @@ print(f"Bandwidth: {bw}")
 print(f"Parameters shape: {results.params.shape}")
 
 # --------------------------------------------------------------
-## 11.3 Extract Local R² and Coefficients
+## 10.3 Extract Local R² and Coefficients
 gwr['gwr_r2'] = results.localR2
 
 for i, col in enumerate(['intercept', 'nature_density', 'transport_density', 'tourism_density',
@@ -2003,11 +2011,11 @@ for i, col in enumerate(['intercept', 'nature_density', 'transport_density', 'to
 #| echo: false
 #| warning: false
 
-# Step 12: Visualisation
-## 12.1. Set up the figure with a 2x4 layout
+# Step 11: Visualisation
+## 11.1. Set up the figure with a 2x4 layout
 fig, axes = plt.subplots(2, 4, figsize=(16, 8))  # 2 rows, 4 columns
 
-## 12.2. Define the variables and custom titles for each subplot
+## 11.2. Define the variables and custom titles for each subplot
 variables = [
     'gwr_r2', 'transport_density', 'tourism_density', 'nature_density',
     'avg_price', 'avg_night', 'avg_host_listing', 'entire_density'
@@ -2019,7 +2027,7 @@ titles = [
     'Entire Home Density Coefficient'
 ]
 
-## 12.3. Loop through the variables and plot each on the corresponding axis
+## 11.3. Loop through the variables and plot each on the corresponding axis
 for i, (var, title) in enumerate(zip(variables, titles)):
     row, col = divmod(i, 4)  # Calculate row and column index for 2x4 layout
     gwr.plot(column=f"gwr_{var}" if var != "gwr_r2" else var, 
@@ -2027,7 +2035,7 @@ for i, (var, title) in enumerate(zip(variables, titles)):
     axes[row, col].set_title(title)  # Set custom title
     axes[row, col].axis('off')  # Remove axes for clean plots
 
-## 12.4. Adjust layout and display the figure
+## 11.4. Adjust layout and display the figure
 plt.figtext(0.5, -0.02, 
             'Figure 6: Spatial Distribution of GWR Results for Airbnb Listings Analysis', 
             ha='center', fontsize=16, fontweight='bold')
