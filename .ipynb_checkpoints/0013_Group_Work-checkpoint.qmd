@@ -75,6 +75,15 @@ Date: 17/12/2024
 
 Student Numbers: 4
 
+## Word Count 
+
+**Text Content**: 1,303   [[[[+++++ yezhen part and conclusion????????????]]]
+
+**Visuals**: 6 figures × 150 per figure = 900 
+
+**Total**: 2,500 [[[[[[[[[[[[]]]]]]]]]]]]]]
+
+
 ## Brief Group Reflection
 
 | What Went Well                                      | What Was Challenging                               |  
@@ -1477,6 +1486,7 @@ tourism = (
 
 ```{python}
 #| echo: false
+#| include: false
 
 # convert listing data from csv to spatial data
 # create geometry

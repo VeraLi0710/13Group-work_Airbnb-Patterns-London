@@ -1486,6 +1486,7 @@ tourism = (
 
 ```{python}
 #| echo: false
+#| include: false
 
 # convert listing data from csv to spatial data
 # create geometry
