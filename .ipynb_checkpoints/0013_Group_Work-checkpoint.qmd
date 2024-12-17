@@ -182,6 +182,7 @@ The Inside Airbnb data reveals key market trends and geographic distribution of 
 #Reading airbnb data 2013.12
 import pandas as pd  
 import numpy as np  
+import geopandas as gpd
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
@@ -191,8 +192,8 @@ import seaborn as sns
 import os  # For creating directories
 
 # loading data
-file_path = 'data/listings_202312.csv' 
-airbnb_data = pd.read_csv(file_path)  
+file_path = 'https://raw.githubusercontent.com/VeraLi0710/FSDSGroup/refs/heads/main/data/listings_202312.csv'  
+airbnb_data = pd.read_csv(file_path) 
  
 print(airbnb_data.info()) 
 
@@ -200,6 +201,16 @@ print(airbnb_data.info())
 output_dir = "plots"  
 if not os.path.exists(output_dir):  
     os.makedirs(output_dir) 
+
+# Define the folder name  
+data_folder = "data"  
+
+# Check if the folder exists, and create it if it doesn't  
+if not os.path.exists(data_folder):  
+    os.makedirs(data_folder)  
+    print(f"Folder '{data_folder}' created successfully.")  
+else:  
+    print(f"Folder '{data_folder}' already exists.")
 ```
 
 ```{python}
@@ -224,49 +235,74 @@ Airbnb has reduced long-term rentals, raised rents, and driven commercialization
 ```{python}
 #| echo: false
 #| warning: false
+# -------------------------------  
 # 1. Data Cleaning and Preparation  
 # -------------------------------  
+import pandas as pd  
+import geopandas as gpd  
+import seaborn as sns  
+import matplotlib.pyplot as plt  
+from matplotlib.gridspec import GridSpec  
+import numpy as np  
+import os 
+import requests
+
 # Select relevant columns and drop rows with missing values  
-data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  
-                    'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  
-                    'price', 'latitude', 'longitude']].dropna()  
+airbnb_data = airbnb_data[['host_id', 'room_type', 'availability_365', 'calculated_host_listings_count',  
+                           'reviews_per_month', 'minimum_nights', 'estimated_nights_booked',  
+                           'price', 'latitude', 'longitude','neighbourhood']].dropna()  
 
 # Filter data where availability_365 is greater than 0  
-data = data[data['availability_365'] > 0]  
+airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0]  
 
-import geopandas as gpd  
-# Load the borough map as a GeoDataFrame  
-borough_map = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+
+#import shp packages
+# Link to the ZIP file in the GitHub repository (raw file link)  
+file_path = "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/statistical-gis-boundaries-london/ESRI/statistical-gis-boundaries-london.zip"  
+
+# Step 1: Download the .zip file to a local file  
+local_zip_path = "statistical-gis-boundaries-london.zip" 
+response = requests.get(file_path)  
+
+if response.status_code == 200:  
+    # Save the content of the response to a local file  
+    with open(local_zip_path, "wb") as f:  
+        f.write(response.content)  
+    pass
+else:  
+    print(f"Failed to download file: HTTP {response.status_code}")  
+    exit()  
+
+# Step 2: Read the shapefile directly from the downloaded .zip file  
+borough_map = gpd.read_file(f"zip://{os.path.abspath(local_zip_path)}")  
+
+
 
 # Convert the cleaned data into a GeoDataFrame  
 gdf = gpd.GeoDataFrame(  
-    data,   
-    geometry=gpd.points_from_xy(data['longitude'], data['latitude']),  
+    airbnb_data,   
+    geometry=gpd.points_from_xy(airbnb_data['longitude'], airbnb_data['latitude']),  
     crs="EPSG:4326"  # WGS84 coordinate system  
 )  
 # Reproject the GeoDataFrame to EPSG:27700 (British National Grid)  
 gdf = gdf.to_crs("EPSG:27700")  
 # Ensure both GeoDataFrames use the same CRS  
 borough_map = borough_map.to_crs(gdf.crs)  
-```
-
-```{python}
-#| echo: false
-#| warning: false
 
 # -------------------------------  
-# 1. Setup the Main Figure Layout  
+# 2. Visualization Setup  
 # -------------------------------  
+# Set up the main figure layout  
 fig = plt.figure(figsize=(16, 10))  # Main figure size  
 gs = GridSpec(1, 1, figure=fig)  # Single grid for the map  
 
 # Subplot positions and sizes  
 x_offset = 0.75  
-y_offsets = [0.82, 0.62, 0.42, 0.22]  
+y_offsets = [0.8, 0.6, 0.42, 0.22]  
 subplot_width, subplot_height = 0.18, 0.12  
 
 # -------------------------------  
-# 2. Plot the Map of Airbnb Listings  
+# 3. Plot the Map of Airbnb Listings  
 # -------------------------------  
 ax_map = fig.add_subplot(gs[0, 0])  
 borough_map.plot(ax=ax_map, color='lightblue', edgecolor='darkblue', alpha=0.44)  
@@ -301,7 +337,7 @@ for spine in ax_map.spines.values():
     spine.set_visible(False)  
 
 # -------------------------------  
-# 3. Subplot 1: Estimated Booking Days  
+# 4. Subplot 1: Estimated Booking Days  
 # -------------------------------  
 ax1 = fig.add_axes([x_offset, y_offsets[0], subplot_width, subplot_height])  
 
@@ -311,13 +347,13 @@ labels = ['0-30', '30-60', '60-90', '90-120', '120-150', '150-180', '180-210',
           '210-240', '240-270', '270-300', '300-330', '330-356', '356+']  
 
 # Assign colors based on booking days  
-data['booking_color'] = data['estimated_nights_booked'].apply(  
+airbnb_data['booking_color'] = airbnb_data['estimated_nights_booked'].apply(  
     lambda x: 'blue' if x <= 89 else 'red'  
 )  
 
 # Plot histogram  
 sns.histplot(  
-    data=data, x='estimated_nights_booked', hue='booking_color',  
+    data=airbnb_data, x='estimated_nights_booked', hue='booking_color',  
     palette={'blue': '#6A9FB5', 'red': '#FF6F61'}, multiple='dodge',  
     edgecolor='black', linewidth=0.5, binwidth=15, ax=ax1  
 )  
@@ -347,12 +383,12 @@ ax1.spines['top'].set_visible(False)
 ax1.spines['right'].set_visible(False)  
 
 # -------------------------------  
-# 4. Subplot 2: Listings per Host  
+# 5. Subplot 2: Listings per Host  
 # -------------------------------  
 ax2 = fig.add_axes([x_offset, y_offsets[1], subplot_width, subplot_height])  
 
 # Group listings per host and create a new column for "10+"  
-listings_per_host = data.groupby('host_id').size()  
+listings_per_host = airbnb_data.groupby('host_id').size()  
 listings_per_host = listings_per_host.apply(lambda x: x if x <= 10 else 11)  
 
 # Plot histogram  
@@ -372,12 +408,12 @@ ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)  
 
 # -------------------------------  
-# 5. Subplot 3: Room Type Count  
+# 6. Subplot 3: Room Type Count  
 # -------------------------------  
 ax3 = fig.add_axes([x_offset, y_offsets[2], subplot_width, subplot_height])  
 
 # Plot bar chart  
-room_type_count = data['room_type'].value_counts()  
+room_type_count = airbnb_data['room_type'].value_counts()  
 room_type_count.index = ['Entire home', 'Private room', 'Shared room', 'Hotel room']  
 sns.barplot(  
     x=room_type_count.index, y=room_type_count.values,  
@@ -393,13 +429,13 @@ ax3.spines['top'].set_visible(False)
 ax3.spines['right'].set_visible(False)  
 
 # -------------------------------  
-# 6. Subplot 4: Minimum Nights Distribution  
+# 7. Subplot 4: Minimum Nights Distribution  
 # -------------------------------  
 ax4 = fig.add_axes([x_offset, y_offsets[3], subplot_width, subplot_height])  
 
 # Plot histogram  
 sns.histplot(  
-    data['minimum_nights'], bins=1000, kde=False,  
+    airbnb_data['minimum_nights'], bins=1000, kde=False,  
     color='lightcoral', edgecolor='black', linewidth=0.5, ax=ax4  
 )  
 ax4.set_title('4. Minimum Nights Distribution', fontsize=10, fontweight='bold')  
@@ -412,11 +448,6 @@ ax4.spines['top'].set_visible(False)
 ax4.spines['right'].set_visible(False)  
 
 # -------------------------------  
-# 7. Add a Table Header  
-# -------------------------------  
-fig.suptitle('Figure 1: Airbnb Listings Analysis in London', fontsize=18, fontweight='bold', y=0.95)  
-
-# -------------------------------  
 # 8. Save the Figure  
 # -------------------------------  
 os.makedirs('plots', exist_ok=True)  # Create 'plots' folder if it doesn't exist  
@@ -425,6 +456,11 @@ plt.savefig('plots/figure_1_Airbnb_Listings_in_London.png', dpi=600, bbox_inches
 # -------------------------------  
 # 9. Display the Figure  
 # -------------------------------  
+
+plt.subplots_adjust(bottom=0.05)  
+fig.text(0.5, 0.01, 'Figure 1: Airbnb Listings Analysis in London',   
+         ha='center', fontsize=18, fontweight='bold')
+
 plt.show()
 ```
 
@@ -447,15 +483,22 @@ To address the limitations of using only snapshot data, we merged datasets from 
 # 1. Load and Combine Data  
 # -------------------------------  
 # Define the folder and file names  
-data_folder = "data"  
-file_names = ["listings_20243.csv", "listings_20246.csv", "listings_20249.csv"]  
+file_urls = [  
+    "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/listings_20243.csv",  
+    "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/listings_20246.csv",  
+    "https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/listings_20249.csv"  
+]  
 
-# Load and combine the datasets  
-data_list = [pd.read_csv(os.path.join(data_folder, file)) for file in file_names]  
+# Load the datasets directly from URLs  
+data_list = [pd.read_csv(url) for url in file_urls]  
+
+# Combine the datasets  
 combined_data = pd.concat(data_list, ignore_index=True)  
 
 # Combine with airbnb_data (2023 data)  
+# Assuming you have already loaded `airbnb_data` elsewhere in your code  
 all_data = pd.concat([combined_data, airbnb_data], ignore_index=True)  
+
 
 # -------------------------------  
 # 2. Data Cleaning  
@@ -513,9 +556,9 @@ min_nights_heatmap = all_data.pivot_table(index='host_type', columns='room_type'
 # -------------------------------  
 fig = plt.figure(figsize=(16, 14))  
 
-# Main title  
-fig.suptitle('Figure 2: Analysis of Airbnb Listings by Host and Room Types', fontsize=16, fontweight='bold', y=0.95)  
-
+# Main title 
+fig.text(0.5, 0.02, 'Figure 2: Analysis of Airbnb Listings by Host and Room Types',   
+         ha='center', fontsize=16, fontweight='bold') 
 # First Row: Tables  
 # Left: Host Type Table  
 ax1 = fig.add_axes([0.1, 0.7, 0.35, 0.15])  
@@ -644,65 +687,50 @@ We analyzed the spatial clustering of Airbnb rule-breaking properties using Mora
 #| echo: false
 #| output: false
 #| cache: true
-import warnings
-warnings.filterwarnings('ignore')
+import warnings  
+warnings.filterwarnings('ignore')  
 from libpysal.weights import Queen  
 
-# Read the data  
-file_path = 'data/listings.csv'    #which is the path in this repository  
-airbnb_data = pd.read_csv(file_path)
+# Count the number of listings in each borough using 'neighbourhood' column  
+borough_counts = airbnb_data['neighbourhood'].value_counts()  
 
-# Calculate the estimation of nights booked for each listing
-airbnb_data = airbnb_data[airbnb_data['availability_365'] > 0] 
-airbnb_data['estimated_nights_booked'] = airbnb_data['reviews_per_month'] * 12 * airbnb_data['minimum_nights'] * 2 
+# Filter the DataFrame to include only rows where estimated_nights_booked is greater than 90  
+filtered_data = airbnb_data[airbnb_data['estimated_nights_booked'] > 90]  
 
-# Data cleaning: assign the estimated nights booked to each borough
-# Replace NaN with 0
-airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].fillna(0)
+# Count the number of listings with estimation of nights booked larger than 90 days in each borough  
+borough_counts_90 = filtered_data['neighbourhood'].value_counts()  
 
-# Convert the column to integers
-airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].astype(int)
+# Merge the two series into a DataFrame  
+merged_data = pd.concat([borough_counts, borough_counts_90], axis=1, keys=['Total_listings', 'More_than_90'])  
 
-#Count the number of listings in each borough using 'neighbourhood' column
-borough_counts = airbnb_data['neighbourhood'].value_counts()
+# Calculate the ratio of listings with more than 90 booked nights per total listings  
+merged_data['Ratio_of_more_than_90'] = merged_data['More_than_90'] / merged_data['Total_listings']  
 
-# Filter the DataFrame to include only rows where estimated_nights_booked is greater than 90
-filtered_data = airbnb_data[airbnb_data['estimated_nights_booked'] > 90]
+# Fill any NaN values that might occur if there are boroughs with no listings > 90 nights  
+merged_data['Ratio_of_more_than_90'] = merged_data['Ratio_of_more_than_90'].fillna(0)  
 
-#Count the number of listings with estimation of nights booked larger than 90 days in each borough
-borough_counts_90 = filtered_data['neighbourhood'].value_counts()
+# Data formatting and round to four decimal places  
+merged_data['Ratio_of_more_than_90'] = merged_data['Ratio_of_more_than_90'].apply(lambda x: round(x, 4))  
 
-# Merge the two series into a DataFrame
-combined_data = pd.concat([borough_counts, borough_counts_90], axis=1, keys=['Total_listings', 'More_than_90'])
+# Rename the index label to 'Borough_name'  
+merged_data.index.rename('Borough_name', inplace=True)  
 
-# Calculate the ratio of listings with more than 90 booked nights per total listings
-combined_data['Ratio_of_more_than_90'] = combined_data['More_than_90'] / combined_data['Total_listings']
+# Load the borough codes  
+borough_code_file_path = 'data/borough_name_code.csv'  
+borough_codes = pd.read_csv(borough_code_file_path)  
 
-# Fill any NaN values that might occur if there are boroughs with no listings > 90 nights
-combined_data['Ratio_of_more_than_90'] = combined_data['Ratio_of_more_than_90'].fillna(0)
+# Reset index in merged_data to turn the index into a regular column  
+merged_data.reset_index(inplace=True)  
+borough_codes.reset_index(inplace=True)  
 
-# Data formatting and round to four decimal places
-combined_data['Ratio_of_more_than_90'] = combined_data['Ratio_of_more_than_90'].apply(lambda x: round(x, 4))
+# Combine the ratio data and borough name with borough code by borough name  
+merged_data = pd.merge(merged_data, borough_codes[['Borough_name', 'Borough_code']], on='Borough_name', how='left')  
 
-# Rename the index label to 'Borough_name'
-combined_data.index.rename('Borough_name', inplace=True)
+# Set 'Borough_name' back as the index  
+merged_data.set_index('Borough_name', inplace=True)  
 
-# Load the borough codes
-borough_code_file_path = 'data/borough_name_code.csv'
-borough_codes = pd.read_csv(borough_code_file_path)
-
-# Reset index in combined_data to turn the index into a regular column
-combined_data.reset_index(inplace=True)
-borough_codes.reset_index(inplace=True)
-
-#Combine the ratio data and borough name with borough code by borough name
-combined_data = pd.merge(combined_data, borough_codes[['Borough_name', 'Borough_code']], on='Borough_name', how='left')
-
-# Set 'Borough_name' back as the index
-combined_data.set_index('Borough_name', inplace=True)
-
-# Save the updated DataFrame
-combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
+# Save the updated DataFrame  
+merged_data.to_csv('data/borough_listings_ratio.csv', index=True)
 ```
 
 ```{python}
@@ -713,7 +741,7 @@ combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
 from esda.moran import Moran  
 # Load data
 ratio = pd.read_csv("data/borough_listings_ratio.csv")
-borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+borough = borough_map
 
 # merge
 borough_ratio = borough.merge(ratio, left_on="GSS_CODE", right_on="Borough_code")
@@ -839,8 +867,7 @@ from libpysal.weights import Queen, lag_spatial
 from esda.moran import Moran_BV, Moran_Local_BV
 
 # load data
-connect = pd.read_csv("data/connect.csv")
-borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+connect = pd.read_csv("https://github.com/VeraLi0710/FSDSGroup/raw/refs/heads/main/data/connect.csv")
 
 # merge the data
 borough_connect = borough.merge(connect, left_on="GSS_CODE", right_on="Borough_code")
@@ -987,9 +1014,26 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/combined_of_Moran_and_LISA.png)
+# Create Layout  
+fig = plt.figure(figsize=(16, 5.5), dpi=800)  
+
+# Path of png  
+img = mpimg.imread('plots/combined_of_Moran_and_LISA.png')  
+
+# Adjust layout 
+ax = fig.add_axes([0.05, 0.1, 0.9, 0.85])  
+ax.imshow(img)  
+ax.axis('off')  
+# title position
+fig.text(0.5, 0.015, 'Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs,\nmonthly rent and vacancy ratio',  
+         ha='center', fontsize=14, fontweight='bold')  
+ 
+plt.show()
+```
 
 2. **Housing Market Impacts**  
 To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR analysis showed that violations contributed to rising rents and increased vacancy rates, with the strongest effects observed in central areas where tourism dominates and in eastern boroughs with emerging rental markets. GWR results highlighted spatial variability, aligning with findings from [@jain2021nowcasting], the highest rent surges in central London and higher vacancy rates in eastern boroughs.   
@@ -1000,8 +1044,8 @@ To quantify these impacts, we applied SAR and GWR models (Figure 4). The SAR ana
 # SAR model
 from spreg import ML_Lag
 # Import data
-data = pd.read_csv("data/connect.csv")
-shp = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+data = connect
+shp = borough_map
 
 # Merge data and transform coordinate system
 zone = shp.merge(data, left_on="GSS_CODE", right_on="Borough_code")
@@ -1223,9 +1267,28 @@ plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tigh
 plt.tight_layout()
 ```
 
-### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
+```{python}
+import matplotlib.pyplot as plt  
+import matplotlib.image as mpimg  
 
-![](plots/Results_of_SAR_and_GWR_model.png)
+# Create Layout
+fig = plt.figure(figsize=(16, 6))  # 减小高度更紧凑  
+
+# Path of png 
+img = mpimg.imread('plots/Results_of_SAR_and_GWR_model.png')  # 替换为你的图片路径  
+
+# 
+ax = fig.add_axes([0.05, 0.18, 0.9, 0.75])  # [左, 下, 宽, 高]，上下的空隙进一步减少  
+ax.imshow(img)  
+ax.axis('off')  # 隐藏坐标轴  
+
+# Title
+fig.text(0.5, 0, 'Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs\non Monthly Rent and Vacancy Ratio',   
+         ha='center', fontsize=14, fontweight='bold')  # 标题紧贴底部，换行确保清晰  
+
+# 
+plt.show()
+```
 
 From the analysis above, enforcing the 90-day policy is essential to address rising rents, increasing vacancy rates, and spatial inequality driven by short-term rentals, thereby preserving housing affordability and stability in affected hotspots.
 
@@ -1393,12 +1456,6 @@ print(f"z-score: {moran.z_sim:.4f}")
 # Create a 3x2 subplot layout  
 fig = plt.figure(figsize=(15, 18))  
 
-# Add main title  
-plt.suptitle("Figure 5. Visualisation of Residuals and Moran's I",   
-             fontsize=16,   
-             fontweight='bold',   
-             y=0.95)  # Adjust y position of the title  
-
 # Residuals vs Fitted Values  
 ax1 = plt.subplot(3, 2, 1)  
 sns.scatterplot(x=gdf_filtered["predicted_probs"], y=gdf_filtered["deviance_residuals"],  
@@ -1443,8 +1500,17 @@ ax5 = plt.subplot(3, 2, (5, 6))  # Span both columns in the last row
 moran_scatterplot(moran, ax=ax5)  
 ax5.set_title("Moran's I Scatterplot (Deviance Residuals)", fontsize=14)  
 
-# Adjust layout with top margin for main title  
-plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle  
+# 调整布局  
+plt.tight_layout(rect=[0, 0.05, 1, 1])  # 预留底部空间来放置标题  
+
+# 将主标题放置在底部  
+plt.figtext(0.5, 0.01,  # 设置位置：靠底部 (y=0.01)  
+            "Figure 5. Visualisation of Residuals and Moran's I",   
+            ha='center',  # 水平居中  
+            fontsize=16,  # 字体大小  
+            fontweight='bold')  # 加粗字体  
+
+# 显示图形  
 plt.show()
 ```
 
