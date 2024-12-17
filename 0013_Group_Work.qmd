@@ -1823,7 +1823,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-The GWR model shows strong explanatory power, explaining over 80% of the variation in non-compliant listings across most of London (R-squared ≥ 0.8), and 95% in central areas where they are concentrated (R-squared = 0.95).  
+The GWR model shows strong explanatory power, explaining over 80% of the variation in non-compliant listings across most of London (R-squared ≥ 0.8), and 95% in central areas where they are concentrated (R-squared = 0.95).  The most influential factors include public transport density and tourist attraction density.
 
 Significant spatial heterogeneity is observed. For example, for public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation. This indicates that the variables cannot uniformly explain rule-breaking Airbnb listings.
 
