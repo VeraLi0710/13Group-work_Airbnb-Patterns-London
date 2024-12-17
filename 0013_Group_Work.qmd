@@ -1765,14 +1765,31 @@ coords = gwr[["x", "y"]].values
 
 # --------------------------------------------------------------
 ## 11.2 Run GWR Model
-### 11.2.1 Determine the optimal bandwidth
-bw = Sel_BW(coords, Y, X).search()
+import pickle
+import os
 
-### 11.2.2 Fit the GWR model
-model = GWR(coords, Y, X, bw)
-results = model.fit()
+# Set cache file
+cache_file = "gwr_results_cache.pkl"
 
-### 11.2.3 Print summary of GWR results
+# Check cache
+if os.path.exists(cache_file):
+    print("Loading cached GWR results...")
+    with open(cache_file, "rb") as f:
+        bw, results = pickle.load(f)
+else:
+    print("Running GWR model...")
+    ### 11.2.1 Determine the optimal bandwidth
+    bw = Sel_BW(coords, Y, X).search()
+    
+    ### 11.2.2 Fit the GWR model
+    model = GWR(coords, Y, X, bw)
+    results = model.fit()
+    
+    ### 11.2.3 Save to cache
+    with open(cache_file, "wb") as f:
+        pickle.dump((bw, results), f)
+
+### 11.2.4 Print summary of GWR results
 print("GWR Results Summary:")
 print(f"R²: {results.R2}")
 print(f"AIC: {results.aic}")
