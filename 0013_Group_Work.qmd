@@ -88,7 +88,11 @@ Student Numbers: 4
 
 ## Priorities for Feedback
 
-Are there any areas on which you would appreciate more detailed feedback if we're able to offer it?
+[[[[[[[[[[[[[[[insert]]]]]]]]]]]] 
+
+**Accuracy of Policy Violation Estimates:** Given the limitations of InsideAirbnb data (e.g., no direct measure for annual rental days), we used proxies like reviews and minimum stay to estimate violations. We’d appreciate guidance on how to validate or improve this estimation method to reduce bias.
+
+**Model Discrepancy and Improvement:** While GWLR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWLR model.
 
 {{< pagebreak >}}
 
@@ -147,16 +151,21 @@ import numpy as np
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
-import seaborn as sns  
+from matplotlib.colors import LinearSegmentedColormap  
 from matplotlib.gridspec import GridSpec  
-import numpy as np  
-import os  
+import seaborn as sns  
+import os  # For creating directories
 
 # loading data
 file_path = 'data/listings_202312.csv' 
 airbnb_data = pd.read_csv(file_path)  
  
 print(airbnb_data.info()) 
+
+#create plots directory
+output_dir = "plots"  
+if not os.path.exists(output_dir):  
+    os.makedirs(output_dir) 
 ```
 
 ```{python}
@@ -171,7 +180,7 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 # Convert the column to integers
 airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].astype(int)
 
-#airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
+airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
 ```
 
 ### The 90-Day Rule and Airbnb Commercialization  
@@ -210,11 +219,6 @@ borough_map = borough_map.to_crs(gdf.crs)
 ```{python}
 #| echo: false
 #| warning: false
-import matplotlib.pyplot as plt  
-import seaborn as sns  
-from matplotlib.gridspec import GridSpec  
-import numpy as np  
-import os  # For creating directories  
 
 # -------------------------------  
 # 1. Setup the Main Figure Layout  
@@ -403,11 +407,7 @@ To address the limitations of using only snapshot data, we merged datasets from 
 ```{python}
 #| echo: false
 #| cache: true
-import pandas as pd  
-import matplotlib.pyplot as plt  
-import seaborn as sns  
-import os  
-from matplotlib.colors import LinearSegmentedColormap  
+
 
 # -------------------------------  
 # 1. Load and Combine Data  
@@ -618,12 +618,7 @@ We analyzed the spatial clustering of Airbnb rule-breaking properties using Mora
 #| cache: true
 import warnings
 warnings.filterwarnings('ignore')
-
-import pandas as pd  
-import numpy as np  
-from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
-import matplotlib.pyplot as plt  
-from matplotlib.font_manager import FontProperties  
+from libpysal.weights import Queen  
 
 # Read the data  
 file_path = 'data/listings.csv'    #which is the path in this repository  
@@ -687,14 +682,7 @@ combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
 #| output: false
 #| cache: true
 # Moran analysis
-import geopandas as gpd
-import libpysal
-from esda.moran import Moran, Moran_Local
-import matplotlib.pyplot as plt
-from libpysal.weights import Queen, KNN
-import seaborn as sns
-import os
-
+from esda.moran import Moran  
 # Load data
 ratio = pd.read_csv("data/borough_listings_ratio.csv")
 borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
@@ -738,6 +726,7 @@ moran_plot(y, weights)
 #| output: false
 #| cache: true
 # Local Moran's I
+from esda.moran import Moran_Local 
 local_moran = Moran_Local(y, weights)
 borough_ratio['Ii'] = local_moran.Is
 borough_ratio['p_value'] = local_moran.p_sim
@@ -794,6 +783,7 @@ print(f"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}")
 #| echo: false
 #| output: false
 # Distance-based weights (20km)
+from libpysal.weights import KNN  
 centroids = borough_ratio.geometry.centroid
 coords = np.column_stack((centroids.x, centroids.y))
 knn = KNN.from_dataframe(borough_ratio, k=4)  # Approximate 20km neighbors
@@ -1199,7 +1189,7 @@ ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
 ax[2].set_axis_off()
 
 #output
-plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=600, bbox_inches='tight')  
+plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tight')  
 
 # Adjust layout
 plt.tight_layout()
@@ -1238,9 +1228,8 @@ import matplotlib.gridspec as gridspec
 
 ```{python}
 #| echo: false
-# Step 2: Load and preprocess data  
-file_path = "processed_airbnb_data.csv"  
-regression_data = pd.read_csv(file_path)  
+# Step 2: Load and preprocess data   
+regression_data = airbnb_data
 
 # Select and clean columns  
 columns_to_keep = [  
@@ -1428,12 +1417,11 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle
 plt.show()
 ```
 
-```{python}
-### Result
-Firstly, the VIF results show no multicollinearity issues.
-The logistic regression analysis revealed significant relationships across all variables (p < 0.001) in the model with low pseudo R-squared (0.05093). 
-Furthermore, the Moran's I test (Moran's I = 0.0855, p=0.0010) reveals weak but significant spatial autocorrelation, indicating spatial heterogeneity and that the model may have omitted key variables or nonlinear relationships, leading to underfitting, heteroscedasticity, and high-leverage points that require further optimization and anomaly handling. 
-```
+# Missing Variables and Spatial Patterns?  
+
+Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the causes.  
+
+Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.
 
 ---
 
@@ -1443,7 +1431,6 @@ Research shows that factors affecting Airbnb distribution in London vary across 
 
 ```{python}
 #| echo: false
-
 # packages
 import pandas as pd  
 import numpy as np  
@@ -1758,4 +1745,3 @@ The GWR model shows high explanatory power, with R-squared values exceeding 0.8 
 --- 
 
 ## References
-

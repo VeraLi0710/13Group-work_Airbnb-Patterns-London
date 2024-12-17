@@ -88,7 +88,11 @@ Student Numbers: 4
 
 ## Priorities for Feedback
 
-Are there any areas on which you would appreciate more detailed feedback if we're able to offer it?
+[[[[[[[[[[[[[[[insert]]]]]]]]]]]] 
+
+**Accuracy of Policy Violation Estimates:** Given the limitations of InsideAirbnb data (e.g., no direct measure for annual rental days), we used proxies like reviews and minimum stay to estimate violations. We’d appreciate guidance on how to validate or improve this estimation method to reduce bias.
+
+**Model Discrepancy and Improvement:** While GWLR significantly improved explanatory power (R² = 0.55–0.96), the initial logistic regression model had very low explanatory power (R² = 0.05). We would appreciate feedback on whether there are key factors missing in the initial model and how to avoid potential overfitting or over-reliance on local weights in the GWLR model.
 
 {{< pagebreak >}}
 
@@ -147,16 +151,21 @@ import numpy as np
 from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
 import matplotlib.pyplot as plt  
 from matplotlib.font_manager import FontProperties  
-import seaborn as sns  
+from matplotlib.colors import LinearSegmentedColormap  
 from matplotlib.gridspec import GridSpec  
-import numpy as np  
-import os  
+import seaborn as sns  
+import os  # For creating directories
 
 # loading data
 file_path = 'data/listings_202312.csv' 
 airbnb_data = pd.read_csv(file_path)  
  
 print(airbnb_data.info()) 
+
+#create plots directory
+output_dir = "plots"  
+if not os.path.exists(output_dir):  
+    os.makedirs(output_dir) 
 ```
 
 ```{python}
@@ -171,12 +180,12 @@ airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].
 # Convert the column to integers
 airbnb_data['estimated_nights_booked'] = airbnb_data['estimated_nights_booked'].astype(int)
 
-#airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
+airbnb_data.to_csv('data/processed_airbnb_data.csv', index=False)  
 ```
 
 ### The 90-Day Rule and Airbnb Commercialization  
 
-Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data：
+Airbnb has reduced long-term rentals, raised rents, and driven commercialization in London’s housing market. The 90-day rule limits entire-home short-term rentals to 90 days per year without special planning permission [@greaterlondonauthority], but enforcement depends on self-reporting, which is weak. To address this, we use InsideAirbnb data to analyze booking patterns, host behavior, and property types to assess commercialization and compliance risks. Let's start by conducting an initial observation of the data:
 
 ```{python}
 #| echo: false
@@ -210,11 +219,6 @@ borough_map = borough_map.to_crs(gdf.crs)
 ```{python}
 #| echo: false
 #| warning: false
-import matplotlib.pyplot as plt  
-import seaborn as sns  
-from matplotlib.gridspec import GridSpec  
-import numpy as np  
-import os  # For creating directories  
 
 # -------------------------------  
 # 1. Setup the Main Figure Layout  
@@ -403,11 +407,7 @@ To address the limitations of using only snapshot data, we merged datasets from 
 ```{python}
 #| echo: false
 #| cache: true
-import pandas as pd  
-import matplotlib.pyplot as plt  
-import seaborn as sns  
-import os  
-from matplotlib.colors import LinearSegmentedColormap  
+
 
 # -------------------------------  
 # 1. Load and Combine Data  
@@ -589,15 +589,13 @@ plt.show()
 InsideAirbnb data shows London’s Airbnb market is highly commercialized, with significant 90-day rule compliance risks, requiring effective enforcement.
 
 1. **Spatial Insights**: Airbnb listings are clustered in high-risk areas - further spatial analysis is needed to assess impacts and identify drivers of non-compliance for better regulation.
-
+ 
 2. **Policy Violation Factors**: Multi-listing hosts and commercialized properties, such as entire homes and hotel-like listings, are major contributors to non-compliance. Different factors (e.g. property type, cost, location...)need further regression analysis to improve enforcement.
 
 ---  
 
 ## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
-
-## 7. Drawing on your previous answers, and supporting your response with evidence (*e.g.* figures, maps, EDA/ESDA, and simple statistical analysis/models drawing on experience from, e.g., CASA0007), how *could* the InsideAirbnb data set be used to inform the regulation of Short-Term Lets (STL) in London? 
 
 We decided to further analyze the December 2023 Inside Airbnb dataset to provide evidence on the link between Airbnb activity and policy violations. The next steps are:
 
@@ -620,12 +618,7 @@ We analyzed the spatial clustering of Airbnb rule-breaking properties using Mora
 #| cache: true
 import warnings
 warnings.filterwarnings('ignore')
-
-import pandas as pd  
-import numpy as np  
-from scipy.stats import pearsonr, pointbiserialr, chi2_contingency  
-import matplotlib.pyplot as plt  
-from matplotlib.font_manager import FontProperties  
+from libpysal.weights import Queen  
 
 # Read the data  
 file_path = 'data/listings.csv'    #which is the path in this repository  
@@ -689,14 +682,7 @@ combined_data.to_csv('data/borough_listings_ratio.csv', index=True)
 #| output: false
 #| cache: true
 # Moran analysis
-import geopandas as gpd
-import libpysal
-from esda.moran import Moran, Moran_Local
-import matplotlib.pyplot as plt
-from libpysal.weights import Queen, KNN
-import seaborn as sns
-import os
-
+from esda.moran import Moran  
 # Load data
 ratio = pd.read_csv("data/borough_listings_ratio.csv")
 borough = gpd.read_file("data/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
@@ -740,6 +726,7 @@ moran_plot(y, weights)
 #| output: false
 #| cache: true
 # Local Moran's I
+from esda.moran import Moran_Local 
 local_moran = Moran_Local(y, weights)
 borough_ratio['Ii'] = local_moran.Is
 borough_ratio['p_value'] = local_moran.p_sim
@@ -796,6 +783,7 @@ print(f"Number of significant clusters: {(local_moran.p_sim < 0.1).sum()}")
 #| echo: false
 #| output: false
 # Distance-based weights (20km)
+from libpysal.weights import KNN  
 centroids = borough_ratio.geometry.centroid
 coords = np.column_stack((centroids.x, centroids.y))
 knn = KNN.from_dataframe(borough_ratio, k=4)  # Approximate 20km neighbors
@@ -971,9 +959,7 @@ for i, img in enumerate(images[3:]):  # Last three are LISA plots
 new_im.save('plots/combined_of_Moran_and_LISA.png')
 ```
 
-::: {style="text-align: center;"}  
 ### Figure 3: Results of Moran and LISA analysis of rule breaking Airbnbs, monthly rent and vacancy ratio
-:::
 
 ![](plots/combined_of_Moran_and_LISA.png)
 
@@ -1175,43 +1161,41 @@ plt.show()
 ```
 
 ```{python}
+#| echo: false
+#| output: false
+#| include: false
 #| cache: true
-# #| echo: false
-# #| output: false
-# #| include: false
-# # combing the plots to a new plot
-# zone['residuals'] = sar_model.u
+# combing the plots to a new plot
+zone['residuals'] = sar_model.u
 
-# # Create a figure with three subplots (one row, three columns)
-# fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
+# Create a figure with three subplots (one row, three columns)
+fig, ax = plt.subplots(1, 3, figsize=(18, 6))  # Adjust the figure size as needed
 
-# # Plot for Residuals
-# zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
-# ax[0].set_title('SAR Model Residuals')
-# ax[0].set_axis_off()
+# Plot for Residuals
+zone.plot(column='residuals', cmap='viridis', ax=ax[0], legend=True)
+ax[0].set_title('SAR Model Residuals')
+ax[0].set_axis_off()
 
-# # Plot for Rent Effect
-# zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
-# zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
-# ax[1].set_title('Effect of rule breaking Airbnbs on rent')
-# ax[1].set_axis_off()
+# Plot for Rent Effect
+zone.plot(column='Rent_Effect', cmap='viridis', ax=ax[1], legend=True, legend_kwds={'label': "Effect on Rent"})
+zone[~zone['Significant_Rent']].plot(color='lightgrey', ax=ax[1])
+ax[1].set_title('Effect of rule breaking Airbnbs on rent')
+ax[1].set_axis_off()
 
-# # Plot for Vacancy Effect
-# zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
-# zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
-# ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
-# ax[2].set_axis_off()
+# Plot for Vacancy Effect
+zone.plot(column='Vacancy_Effect', cmap='viridis', ax=ax[2], legend=True, legend_kwds={'label': "Effect on Vacancy"})
+zone[~zone['Significant_Vacancy']].plot(color='lightgrey', ax=ax[2])
+ax[2].set_title('Effect of rule breaking Airbnbs on vacancy')
+ax[2].set_axis_off()
 
-# #output
-# plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tight')  
+#output
+plt.savefig('plots/Results_of_SAR_and_GWR_model.png', dpi=300, bbox_inches='tight')  
 
-# # Adjust layout
-# plt.tight_layout()
+# Adjust layout
+plt.tight_layout()
 ```
 
-::: {style="text-align: center;"}  
 ### Figure 4: Results of SAR and GWR Analysis of the Effect of Rule-Breaking Airbnbs on Monthly Rent and Vacancy Ratio
-:::
 
 ![](plots/Results_of_SAR_and_GWR_model.png)
 
@@ -1244,9 +1228,8 @@ import matplotlib.gridspec as gridspec
 
 ```{python}
 #| echo: false
-# Step 2: Load and preprocess data  
-file_path = "processed_airbnb_data.csv"  
-regression_data = pd.read_csv(file_path)  
+# Step 2: Load and preprocess data   
+regression_data = airbnb_data
 
 # Select and clean columns  
 columns_to_keep = [  
@@ -1297,10 +1280,9 @@ X = add_constant(X)
 # Calculate VIF  
 vif_data = pd.DataFrame()  
 vif_data["Variable"] = X.columns  
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])] 
+vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]  
 
-print("\nVIF Results:")  
-print(vif_data.to_string(index=False))  
+vif_results = vif_data  
 ```
 
 ```{python}
@@ -1329,6 +1311,9 @@ print("Logistic regression complete.")
 ```
 
 ```{python}
+#| echo: false
+#| output: false
+#| include: false
 # Step 1: Clip predicted probabilities  
 regression_data["predicted_probs"] = regression_data["predicted_probs"].clip(1e-6, 1 - 1e-6)  
 
@@ -1343,19 +1328,16 @@ regression_data["deviance_residuals"] = np.sign(
     )  
 )  
 
-# Calculate Residuals Using Existing Predicted Probabilities  
-regression_data["residuals"] = regression_data["estimated_nights_booked_binary"] - regression_data["predicted_probs"]  
-
 # Step 3: Convert data into GeoDataFrame  
 regression_data["geometry"] = [  
     Point(xy) for xy in zip(regression_data["longitude"], regression_data["latitude"])  
 ]  
 gdf = gpd.GeoDataFrame(regression_data, geometry="geometry", crs="EPSG:4326")  
 
-# Step 4: Create KNN Weight Matrix  
+# Step 4: Create KNN weight matrix  
 weights = KNN.from_dataframe(gdf, k=3)  # k=3 means each point will connect to its 3 nearest neighbors  
 
-# Step 5: Check for Isolated Points in the Weight Matrix  
+# Step 5: Check for isolated points in the weight matrix  
 islands = weights.islands  # Return a list of indices that are isolated/disconnected  
 
 if len(islands) > 0:  
@@ -1366,43 +1348,14 @@ else:
     print("No isolated points found. Continuing with the original dataset.")  
     gdf_filtered = gdf  # If no isolated points, the original dataset is used  
 
-# Summary Statistics for Residuals  
-print("\nResiduals Summary Statistics:")  
-print(regression_data["residuals"].describe())  
-
-# Display Deviance Residuals Summary Statistics  
-print("\nDeviance Residuals Summary Statistics:")  
-print(regression_data["deviance_residuals"].describe())  
-
-# Display Extreme Deviance Residuals  
-print("\nExtreme Deviance Residuals (Top 5 Largest Absolute Values):")  
-extreme_residuals = regression_data["deviance_residuals"].abs().sort_values(ascending=False).head()  
-print(extreme_residuals)  
-
-# Display Predicted Probabilities Summary Statistics  
-print("\nPredicted Probabilities Summary Statistics:")  
-print(regression_data["predicted_probs"].describe())  
-
-# Check Distribution of Actual vs Predicted  
-print("\nActual vs Predicted Cross-tabulation:")  
-print(pd.crosstab(  
-    regression_data["estimated_nights_booked_binary"],  
-    (regression_data["predicted_probs"] > 0.5).astype(int),  
-    margins=True  
-))  
-
 # Step 6: Calculate Moran's I  
 moran = Moran(gdf_filtered["deviance_residuals"], weights)  
 
-# Print Moran's I Results  
-print("\nMoran's I Results:")  
+# Print Moran's I results  
+print("Moran's I Results:")  
 print(f"Moran's I: {moran.I:.4f}")  
 print(f"p-value: {moran.p_sim:.4f}")  
-<<<<<<< Updated upstream
 print(f"z-score: {moran.z_sim:.4f}")  
-=======
-print(f"z-score: {moran.z_sim:.4f}")
->>>>>>> Stashed changes
 ```
 
 ```{python}
@@ -1464,20 +1417,20 @@ plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space at top for suptitle
 plt.show()
 ```
 
-**Missing Variables and Spatial Patterns?**
+# Missing Variables and Spatial Patterns?  
 
 Key property and host characteristics were identified as significant drivers of policy violations (p < 0.001). However, the low pseudo R-squared (0.05) suggests the model explains only a small portion of the causes.  
 
-Additionally, residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.
+Residual analysis and Moran's I test (I = 0.0855, p = 0.001) highlighted weak but significant spatial patterns, indicating missing factors and spatial heterogeneity. Further model improvements are needed to better capture these complexities.
 
-<<<<<<< Updated upstream
+---
+
 ## Geographically Weighted Regression
 
 Research shows that factors affecting Airbnb distribution in London vary across areas. To address this spatial heterogeneity, the Geographically Weighted Regression (GWR) model will be used, as it allows variables’ coefficients to change with location. Meanwhile, previous studies have shown a strong association between public transport density, green space density, and tourist attraction density with Airbnb distribution [@xu_influence_2020]. This study incorporates these variables into the model to examine whether they similarly influence the occurrence of non-compliant listings. The data for these variables were obtained from OpenStreetMap.
 
 ```{python}
 #| echo: false
-
 # packages
 import pandas as pd  
 import numpy as np  
@@ -1788,9 +1741,7 @@ plt.show()
 ```
 
 The GWR model shows high explanatory power, with R-squared values exceeding 0.8 across most of London and reaching 0.95 in central areas where non-compliant listings are concentrated. This confirms the strong relevance of the selected variables. However, significant spatial heterogeneity is observed, indicating that the variables cannot uniformly explain rule-breaking Airbnb listings. For public transport density, the lower-left central region shows a strong positive correlation, while the upper-right exhibits a moderate negative correlation. In contrast, for tourist attraction density, the lower-left shows a strong negative correlation, whereas the upper-right demonstrates a moderate positive correlation.
-=======
+
+--- 
+
 ## References
-
----
-
->>>>>>> Stashed changes
