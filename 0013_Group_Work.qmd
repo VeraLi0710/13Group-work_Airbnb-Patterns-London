@@ -1,7 +1,7 @@
 ---
 bibliography: bio.bib
 csl: harvard-cite-them-right.csl
-title: NA_Group2's Group Project
+title: NA_2 Group Project - Airbnb Trends and Patterns in London
 assess:
   group-date: '2024-12-17'
 execute:
@@ -2088,4 +2088,3 @@ These measures would improve regulatory efficiency and help reduce illegal activ
 --- 
 
 ## References
-
