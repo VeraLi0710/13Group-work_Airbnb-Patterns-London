@@ -14,8 +14,3 @@ This project investigates **Airbnb policy violations** in London, focusing on th
 - **Scarlett Liu** ([Scarlett-Cococo](https://github.com/Scarlett-Cococo))  
 - **Duanduan Shen** ([Vandring1701](https://github.com/Vandring1701))  
 - **Yezhen Zhang** ([YezhenZhang](https://github.com/YezhenZhang))  
-
-## Tools & Data  
-- **Data**: InsideAirbnb dataset (December 2023), borough-level socioeconomic data.  
-- **Tools**: Python (pandas, geopandas, libpysal, mgwr, seaborn, matplotlib).  
-
