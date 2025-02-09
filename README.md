@@ -1,4 +1,4 @@
-# Airbnb Policy Violations and Spatial Analysis in London
+# Airbnb Policy Violations and Spatial Analysis: London
 
 ## Overview  
 This project investigates **Airbnb policy violations** in London, focusing on the **90-day rule** and its spatial and socioeconomic impacts. Using data from **InsideAirbnb**, we applied advanced spatial analysis techniques to explore the drivers of violations and identify high-risk areas.  
