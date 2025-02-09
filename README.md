@@ -3,8 +3,6 @@
 ## Overview  
 This project investigates **Airbnb policy violations** in London, focusing on the **90-day rule** and its spatial and socioeconomic impacts. Using data from **InsideAirbnb**, we applied advanced spatial analysis techniques to explore the drivers of violations and identify high-risk areas.  
 
-This work is part of the **Foundations of Spatial Data Science** course at UCL CASA and showcases our ability to combine spatial data science methods with real-world policy challenges.  
-
 ## Key Features  
 - **Exploratory Spatial Data Analysis (ESDA)**: Used Moran's I and LISA cluster maps to identify hotspots of rule violations.  
 - **Geographically Weighted Regression (GWR)**: Explored spatially varying relationships between Airbnb activity and socioeconomic factors.  
@@ -21,4 +19,3 @@ This work is part of the **Foundations of Spatial Data Science** course at UCL C
 - **Data**: InsideAirbnb dataset (December 2023), borough-level socioeconomic data.  
 - **Tools**: Python (pandas, geopandas, libpysal, mgwr, seaborn, matplotlib).  
 
----  
