@@ -12,15 +12,13 @@ This work is part of the **Foundations of Spatial Data Science** course at UCL C
 - **Policy Insights**: Provided evidence-based recommendations for improving enforcement of short-term let regulations.  
 
 ## Team Members  
-- **Yixing Li**  
+- **Yixing Li** ([VeraLi0710](https://github.com/VeraLi0710))  
 - **Scarlett Liu** ([Scarlett-Cococo](https://github.com/Scarlett-Cococo))  
 - **Duanduan Shen** ([Vandring1701](https://github.com/Vandring1701))  
-- **Yezhen Zhang**  
+- **Yezhen Zhang** ([YezhenZhang](https://github.com/YezhenZhang))  
 
 ## Tools & Data  
 - **Data**: InsideAirbnb dataset (December 2023), borough-level socioeconomic data.  
 - **Tools**: Python (pandas, geopandas, libpysal, mgwr, seaborn, matplotlib).  
 
 ---  
-
-This project highlights the power of spatial data science in addressing urban challenges. Feel free to explore our work and reach out with any questions!
